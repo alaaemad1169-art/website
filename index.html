@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AgriCore - The Core of Agricultural Careers in Egypt & Arab Region</title>
+  <meta name="description"
+    content="Connecting agricultural engineers, consultants, researchers, food safety specialists, and agribusinesses across Egypt and the Arab region with advanced candidate matching.">
+
+  <!-- Modern Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+
+  <!-- CSS Stylesheets -->
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/main.css">
+</head>
+
+<body>
+
+  <!-- =========================================================================
+       Top Master Controller Bar (Role & View Switcher)
+       Allows immediate inspection of all platform roles, dashboards & database specs
+       ========================================================================= -->
+  <nav class="role-bar" aria-label="Role Switcher">
+    <div class="role-bar-left">
+      <span class="role-badge-tag">AgriCore Platform</span>
+    </div>
+    <div class="role-bar-nav">
+      <button class="role-btn active" data-view="landing">🌾 Public Portal</button>
+      <button class="role-btn" data-view="seeker_dashboard">👤 Seeker Dashboard</button>
+      <button class="role-btn" data-view="jobs_search">🔍 Jobs & Match Engine</button>
+      <button class="role-btn" data-view="company_dashboard">🏢 Company Portal (Delta Foods)</button>
+      <button class="role-btn" data-view="candidate_profile">📄 Candidate Profile (Ahmed)</button>
+      <button class="role-btn" data-view="academy">🎓 AgriCore Academy</button>
+      <button class="role-btn" data-view="insights">📊 Sector Insights</button>
+      <button class="role-btn role-sql-btn" id="openSqlModalBtn">⚡ Supabase SQL Blueprint</button>
+    </div>
+  </nav>
+
+  <!-- =========================================================================
+       Dynamic Application Mount Root
+       ========================================================================= -->
+  <div id="appRoot">
+    <!-- Rendered dynamically by js/app.js -->
+  </div>
+
+  <!-- =========================================================================
+       Modal 1: Job Application Modal
+       ========================================================================= -->
+  <div class="modal-overlay" id="applyModal" role="dialog" aria-modal="true" aria-labelledby="applyModalTitle">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <div>
+          <h3 id="applyModalTitle" style="font-size:1.125rem; font-weight:800;">Submit Application</h3>
+          <p id="applyJobCompany" style="font-size:0.8125rem; color:var(--color-text-muted);">Company details</p>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="window.agriApp.closeAllModals()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <h4 id="applyJobTitle"
+          style="font-size:1.0625rem; font-weight:700; color:var(--color-brand-900); margin-bottom:12px;">Position Title
+        </h4>
+
+        <div
+          style="background:var(--color-brand-50); border:1px solid var(--color-brand-100); border-radius:var(--radius-md); padding:16px; margin-bottom:16px; display:flex; align-items:center; justify-content:space-between;">
+          <div style="display:flex; align-items:center; gap:12px;">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              style="color:var(--color-brand-700);">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+              <polyline points="10 9 9 9 8 9"></polyline>
+            </svg>
+            <div>
+              <strong style="display:block; font-size:0.875rem;">Ahmed_Mohamed_Agri_CV.pdf</strong>
+              <small style="color:var(--color-text-muted);">Uploaded via Supabase Storage • 1.4 MB</small>
+            </div>
+          </div>
+          <span class="verified-badge">Verified</span>
+        </div>
+
+        <div style="margin-bottom:16px;">
+          <label style="font-size:0.875rem; font-weight:600; display:block; margin-bottom:6px;">Short Introduction /
+            Cover Note (Optional)</label>
+          <textarea rows="3"
+            style="width:100%; border:1px solid var(--color-border); border-radius:var(--radius-md); padding:10px; font-family:var(--font-sans); font-size:0.875rem;"
+            placeholder="Briefly highlight why your agricultural or quality expertise is a great fit for this vacancy...">I have 2.5 years of experience in food quality control and HACCP compliance with Cairo 3A, and I am excited to contribute to your production standards.</textarea>
+        </div>
+
+        <div style="font-size:0.75rem; color:var(--color-text-muted); line-height:1.5;">
+          🔒 <strong>Privacy Note:</strong> Your application creates a private snapshot stored under Supabase Row Level
+          Security. The employer can only view your verified credentials and submitted CV for this vacancy.
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary btn-sm" onclick="window.agriApp.closeAllModals()">Cancel</button>
+        <button class="btn btn-primary btn-sm" onclick="window.agriApp.submitApplication()">Confirm & Apply</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       Modal 2: Post Vacancy Modal (Employer Portal)
+       ========================================================================= -->
+  <div class="modal-overlay" id="postJobModal" role="dialog" aria-modal="true">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 style="font-size:1.125rem; font-weight:800;">Post a New Agricultural Job</h3>
+        <button class="btn btn-ghost btn-sm" onclick="window.agriApp.closeAllModals()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div style="display:flex; flex-direction:column; gap:16px;">
+          <div>
+            <label style="font-size:0.8125rem; font-weight:700; display:block; margin-bottom:4px;">Job Title *</label>
+            <input type="text" id="newJobTitle"
+              style="width:100%; padding:10px; border:1px solid var(--color-border); border-radius:var(--radius-md);"
+              placeholder="e.g. Modern Irrigation Engineer">
+          </div>
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+            <div>
+              <label style="font-size:0.8125rem; font-weight:700; display:block; margin-bottom:4px;">Location
+                (Governorate)</label>
+              <select id="newJobLocation"
+                style="width:100%; padding:10px; border:1px solid var(--color-border); border-radius:var(--radius-md);">
+                <option value="Cairo">Cairo</option>
+                <option value="Giza">Giza</option>
+                <option value="Fayoum">Fayoum</option>
+                <option value="Beheira">Beheira</option>
+                <option value="Alexandria">Alexandria</option>
+                <option value="Minya">Minya</option>
+              </select>
+            </div>
+            <div>
+              <label style="font-size:0.8125rem; font-weight:700; display:block; margin-bottom:4px;">Minimum
+                Experience</label>
+              <select id="newJobExp"
+                style="width:100%; padding:10px; border:1px solid var(--color-border); border-radius:var(--radius-md);">
+                <option value="0">Fresh Graduate (0-1 yrs)</option>
+                <option value="1" selected>Junior (1-3 yrs)</option>
+                <option value="3">Mid-Level (3-6 yrs)</option>
+                <option value="6">Senior (6+ yrs)</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <label style="font-size:0.8125rem; font-weight:700; display:block; margin-bottom:4px;">Primary
+              Specialization</label>
+            <select id="newJobSpec"
+              style="width:100%; padding:10px; border:1px solid var(--color-border); border-radius:var(--radius-md);">
+              <option value="Quality Control">Quality Control (QC)</option>
+              <option value="Food Safety">Food Safety & HACCP</option>
+              <option value="Crop Production">Crop Production</option>
+              <option value="Modern Irrigation">Modern Irrigation Systems</option>
+              <option value="Poultry Production">Poultry Production</option>
+              <option value="Farm Management">Farm Management</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary btn-sm" onclick="window.agriApp.closeAllModals()">Cancel</button>
+        <button class="btn btn-primary btn-sm" onclick="window.agriApp.submitNewJob()">Publish Vacancy</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       Modal 3: Supabase SQL Architecture & Schema Inspector
+       ========================================================================= -->
+  <div class="modal-overlay" id="sqlViewerModal" role="dialog" aria-modal="true">
+    <div class="modal-dialog" style="max-width:880px;">
+      <div class="modal-header">
+        <div>
+          <h3 style="font-size:1.25rem; font-weight:800; color:var(--color-brand-900);">AgriCore Supabase PostgreSQL
+            Blueprint</h3>
+          <p style="font-size:0.8125rem; color:var(--color-text-muted);">8 Ordered SQL Migrations with RLS, Triggers &
+            Matching Engine</p>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="window.agriApp.closeAllModals()">&times;</button>
+      </div>
+      <div class="modal-body" style="padding: 20px 24px;">
+        <div style="display:grid; grid-template-columns: 240px 1fr; gap:20px;">
+          <!-- SQL Files List -->
+          <div
+            style="display:flex; flex-direction:column; gap:6px; border-right:1px solid var(--color-border); padding-right:12px;">
+            <button class="btn btn-secondary btn-sm active" style="justify-content:flex-start;"
+              onclick="showSqlFile('01')">01_extensions.sql</button>
+            <button class="btn btn-secondary btn-sm" style="justify-content:flex-start;"
+              onclick="showSqlFile('02')">02_enums.sql</button>
+            <button class="btn btn-secondary btn-sm" style="justify-content:flex-start;"
+              onclick="showSqlFile('03')">03_tables.sql</button>
+            <button class="btn btn-secondary btn-sm" style="justify-content:flex-start;"
+              onclick="showSqlFile('04')">04_indexes.sql</button>
+            <button class="btn btn-secondary btn-sm" style="justify-content:flex-start;"
+              onclick="showSqlFile('05')">05_functions_triggers.sql</button>
+            <button class="btn btn-secondary btn-sm" style="justify-content:flex-start;"
+              onclick="showSqlFile('06')">06_rls_policies.sql</button>
+            <button class="btn btn-secondary btn-sm" style="justify-content:flex-start;"
+              onclick="showSqlFile('07')">07_storage.sql</button>
+            <button class="btn btn-secondary btn-sm" style="justify-content:flex-start;"
+              onclick="showSqlFile('08')">08_seed_data.sql</button>
+          </div>
+
+          <!-- Code Snippet Display -->
+          <div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+              <strong id="sqlFileTitle" style="font-size:0.875rem; color:var(--color-brand-700);">01_extensions.sql -
+                PostgreSQL Extensions</strong>
+              <button class="btn btn-ghost btn-sm" style="font-size:0.75rem;" onclick="copySqlCode()">Copy SQL</button>
+            </div>
+            <pre id="sqlCodeBlock"
+              style="background:#092c1d; color:#e2e8f0; padding:16px; border-radius:var(--radius-md); font-family:var(--font-mono); font-size:0.75rem; max-height:360px; overflow-y:auto; line-height:1.5;"></pre>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary btn-sm" onclick="window.agriApp.closeAllModals()">Close Inspector</button>
+      </div>
+    </div>
+  </div>
+  <!-- =========================================================================
+       Modal 4: Real Supabase Authentication Modal (Login & Sign Up)
+       ========================================================================= -->
+  <div class="modal-overlay" id="authModal" role="dialog" aria-modal="true">
+    <div class="modal-dialog" style="max-width:540px;">
+      <div class="modal-header">
+        <div>
+          <h3 id="authModalTitle" style="font-size:1.25rem; font-weight:800; color:var(--color-brand-900);">تسجيل الدخول
+            إلى AgriCore</h3>
+          <p style="font-size:0.8125rem; color:var(--color-text-muted);">بوابة الكوادر والشركات الزراعية في مصر والعالم
+            العربي</p>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="window.agriApp.closeAllModals()">&times;</button>
+      </div>
+      <div class="modal-body" style="padding: 24px;">
+        <!-- Auth Tabs -->
+        <div class="nav-tabs" style="margin-bottom:20px;">
+          <button class="tab-btn active" id="tabLoginBtn" onclick="window.agriApp.switchAuthTab('login')">تسجيل
+            الدخول</button>
+          <button class="tab-btn" id="tabSignUpBtn" onclick="window.agriApp.switchAuthTab('signup')">إنشاء حساب
+            جديد</button>
+        </div>
+
+        <!-- Feedback Alert Box -->
+        <div id="authAlert"
+          style="display:none; padding:10px 14px; border-radius:var(--radius-md); font-size:0.875rem; margin-bottom:16px;">
+        </div>
+
+        <!-- Form: Login -->
+        <form id="loginForm" novalidate onsubmit="event.preventDefault(); window.agriApp?.handleLogin();">
+          <div style="display:flex; flex-direction:column; gap:14px;">
+            <div>
+              <label style="font-size:0.8125rem; font-weight:700; display:block; margin-bottom:4px;">البريد الإلكتروني
+                (Email)</label>
+              <input type="email" id="loginEmail" required
+                style="width:100%; padding:10px; border:1px solid var(--color-border); border-radius:var(--radius-md);"
+                placeholder="name@company.com">
+            </div>
+            <div>
+              <label style="font-size:0.8125rem; font-weight:700; display:block; margin-bottom:4px;">كلمة المرور
+                (Password)</label>
+              <input type="password" id="loginPassword" required
+                style="width:100%; padding:10px; border:1px solid var(--color-border); border-radius:var(--radius-md);"
+                placeholder="••••••••">
+            </div>
+            <button type="submit" id="loginSubmitBtn" class="btn btn-primary" style="width:100%; margin-top:8px;">دخول
+              إلى المنصة</button>
+          </div>
+        </form>
+
+        <!-- Form: Sign Up -->
+        <form id="signUpForm" style="display:none;" novalidate onsubmit="event.preventDefault(); window.agriApp?.handleSignUp();">
+          <div style="display:flex; flex-direction:column; gap:14px;">
+            <!-- Account Type Selector -->
+            <div>
+              <label style="font-size:0.8125rem; font-weight:700; display:block; margin-bottom:6px;">نوع الحساب (Account Type)</label>
+              <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                <button type="button" class="btn btn-sm btn-primary" id="roleSeekerBtn"
+                  onclick="window.agriApp.selectSignupRole('professional')">
+                  🌾 كادر / مهندس زراعي
+                </button>
+                <button type="button" class="btn btn-sm btn-secondary" id="roleCompanyBtn"
+                  onclick="window.agriApp.selectSignupRole('company')">
+                  🏢 شركة / منشأة زراعية
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <label for="regFullName" style="font-size:0.8125rem; font-weight:700; display:block; margin-bottom:4px;">الاسم بالكامل (Full Name) <span style="color:#ef4444;">*</span></label>
+              <input type="text" id="regFullName" name="fullName" autocomplete="name" required
+                style="width:100%; padding:10px; border:1px solid var(--color-border); border-radius:var(--radius-md);"
+                placeholder="مثال: م. أحمد محمد">
+            </div>
+
+            <div id="companyExtraFields" style="display:none;">
+              <label for="regCompanyName" style="font-size:0.8125rem; font-weight:700; display:block; margin-bottom:4px;">اسم الشركة والقطاع</label>
+              <input type="text" id="regCompanyName" name="companyName" autocomplete="organization"
+                style="width:100%; padding:10px; border:1px solid var(--color-border); border-radius:var(--radius-md); margin-bottom:8px;"
+                placeholder="اسم المنشأة / الشركة">
+              <select id="regBusinessSector" name="businessSector"
+                style="width:100%; padding:10px; border:1px solid var(--color-border); border-radius:var(--radius-md);">
+                <option value="Food Industry">التصنيع الغذائي وتكنولوجيا الأغذية</option>
+                <option value="Farms & Production">المزارع والإنتاج النباتي والحيواني</option>
+                <option value="Agri Export">التصدير والحاصلات الزراعية</option>
+                <option value="Irrigation & Tech">شبكات الري والزراعة الذكية</option>
+                <option value="Laboratories">المعامل والتحاليل الميكروبيولوجية</option>
+              </select>
+            </div>
+
+            <div id="seekerExtraFields">
+              <label for="regTitle" style="font-size:0.8125rem; font-weight:700; display:block; margin-bottom:4px;">المسمى المهني والتخصص</label>
+              <input type="text" id="regTitle" name="title"
+                style="width:100%; padding:10px; border:1px solid var(--color-border); border-radius:var(--radius-md);"
+                placeholder="مثال: مهندس مراقبة جودة وسلامة غذاء">
+            </div>
+
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+              <div>
+                <label for="regGovernorate" style="font-size:0.8125rem; font-weight:700; display:block; margin-bottom:4px;">المحافظة</label>
+                <select id="regGovernorate" name="governorate"
+                  style="width:100%; padding:10px; border:1px solid var(--color-border); border-radius:var(--radius-md);">
+                  <option value="Cairo">القاهرة (Cairo)</option>
+                  <option value="Giza">الجيزة (Giza)</option>
+                  <option value="Alexandria">الإسكندرية (Alexandria)</option>
+                  <option value="Fayoum">الفيوم (Fayoum)</option>
+                  <option value="Beheira">البحيرة (Beheira)</option>
+                  <option value="Dakahlia">الدقهلية (Dakahlia)</option>
+                  <option value="Sharqia">الشرقية (Sharqia)</option>
+                  <option value="Minya">المنيا (Minya)</option>
+                </select>
+              </div>
+              <div>
+                <label for="regPhone" style="font-size:0.8125rem; font-weight:700; display:block; margin-bottom:4px;">رقم الهاتف / واتساب</label>
+                <input type="tel" id="regPhone" name="phone" autocomplete="tel"
+                  style="width:100%; padding:10px; border:1px solid var(--color-border); border-radius:var(--radius-md);"
+                  placeholder="010XXXXXXXX">
+              </div>
+            </div>
+
+            <div>
+              <label for="regEmail" style="font-size:0.8125rem; font-weight:700; display:block; margin-bottom:4px;">البريد الإلكتروني (Email) <span style="color:#ef4444;">*</span></label>
+              <input type="email" id="regEmail" name="email" autocomplete="email" required
+                style="width:100%; padding:10px; border:1px solid var(--color-border); border-radius:var(--radius-md);"
+                placeholder="user@gmail.com">
+            </div>
+
+            <div>
+              <label for="regPassword" style="font-size:0.8125rem; font-weight:700; display:block; margin-bottom:4px;">كلمة المرور (Password - 6 خانات كحد أدنى) <span style="color:#ef4444;">*</span></label>
+              <input type="password" id="regPassword" name="password" autocomplete="new-password" required minlength="6"
+                style="width:100%; padding:10px; border:1px solid var(--color-border); border-radius:var(--radius-md);"
+                placeholder="••••••••">
+            </div>
+
+            <button type="submit" id="signUpSubmitBtn" class="btn btn-primary" style="width:100%; margin-top:8px;">
+              <span id="signUpSubmitBtnText">تأكيد وإنشاء الحساب (Sign Up)</span>
+            </button>
+          </div>
+        </form>
+
+        <!-- Dedicated Post-Signup Email Verification Notice Screen -->
+        <div id="emailVerifyNotice" style="display:none; text-align:center; padding: 12px 6px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="js/data.js"></script>
+  <script type="module" src="js/matchingEngine.js"></script>
+  <script type="module" src="js/supabaseClient.js"></script>
+  <script type="module" src="js/app.js"></script>
+
+  <!-- Inline Helper for SQL Modal Tabs -->
+  <script>
+    const sqlFileSnippets = {
+      '01': `-- 01_extensions.sql: Enables essential extensions\nCREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA extensions;\nCREATE EXTENSION IF NOT EXISTS "pg_trgm" WITH SCHEMA extensions;\nCREATE EXTENSION IF NOT EXISTS "unaccent" WITH SCHEMA extensions;\nCREATE EXTENSION IF NOT EXISTS "pgcrypto" WITH SCHEMA extensions;`,
+      '02': `-- 02_enums.sql: Platform Enumerations\nCREATE TYPE public.user_type_enum AS ENUM ('professional', 'company', 'admin');\nCREATE TYPE public.education_level_enum AS ENUM ('diploma', 'bachelor', 'master', 'phd', 'other');\nCREATE TYPE public.visibility_enum AS ENUM ('public', 'anonymous', 'private');\nCREATE TYPE public.application_status_enum AS ENUM ('applied', 'under_review', 'contacted', 'accepted', 'rejected', 'position_closed');`,
+      '03': `-- 03_tables.sql: 15+ Core Schema Entities\nCREATE TABLE public.profiles (id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE, ...);\nCREATE TABLE public.professional_profiles (id UUID PRIMARY KEY REFERENCES public.profiles(id), agricore_id TEXT UNIQUE, ...);\nCREATE TABLE public.company_profiles (id UUID PRIMARY KEY, company_name TEXT, ...);\nCREATE TABLE public.jobs (id UUID PRIMARY KEY, company_id UUID REFERENCES public.company_profiles(id), ...);\nCREATE TABLE public.applications (id UUID PRIMARY KEY, job_id UUID REFERENCES public.jobs(id), ...);`,
+      '04': `-- 04_indexes.sql: B-Tree and GIN Trigram Search Indexes\nCREATE INDEX idx_jobs_status ON public.jobs(status);\nCREATE INDEX idx_professional_title_trgm ON public.professional_profiles USING gin (professional_title extensions.gin_trgm_ops);\nCREATE INDEX idx_skills_name_en_trgm ON public.skills USING gin (name_en extensions.gin_trgm_ops);`,
+      '05': `-- 05_functions_triggers.sql: Multi-Criteria Candidate Matching Engine\nCREATE OR REPLACE FUNCTION public.calculate_candidate_match_score(p_job_id UUID, p_professional_id UUID) RETURNS INT AS $$\n-- Specialization Match: 30%\n-- Skills Match: 25%\n-- Experience Match: 20%\n-- Location Match: 15%\n-- Education Match: 10%\n$$ LANGUAGE plpgsql STABLE;`,
+      '06': `-- 06_rls_policies.sql: Row Level Security Matrix\nALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;\nALTER TABLE public.professional_profiles ENABLE ROW LEVEL SECURITY;\nALTER TABLE public.applications ENABLE ROW LEVEL SECURITY;\nCREATE POLICY "profiles_select_policy" ON public.profiles FOR SELECT TO authenticated, anon USING (true);`,
+      '07': `-- 07_storage.sql: Storage Buckets & Policies\nINSERT INTO storage.buckets (id, name, public) VALUES ('avatars', 'avatars', true), ('company-logos', 'company-logos', true), ('resumes', 'resumes', false);\n-- Authenticated users upload only to their own folders`,
+      '08': `-- 08_seed_data.sql: 55+ Specializations & 45+ Skills\nINSERT INTO public.specializations (name_en, name_ar, category_group) VALUES ('Quality Control', 'مراقبة الجودة (QC)', 'Food Science & Quality'), ...;\nINSERT INTO public.training_categories (name_en, name_ar, code) VALUES ('HACCP', 'نظام تحليل المخاطر ونقاط التحكم الحرجة', 'HACCP'), ('ISO 22000', 'نظام إدارة سلامة الغذاء', 'ISO-22000'), ...;`
+    };
+
+    window.showSqlFile = function (num) {
+      document.getElementById('sqlCodeBlock').innerText = sqlFileSnippets[num] || '-- File content';
+      document.getElementById('sqlFileTitle').innerText = `0${num} file migration preview`;
+    };
+
+    window.copySqlCode = function () {
+      const code = document.getElementById('sqlCodeBlock').innerText;
+      navigator.clipboard.writeText(code).then(() => alert('SQL copied to clipboard!'));
+    };
+
+    // Initialize snippet display
+    window.showSqlFile('01');
+  </script>
+</body>
+
+</html>
