@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -19,6 +19,7 @@
   <link rel="stylesheet" href="css/variables.css">
   <link rel="stylesheet" href="css/components.css">
   <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/onboarding.css">
 </head>
 
 <body>
@@ -32,14 +33,14 @@
       <span class="role-badge-tag">AgriCore Platform</span>
     </div>
     <div class="role-bar-nav">
-      <button class="role-btn active" data-view="landing">🌾 Public Portal</button>
-      <button class="role-btn" data-view="seeker_dashboard">👤 Seeker Dashboard</button>
-      <button class="role-btn" data-view="jobs_search">🔍 Jobs & Match Engine</button>
-      <button class="role-btn" data-view="company_dashboard">🏢 Company Portal (Delta Foods)</button>
-      <button class="role-btn" data-view="candidate_profile">📄 Candidate Profile (Ahmed)</button>
-      <button class="role-btn" data-view="academy">🎓 AgriCore Academy</button>
-      <button class="role-btn" data-view="insights">📊 Sector Insights</button>
-      <button class="role-btn role-sql-btn" id="openSqlModalBtn">⚡ Supabase SQL Blueprint</button>
+      <button class="role-btn active" data-view="landing">ًںŒ¾ Public Portal</button>
+      <button class="role-btn" data-view="seeker_dashboard">ًں‘¤ Seeker Dashboard</button>
+      <button class="role-btn" data-view="jobs_search">ًں”چ Jobs & Match Engine</button>
+      <button class="role-btn" data-view="company_dashboard">ًںڈ¢ Company Portal (Delta Foods)</button>
+      <button class="role-btn" data-view="candidate_profile">ًں“„ Candidate Profile (Ahmed)</button>
+      <button class="role-btn" data-view="academy">ًںژ“ AgriCore Academy</button>
+      <button class="role-btn" data-view="insights">ًں“ٹ Sector Insights</button>
+      <button class="role-btn role-sql-btn" id="openSqlModalBtn">âڑ، Supabase SQL Blueprint</button>
     </div>
   </nav>
 
@@ -80,7 +81,7 @@
             </svg>
             <div>
               <strong style="display:block; font-size:0.875rem;">Ahmed_Mohamed_Agri_CV.pdf</strong>
-              <small style="color:var(--color-text-muted);">Uploaded via Supabase Storage • 1.4 MB</small>
+              <small style="color:var(--color-text-muted);">Uploaded via Supabase Storage â€¢ 1.4 MB</small>
             </div>
           </div>
           <span class="verified-badge">Verified</span>
@@ -95,7 +96,7 @@
         </div>
 
         <div style="font-size:0.75rem; color:var(--color-text-muted); line-height:1.5;">
-          🔒 <strong>Privacy Note:</strong> Your application creates a private snapshot stored under Supabase Row Level
+          ًں”’ <strong>Privacy Note:</strong> Your application creates a private snapshot stored under Supabase Row Level
           Security. The employer can only view your verified credentials and submitted CV for this vacancy.
         </div>
       </div>
@@ -232,20 +233,20 @@
     <div class="modal-dialog" style="max-width:540px;">
       <div class="modal-header">
         <div>
-          <h3 id="authModalTitle" style="font-size:1.25rem; font-weight:800; color:var(--color-brand-900);">تسجيل الدخول
-            إلى AgriCore</h3>
-          <p style="font-size:0.8125rem; color:var(--color-text-muted);">بوابة الكوادر والشركات الزراعية في مصر والعالم
-            العربي</p>
+          <h3 id="authModalTitle" style="font-size:1.25rem; font-weight:800; color:var(--color-brand-900);">طھط³ط¬ظٹظ„ ط§ظ„ط¯ط®ظˆظ„
+            ط¥ظ„ظ‰ AgriCore</h3>
+          <p style="font-size:0.8125rem; color:var(--color-text-muted);">ط¨ظˆط§ط¨ط© ط§ظ„ظƒظˆط§ط¯ط± ظˆط§ظ„ط´ط±ظƒط§طھ ط§ظ„ط²ط±ط§ط¹ظٹط© ظپظٹ ظ…طµط± ظˆط§ظ„ط¹ط§ظ„ظ…
+            ط§ظ„ط¹ط±ط¨ظٹ</p>
         </div>
         <button class="btn btn-ghost btn-sm" onclick="window.agriApp.closeAllModals()">&times;</button>
       </div>
       <div class="modal-body" style="padding: 24px;">
         <!-- Auth Tabs -->
         <div class="nav-tabs" style="margin-bottom:20px;">
-          <button class="tab-btn active" id="tabLoginBtn" onclick="window.agriApp.switchAuthTab('login')">تسجيل
-            الدخول</button>
-          <button class="tab-btn" id="tabSignUpBtn" onclick="window.agriApp.switchAuthTab('signup')">إنشاء حساب
-            جديد</button>
+          <button class="tab-btn active" id="tabLoginBtn" onclick="window.agriApp.switchAuthTab('login')">طھط³ط¬ظٹظ„
+            ط§ظ„ط¯ط®ظˆظ„</button>
+          <button class="tab-btn" id="tabSignUpBtn" onclick="window.agriApp.switchAuthTab('signup')">ط¥ظ†ط´ط§ط، ط­ط³ط§ط¨
+            ط¬ط¯ظٹط¯</button>
         </div>
 
         <!-- Feedback Alert Box -->
@@ -257,21 +258,21 @@
         <form id="loginForm" novalidate onsubmit="event.preventDefault(); window.agriApp?.handleLogin();">
           <div style="display:flex; flex-direction:column; gap:14px;">
             <div>
-              <label style="font-size:0.8125rem; font-weight:700; display:block; margin-bottom:4px;">البريد الإلكتروني
+              <label style="font-size:0.8125rem; font-weight:700; display:block; margin-bottom:4px;">ط§ظ„ط¨ط±ظٹط¯ ط§ظ„ط¥ظ„ظƒطھط±ظˆظ†ظٹ
                 (Email)</label>
               <input type="email" id="loginEmail" required
                 style="width:100%; padding:10px; border:1px solid var(--color-border); border-radius:var(--radius-md);"
                 placeholder="name@company.com">
             </div>
             <div>
-              <label style="font-size:0.8125rem; font-weight:700; display:block; margin-bottom:4px;">كلمة المرور
+              <label style="font-size:0.8125rem; font-weight:700; display:block; margin-bottom:4px;">ظƒظ„ظ…ط© ط§ظ„ظ…ط±ظˆط±
                 (Password)</label>
               <input type="password" id="loginPassword" required
                 style="width:100%; padding:10px; border:1px solid var(--color-border); border-radius:var(--radius-md);"
-                placeholder="••••••••">
+                placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢">
             </div>
-            <button type="submit" id="loginSubmitBtn" class="btn btn-primary" style="width:100%; margin-top:8px;">دخول
-              إلى المنصة</button>
+            <button type="submit" id="loginSubmitBtn" class="btn btn-primary" style="width:100%; margin-top:8px;">ط¯ط®ظˆظ„
+              ط¥ظ„ظ‰ ط§ظ„ظ…ظ†طµط©</button>
           </div>
         </form>
 
@@ -280,65 +281,65 @@
           <div style="display:flex; flex-direction:column; gap:14px;">
             <!-- Account Type Selector -->
             <div>
-              <label style="font-size:0.8125rem; font-weight:700; display:block; margin-bottom:6px;">نوع الحساب (Account Type)</label>
+              <label style="font-size:0.8125rem; font-weight:700; display:block; margin-bottom:6px;">ظ†ظˆط¹ ط§ظ„ط­ط³ط§ط¨ (Account Type)</label>
               <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
                 <button type="button" class="btn btn-sm btn-primary" id="roleSeekerBtn"
                   onclick="window.agriApp.selectSignupRole('professional')">
-                  🌾 كادر / مهندس زراعي
+                  ًںŒ¾ ظƒط§ط¯ط± / ظ…ظ‡ظ†ط¯ط³ ط²ط±ط§ط¹ظٹ
                 </button>
                 <button type="button" class="btn btn-sm btn-secondary" id="roleCompanyBtn"
                   onclick="window.agriApp.selectSignupRole('company')">
-                  🏢 شركة / منشأة زراعية
+                  ًںڈ¢ ط´ط±ظƒط© / ظ…ظ†ط´ط£ط© ط²ط±ط§ط¹ظٹط©
                 </button>
               </div>
             </div>
 
             <div>
-              <label for="regFullName" style="font-size:0.8125rem; font-weight:700; display:block; margin-bottom:4px;">الاسم بالكامل (Full Name) <span style="color:#ef4444;">*</span></label>
+              <label for="regFullName" style="font-size:0.8125rem; font-weight:700; display:block; margin-bottom:4px;">ط§ظ„ط§ط³ظ… ط¨ط§ظ„ظƒط§ظ…ظ„ (Full Name) <span style="color:#ef4444;">*</span></label>
               <input type="text" id="regFullName" name="fullName" autocomplete="name" required
                 style="width:100%; padding:10px; border:1px solid var(--color-border); border-radius:var(--radius-md);"
-                placeholder="مثال: م. أحمد محمد">
+                placeholder="ظ…ط«ط§ظ„: ظ…. ط£ط­ظ…ط¯ ظ…ط­ظ…ط¯">
             </div>
 
             <div id="companyExtraFields" style="display:none;">
-              <label for="regCompanyName" style="font-size:0.8125rem; font-weight:700; display:block; margin-bottom:4px;">اسم الشركة والقطاع</label>
+              <label for="regCompanyName" style="font-size:0.8125rem; font-weight:700; display:block; margin-bottom:4px;">ط§ط³ظ… ط§ظ„ط´ط±ظƒط© ظˆط§ظ„ظ‚ط·ط§ط¹</label>
               <input type="text" id="regCompanyName" name="companyName" autocomplete="organization"
                 style="width:100%; padding:10px; border:1px solid var(--color-border); border-radius:var(--radius-md); margin-bottom:8px;"
-                placeholder="اسم المنشأة / الشركة">
+                placeholder="ط§ط³ظ… ط§ظ„ظ…ظ†ط´ط£ط© / ط§ظ„ط´ط±ظƒط©">
               <select id="regBusinessSector" name="businessSector"
                 style="width:100%; padding:10px; border:1px solid var(--color-border); border-radius:var(--radius-md);">
-                <option value="Food Industry">التصنيع الغذائي وتكنولوجيا الأغذية</option>
-                <option value="Farms & Production">المزارع والإنتاج النباتي والحيواني</option>
-                <option value="Agri Export">التصدير والحاصلات الزراعية</option>
-                <option value="Irrigation & Tech">شبكات الري والزراعة الذكية</option>
-                <option value="Laboratories">المعامل والتحاليل الميكروبيولوجية</option>
+                <option value="Food Industry">ط§ظ„طھطµظ†ظٹط¹ ط§ظ„ط؛ط°ط§ط¦ظٹ ظˆطھظƒظ†ظˆظ„ظˆط¬ظٹط§ ط§ظ„ط£ط؛ط°ظٹط©</option>
+                <option value="Farms & Production">ط§ظ„ظ…ط²ط§ط±ط¹ ظˆط§ظ„ط¥ظ†طھط§ط¬ ط§ظ„ظ†ط¨ط§طھظٹ ظˆط§ظ„ط­ظٹظˆط§ظ†ظٹ</option>
+                <option value="Agri Export">ط§ظ„طھطµط¯ظٹط± ظˆط§ظ„ط­ط§طµظ„ط§طھ ط§ظ„ط²ط±ط§ط¹ظٹط©</option>
+                <option value="Irrigation & Tech">ط´ط¨ظƒط§طھ ط§ظ„ط±ظٹ ظˆط§ظ„ط²ط±ط§ط¹ط© ط§ظ„ط°ظƒظٹط©</option>
+                <option value="Laboratories">ط§ظ„ظ…ط¹ط§ظ…ظ„ ظˆط§ظ„طھط­ط§ظ„ظٹظ„ ط§ظ„ظ…ظٹظƒط±ظˆط¨ظٹظˆظ„ظˆط¬ظٹط©</option>
               </select>
             </div>
 
             <div id="seekerExtraFields">
-              <label for="regTitle" style="font-size:0.8125rem; font-weight:700; display:block; margin-bottom:4px;">المسمى المهني والتخصص</label>
+              <label for="regTitle" style="font-size:0.8125rem; font-weight:700; display:block; margin-bottom:4px;">ط§ظ„ظ…ط³ظ…ظ‰ ط§ظ„ظ…ظ‡ظ†ظٹ ظˆط§ظ„طھط®طµطµ</label>
               <input type="text" id="regTitle" name="title"
                 style="width:100%; padding:10px; border:1px solid var(--color-border); border-radius:var(--radius-md);"
-                placeholder="مثال: مهندس مراقبة جودة وسلامة غذاء">
+                placeholder="ظ…ط«ط§ظ„: ظ…ظ‡ظ†ط¯ط³ ظ…ط±ط§ظ‚ط¨ط© ط¬ظˆط¯ط© ظˆط³ظ„ط§ظ…ط© ط؛ط°ط§ط،">
             </div>
 
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
               <div>
-                <label for="regGovernorate" style="font-size:0.8125rem; font-weight:700; display:block; margin-bottom:4px;">المحافظة</label>
+                <label for="regGovernorate" style="font-size:0.8125rem; font-weight:700; display:block; margin-bottom:4px;">ط§ظ„ظ…ط­ط§ظپط¸ط©</label>
                 <select id="regGovernorate" name="governorate"
                   style="width:100%; padding:10px; border:1px solid var(--color-border); border-radius:var(--radius-md);">
-                  <option value="Cairo">القاهرة (Cairo)</option>
-                  <option value="Giza">الجيزة (Giza)</option>
-                  <option value="Alexandria">الإسكندرية (Alexandria)</option>
-                  <option value="Fayoum">الفيوم (Fayoum)</option>
-                  <option value="Beheira">البحيرة (Beheira)</option>
-                  <option value="Dakahlia">الدقهلية (Dakahlia)</option>
-                  <option value="Sharqia">الشرقية (Sharqia)</option>
-                  <option value="Minya">المنيا (Minya)</option>
+                  <option value="Cairo">ط§ظ„ظ‚ط§ظ‡ط±ط© (Cairo)</option>
+                  <option value="Giza">ط§ظ„ط¬ظٹط²ط© (Giza)</option>
+                  <option value="Alexandria">ط§ظ„ط¥ط³ظƒظ†ط¯ط±ظٹط© (Alexandria)</option>
+                  <option value="Fayoum">ط§ظ„ظپظٹظˆظ… (Fayoum)</option>
+                  <option value="Beheira">ط§ظ„ط¨ط­ظٹط±ط© (Beheira)</option>
+                  <option value="Dakahlia">ط§ظ„ط¯ظ‚ظ‡ظ„ظٹط© (Dakahlia)</option>
+                  <option value="Sharqia">ط§ظ„ط´ط±ظ‚ظٹط© (Sharqia)</option>
+                  <option value="Minya">ط§ظ„ظ…ظ†ظٹط§ (Minya)</option>
                 </select>
               </div>
               <div>
-                <label for="regPhone" style="font-size:0.8125rem; font-weight:700; display:block; margin-bottom:4px;">رقم الهاتف / واتساب</label>
+                <label for="regPhone" style="font-size:0.8125rem; font-weight:700; display:block; margin-bottom:4px;">ط±ظ‚ظ… ط§ظ„ظ‡ط§طھظپ / ظˆط§طھط³ط§ط¨</label>
                 <input type="tel" id="regPhone" name="phone" autocomplete="tel"
                   style="width:100%; padding:10px; border:1px solid var(--color-border); border-radius:var(--radius-md);"
                   placeholder="010XXXXXXXX">
@@ -346,21 +347,21 @@
             </div>
 
             <div>
-              <label for="regEmail" style="font-size:0.8125rem; font-weight:700; display:block; margin-bottom:4px;">البريد الإلكتروني (Email) <span style="color:#ef4444;">*</span></label>
+              <label for="regEmail" style="font-size:0.8125rem; font-weight:700; display:block; margin-bottom:4px;">ط§ظ„ط¨ط±ظٹط¯ ط§ظ„ط¥ظ„ظƒطھط±ظˆظ†ظٹ (Email) <span style="color:#ef4444;">*</span></label>
               <input type="email" id="regEmail" name="email" autocomplete="email" required
                 style="width:100%; padding:10px; border:1px solid var(--color-border); border-radius:var(--radius-md);"
                 placeholder="user@gmail.com">
             </div>
 
             <div>
-              <label for="regPassword" style="font-size:0.8125rem; font-weight:700; display:block; margin-bottom:4px;">كلمة المرور (Password - 6 خانات كحد أدنى) <span style="color:#ef4444;">*</span></label>
+              <label for="regPassword" style="font-size:0.8125rem; font-weight:700; display:block; margin-bottom:4px;">ظƒظ„ظ…ط© ط§ظ„ظ…ط±ظˆط± (Password - 6 ط®ط§ظ†ط§طھ ظƒط­ط¯ ط£ط¯ظ†ظ‰) <span style="color:#ef4444;">*</span></label>
               <input type="password" id="regPassword" name="password" autocomplete="new-password" required minlength="6"
                 style="width:100%; padding:10px; border:1px solid var(--color-border); border-radius:var(--radius-md);"
-                placeholder="••••••••">
+                placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢">
             </div>
 
             <button type="submit" id="signUpSubmitBtn" class="btn btn-primary" style="width:100%; margin-top:8px;">
-              <span id="signUpSubmitBtnText">تأكيد وإنشاء الحساب (Sign Up)</span>
+              <span id="signUpSubmitBtnText">طھط£ظƒظٹط¯ ظˆط¥ظ†ط´ط§ط، ط§ظ„ط­ط³ط§ط¨ (Sign Up)</span>
             </button>
           </div>
         </form>
@@ -371,9 +372,6 @@
     </div>
   </div>
 
-  <script type="module" src="js/data.js"></script>
-  <script type="module" src="js/matchingEngine.js"></script>
-  <script type="module" src="js/supabaseClient.js"></script>
   <script type="module" src="js/app.js"></script>
 
   <!-- Inline Helper for SQL Modal Tabs -->
@@ -386,7 +384,7 @@
       '05': `-- 05_functions_triggers.sql: Multi-Criteria Candidate Matching Engine\nCREATE OR REPLACE FUNCTION public.calculate_candidate_match_score(p_job_id UUID, p_professional_id UUID) RETURNS INT AS $$\n-- Specialization Match: 30%\n-- Skills Match: 25%\n-- Experience Match: 20%\n-- Location Match: 15%\n-- Education Match: 10%\n$$ LANGUAGE plpgsql STABLE;`,
       '06': `-- 06_rls_policies.sql: Row Level Security Matrix\nALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;\nALTER TABLE public.professional_profiles ENABLE ROW LEVEL SECURITY;\nALTER TABLE public.applications ENABLE ROW LEVEL SECURITY;\nCREATE POLICY "profiles_select_policy" ON public.profiles FOR SELECT TO authenticated, anon USING (true);`,
       '07': `-- 07_storage.sql: Storage Buckets & Policies\nINSERT INTO storage.buckets (id, name, public) VALUES ('avatars', 'avatars', true), ('company-logos', 'company-logos', true), ('resumes', 'resumes', false);\n-- Authenticated users upload only to their own folders`,
-      '08': `-- 08_seed_data.sql: 55+ Specializations & 45+ Skills\nINSERT INTO public.specializations (name_en, name_ar, category_group) VALUES ('Quality Control', 'مراقبة الجودة (QC)', 'Food Science & Quality'), ...;\nINSERT INTO public.training_categories (name_en, name_ar, code) VALUES ('HACCP', 'نظام تحليل المخاطر ونقاط التحكم الحرجة', 'HACCP'), ('ISO 22000', 'نظام إدارة سلامة الغذاء', 'ISO-22000'), ...;`
+      '08': `-- 08_seed_data.sql: 55+ Specializations & 45+ Skills\nINSERT INTO public.specializations (name_en, name_ar, category_group) VALUES ('Quality Control', 'ظ…ط±ط§ظ‚ط¨ط© ط§ظ„ط¬ظˆط¯ط© (QC)', 'Food Science & Quality'), ...;\nINSERT INTO public.training_categories (name_en, name_ar, code) VALUES ('HACCP', 'ظ†ط¸ط§ظ… طھط­ظ„ظٹظ„ ط§ظ„ظ…ط®ط§ط·ط± ظˆظ†ظ‚ط§ط· ط§ظ„طھط­ظƒظ… ط§ظ„ط­ط±ط¬ط©', 'HACCP'), ('ISO 22000', 'ظ†ط¸ط§ظ… ط¥ط¯ط§ط±ط© ط³ظ„ط§ظ…ط© ط§ظ„ط؛ط°ط§ط،', 'ISO-22000'), ...;`
     };
 
     window.showSqlFile = function (num) {

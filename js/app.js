@@ -13,6 +13,7 @@ import {
 
 import { calculateMatchScore } from './matchingEngine.js';
 import { supabaseBridge } from './supabaseClient.js';
+import { ProfessionalOnboardingManager } from './onboarding.js';
 
 class AgriCoreApp {
   constructor() {
@@ -22,11 +23,15 @@ class AgriCoreApp {
     this.candidates = [...candidatesData];
     this._signupRole = 'professional';
     this.currentUser = null; // Will be set after login
+    this.currentCandidateProfile = null; // Set after onboarding completion
     this.searchFilters = {
       keyword: '',
       location: 'all',
       specialization: 'all'
     };
+
+    // Initialize the onboarding manager
+    this.onboardingManager = new ProfessionalOnboardingManager(this);
 
     this.init();
   }
@@ -207,6 +212,10 @@ class AgriCoreApp {
       case 'insights':
         container.innerHTML = this.renderInsightsPage();
         break;
+      case 'professional_onboarding':
+        container.innerHTML = this.onboardingManager.renderOnboardingView();
+        this.onboardingManager.bindDropzoneEvents();
+        break;
       default:
         container.innerHTML = this.renderLandingPage();
     }
@@ -369,10 +378,10 @@ class AgriCoreApp {
           <span class="section-link" onclick="window.agriApp.openAuthModal('signup')">Sign Up Free &rarr;</span>
         </div>
         <div class="companies-grid">
-          <div class="company-logo-card" onclick="window.agriApp.openAuthModal('signup')" style="cursor:pointer;">
+          <div class="company-logo-card" onclick="window.agriApp.startProfessionalOnboarding()" style="cursor:pointer; border: 2px solid transparent; transition: border-color 0.2s;" onmouseenter="this.style.borderColor='var(--color-brand-600)'" onmouseleave="this.style.borderColor='transparent'">
             <div class="company-logo-badge">🌾</div>
             <div class="company-logo-name">Agricultural Engineers</div>
-            <div class="company-logo-sector">Post your profile</div>
+            <div class="company-logo-sector" style="color:var(--color-brand-700); font-weight:600;">Start Profile &rarr;</div>
           </div>
           <div class="company-logo-card" onclick="window.agriApp.openAuthModal('signup')" style="cursor:pointer;">
             <div class="company-logo-badge">🏢</div>
@@ -391,6 +400,195 @@ class AgriCoreApp {
           </div>
         </div>
       </section>
+
+      <!-- ============================================================
+           How It Works Section
+           ============================================================ -->
+      <section style="padding: 72px 0; background: #f8fffe;">
+        <div style="max-width: 1160px; margin: 0 auto; padding: 0 24px;">
+          <div class="section-header" style="text-align:center; flex-direction:column; gap:10px; margin-bottom:48px;">
+            <div style="display:inline-flex; align-items:center; gap:8px; background:var(--color-brand-50); border:1px solid var(--color-brand-100); border-radius:999px; padding:6px 16px; font-size:0.8125rem; font-weight:700; color:var(--color-brand-700); margin-bottom:8px;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
+              How AgriCore Works
+            </div>
+            <h2 class="section-title" style="font-size:2rem; font-weight:800; text-align:center;">From Profile to Opportunity in 4 Steps</h2>
+            <p style="color:var(--color-text-muted); max-width:540px; margin:0 auto; font-size:0.9375rem;">Our intelligent matching engine connects Egyptian agricultural talent with the right companies in record time.</p>
+          </div>
+
+          <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:28px;">
+            ${[
+              { step: '1', icon: '👤', title: 'Build Your Profile', desc: 'Complete our 8-step agricultural professional onboarding with your specializations, skills, certifications and CV.' },
+              { step: '2', icon: '🤖', title: 'AI Matching Engine', desc: 'Our algorithm scores your profile against all active vacancies using 5-factor matching — specialization, skills, experience, location, education.' },
+              { step: '3', icon: '🎯', title: 'Get Matched Instantly', desc: 'Receive a ranked list of vacancies with match percentages. Apply to top matches with your verified AgriCore profile.' },
+              { step: '4', icon: '🌾', title: 'Grow Your Career', desc: 'Track applications, earn certifications at AgriCore Academy, and get discovered by Egypt\'s leading agribusinesses.' }
+            ].map(item => `
+              <div style="background:#ffffff; border:1px solid var(--color-border); border-radius:var(--radius-lg); padding:28px 22px; position:relative; transition:box-shadow 0.2s, transform 0.2s;" onmouseenter="this.style.boxShadow='0 12px 40px rgba(21,87,59,0.12)'; this.style.transform='translateY(-4px)'" onmouseleave="this.style.boxShadow=''; this.style.transform=''">
+                <div style="position:absolute; top:-16px; left:22px; width:32px; height:32px; background:var(--color-brand-700); color:#ffffff; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.875rem; font-weight:800; box-shadow: 0 4px 12px rgba(21,87,59,0.3);">
+                  ${item.step}
+                </div>
+                <div style="font-size:2rem; margin-bottom:12px; margin-top:8px;">${item.icon}</div>
+                <h3 style="font-size:1rem; font-weight:700; color:var(--color-text-main); margin-bottom:8px;">${item.title}</h3>
+                <p style="font-size:0.875rem; color:var(--color-text-muted); line-height:1.6;">${item.desc}</p>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================
+           Featured Jobs Ticker / Live Jobs Preview
+           ============================================================ -->
+      <section style="padding: 56px 0; background:#ffffff;">
+        <div style="max-width: 1160px; margin: 0 auto; padding: 0 24px;">
+          <div class="section-header" style="margin-bottom:28px;">
+            <h2 class="section-title">Featured Agricultural Vacancies</h2>
+            <span class="section-link" onclick="window.agriApp.navigateTo('jobs_search')">View All Jobs &rarr;</span>
+          </div>
+
+          <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:20px;">
+            ${jobsData.slice(0, 3).map(job => `
+              <div style="border:1px solid var(--color-border); border-radius:var(--radius-lg); padding:20px 22px; background:#fafffe; transition:box-shadow 0.2s, border-color 0.2s;" onmouseenter="this.style.borderColor='var(--color-brand-400)'; this.style.boxShadow='0 6px 24px rgba(21,87,59,0.1)'" onmouseleave="this.style.borderColor='var(--color-border)'; this.style.boxShadow=''">
+                <div style="display:flex; align-items:center; gap:12px; margin-bottom:14px;">
+                  <div class="job-item-logo" style="width:44px; height:44px; font-size:0.875rem;">${job.logo_text}</div>
+                  <div>
+                    <h4 style="font-size:0.9375rem; font-weight:700; line-height:1.3;">${job.title}</h4>
+                    <p style="font-size:0.8125rem; color:var(--color-text-muted);">${job.company}</p>
+                  </div>
+                </div>
+                <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:14px;">
+                  <span class="chip" style="font-size:0.75rem; padding:3px 10px;">📍 ${job.location}</span>
+                  <span class="chip" style="font-size:0.75rem; padding:3px 10px;">⏳ ${job.experience}</span>
+                  <span class="chip chip-active" style="font-size:0.75rem; padding:3px 10px;">⭐ ${job.match_score}% match</span>
+                </div>
+                <p style="font-size:0.8125rem; color:var(--color-text-muted); line-height:1.5; margin-bottom:16px;">${job.description.substring(0, 80)}...</p>
+                <button class="btn btn-primary btn-sm" style="width:100%;" onclick="window.agriApp.openAuthModal('signup')">Apply Now &rarr;</button>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================
+           Testimonials Section
+           ============================================================ -->
+      <section style="padding: 72px 0; background: linear-gradient(135deg, #0a3824 0%, #15573b 100%); color:#ffffff;">
+        <div style="max-width: 1160px; margin: 0 auto; padding: 0 24px;">
+          <div style="text-align:center; margin-bottom:48px;">
+            <div style="display:inline-flex; align-items:center; gap:8px; background:rgba(255,255,255,0.15); border-radius:999px; padding:6px 16px; font-size:0.8125rem; font-weight:700; color:rgba(255,255,255,0.9); margin-bottom:12px;">
+              ⭐ Success Stories
+            </div>
+            <h2 style="font-size:2rem; font-weight:800; margin-bottom:8px;">What Our Professionals Say</h2>
+            <p style="color:rgba(255,255,255,0.75); font-size:0.9375rem;">Real outcomes from Egypt's agricultural talent ecosystem</p>
+          </div>
+
+          <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:24px;">
+            ${[
+              { name: "م. أحمد رمضان", title: "Quality Control Engineer, Delta Foods", quote: "Through AgriCore I found my dream position in 3 weeks. The matching engine is incredibly accurate — it understood my HACCP expertise perfectly.", rating: 5, avatar: "AR" },
+              { name: "م. سارة محمود", title: "Irrigation Specialist, Nile Valley Farms", quote: "AgriCore Academy gave me an ISO 22000 certification that opened doors. The platform connected me with companies I never would have reached on my own.", rating: 5, avatar: "SM" },
+              { name: "م. عمر حسين", title: "Lab Analyst, Egyptian Agro Export", quote: "As a fresh graduate, I was lost. AgriCore's onboarding helped me structure my agricultural skills and the matching engine showed me real opportunities I qualified for.", rating: 5, avatar: "OH" }
+            ].map(t => `
+              <div style="background:rgba(255,255,255,0.1); backdrop-filter:blur(10px); border:1px solid rgba(255,255,255,0.15); border-radius:var(--radius-lg); padding:28px 24px;">
+                <div style="display:flex; gap:2px; margin-bottom:16px;">
+                  ${'⭐'.repeat(t.rating)}
+                </div>
+                <p style="font-size:0.9375rem; color:rgba(255,255,255,0.9); line-height:1.7; margin-bottom:20px; font-style:italic;">"${t.quote}"</p>
+                <div style="display:flex; align-items:center; gap:12px;">
+                  <div style="width:44px; height:44px; border-radius:50%; background:rgba(255,255,255,0.2); display:flex; align-items:center; justify-content:center; font-weight:800; font-size:0.875rem;">${t.avatar}</div>
+                  <div>
+                    <div style="font-weight:700; font-size:0.9375rem;">${t.name}</div>
+                    <div style="font-size:0.8125rem; color:rgba(255,255,255,0.65);">${t.title}</div>
+                  </div>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================
+           CTA Banner
+           ============================================================ -->
+      <section style="padding: 64px 24px; background: #f0fdf4; text-align:center;">
+        <div style="max-width:640px; margin:0 auto;">
+          <div style="font-size:2.5rem; margin-bottom:16px;">🌱</div>
+          <h2 style="font-size:2rem; font-weight:800; color:var(--color-brand-950); margin-bottom:12px;">Ready to Grow Your Agricultural Career?</h2>
+          <p style="color:var(--color-text-muted); font-size:1rem; margin-bottom:28px;">Join 12,450+ agricultural professionals and 150+ companies already on AgriCore. Start building your verified career profile today — it's free.</p>
+          <div style="display:flex; justify-content:center; gap:14px; flex-wrap:wrap;">
+            <button class="btn btn-primary btn-lg" onclick="window.agriApp.startProfessionalOnboarding()">
+              🌾 Start My Profile Free
+            </button>
+            <button class="btn btn-secondary btn-lg" onclick="window.agriApp.navigateTo('jobs_search')">
+              🔍 Browse Jobs
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================
+           Footer
+           ============================================================ -->
+      <footer style="background: #0a3824; color:rgba(255,255,255,0.8); padding: 52px 24px 28px;">
+        <div style="max-width: 1160px; margin: 0 auto;">
+          <div style="display:grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap:40px; margin-bottom:40px;">
+            <!-- Brand -->
+            <div>
+              <div style="display:flex; align-items:center; gap:10px; margin-bottom:16px;">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="color:#4ade80;">
+                  <path d="M12 2a10 10 0 0 1 10 10c0 5.5-4.5 10-10 10S2 17.5 2 12A10 10 0 0 1 12 2z"></path>
+                  <path d="M12 12c2.5 0 4.5-2 4.5-4.5S14.5 3 12 3s-4.5 2-4.5 4.5 2 4.5 4.5 4.5z"></path>
+                  <path d="M12 12v9"></path>
+                </svg>
+                <span style="font-size:1.25rem; font-weight:800; color:#ffffff;">AgriCore</span>
+              </div>
+              <p style="font-size:0.875rem; line-height:1.7; color:rgba(255,255,255,0.65); max-width:280px;">The core of agricultural careers in Egypt and the Arab region. Connecting verified talent with leading agribusinesses.</p>
+              <div style="display:flex; gap:10px; margin-top:20px;">
+                ${['LinkedIn', 'Facebook', 'WhatsApp'].map(s => `
+                  <div style="width:36px; height:36px; background:rgba(255,255,255,0.1); border-radius:8px; display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:0.75rem; font-weight:700; transition:background 0.2s;" onmouseenter="this.style.background='rgba(255,255,255,0.2)'" onmouseleave="this.style.background='rgba(255,255,255,0.1)'">${s[0]}</div>
+                `).join('')}
+              </div>
+            </div>
+
+            <!-- For Professionals -->
+            <div>
+              <h4 style="font-size:0.875rem; font-weight:700; color:#ffffff; margin-bottom:14px; text-transform:uppercase; letter-spacing:0.05em;">For Professionals</h4>
+              <div style="display:flex; flex-direction:column; gap:10px;">
+                ${['Create Profile', 'Browse Jobs', 'AgriCore Academy', 'Salary Guide', 'Career Insights'].map(l => `
+                  <span style="font-size:0.875rem; color:rgba(255,255,255,0.65); cursor:pointer; transition:color 0.15s;" onmouseenter="this.style.color='#4ade80'" onmouseleave="this.style.color='rgba(255,255,255,0.65)'" onclick="window.agriApp.navigateTo('landing')">${l}</span>
+                `).join('')}
+              </div>
+            </div>
+
+            <!-- For Employers -->
+            <div>
+              <h4 style="font-size:0.875rem; font-weight:700; color:#ffffff; margin-bottom:14px; text-transform:uppercase; letter-spacing:0.05em;">For Employers</h4>
+              <div style="display:flex; flex-direction:column; gap:10px;">
+                ${['Post a Job', 'Search Talent Pool', 'Pricing Plans', 'Recruiting Dashboard', 'AI Matching Engine'].map(l => `
+                  <span style="font-size:0.875rem; color:rgba(255,255,255,0.65); cursor:pointer; transition:color 0.15s;" onmouseenter="this.style.color='#4ade80'" onmouseleave="this.style.color='rgba(255,255,255,0.65)'" onclick="window.agriApp.navigateTo('company_dashboard')">${l}</span>
+                `).join('')}
+              </div>
+            </div>
+
+            <!-- Company -->
+            <div>
+              <h4 style="font-size:0.875rem; font-weight:700; color:#ffffff; margin-bottom:14px; text-transform:uppercase; letter-spacing:0.05em;">Company</h4>
+              <div style="display:flex; flex-direction:column; gap:10px;">
+                ${['About AgriCore', 'Contact Us', 'Privacy Policy', 'Terms of Service', 'Supabase Architecture'].map(l => `
+                  <span style="font-size:0.875rem; color:rgba(255,255,255,0.65); cursor:pointer; transition:color 0.15s;" onmouseenter="this.style.color='#4ade80'" onmouseleave="this.style.color='rgba(255,255,255,0.65)'">${l}</span>
+                `).join('')}
+              </div>
+            </div>
+          </div>
+
+          <div style="border-top:1px solid rgba(255,255,255,0.1); padding-top:24px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
+            <p style="font-size:0.8125rem; color:rgba(255,255,255,0.45);">© 2026 AgriCore Platform. All rights reserved. Built with Supabase PostgreSQL.</p>
+            <div style="display:flex; gap:16px;">
+              <span style="font-size:0.75rem; color:rgba(255,255,255,0.45); cursor:pointer;" onmouseenter="this.style.color='rgba(255,255,255,0.7)'" onmouseleave="this.style.color='rgba(255,255,255,0.45)'">Privacy</span>
+              <span style="font-size:0.75rem; color:rgba(255,255,255,0.45); cursor:pointer;" onmouseenter="this.style.color='rgba(255,255,255,0.7)'" onmouseleave="this.style.color='rgba(255,255,255,0.45)'">Terms</span>
+              <span style="font-size:0.75rem; color:rgba(255,255,255,0.45); cursor:pointer;" onmouseenter="this.style.color='rgba(255,255,255,0.7)'" onmouseleave="this.style.color='rgba(255,255,255,0.45)'">Sitemap</span>
+            </div>
+          </div>
+        </div>
+      </footer>
     `;
   }
 
@@ -820,10 +1018,35 @@ class AgriCoreApp {
   }
 
   // ---------------------------------------------------------------------------
-  // 5. Candidate Profile View (Ahmed Mohamed Mockup)
+  // 5. Candidate Profile View (Dynamic — uses onboarded profile or fallback)
   // ---------------------------------------------------------------------------
   renderCandidateProfile() {
-    const ahmed = candidatesData[0];
+    // Use onboarded profile data if available, otherwise show empty state
+    const prof = this.currentCandidateProfile;
+    const hasProfile = !!prof;
+
+    if (!hasProfile) {
+      return `
+        <div class="dashboard-layout">
+          ${this.renderSidebar('seeker', 'profile')}
+          <main class="dashboard-main">
+            <header class="dashboard-topbar">
+              <button class="btn btn-secondary btn-sm" onclick="window.agriApp.navigateTo('seeker_dashboard')">&larr; Back to Dashboard</button>
+            </header>
+            <div class="dashboard-body" style="display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:60vh; text-align:center;">
+              <div style="font-size:3rem; margin-bottom:16px;">🌱</div>
+              <h2 style="font-size:1.5rem; font-weight:800; color:var(--color-brand-900); margin-bottom:8px;">Your Profile is Empty</h2>
+              <p style="color:var(--color-text-muted); max-width:400px; margin-bottom:24px;">Complete the Agricultural Professional onboarding to build your verified career profile and start receiving matched job opportunities.</p>
+              <button class="btn btn-primary" onclick="window.agriApp.startProfessionalOnboarding()">
+                🌾 Start Building My Profile
+              </button>
+            </div>
+          </main>
+        </div>
+      `;
+    }
+
+    const completionPct = prof.profile_completion_pct || 85;
 
     return `
       <div class="dashboard-layout">
@@ -835,39 +1058,57 @@ class AgriCoreApp {
           <header class="dashboard-topbar">
             <button class="btn btn-secondary btn-sm" onclick="window.agriApp.navigateTo('seeker_dashboard')">&larr; Back to Dashboard</button>
             <div style="display:flex; gap:10px;">
-              <button class="btn btn-secondary btn-sm" onclick="alert('Profile link copied to clipboard!')">Share Profile</button>
-              <button class="btn btn-primary btn-sm" onclick="alert('Downloading CV for ${ahmed.name} (PDF)...')">Download CV</button>
+              <button class="btn btn-ghost btn-sm" onclick="window.agriApp.startProfessionalOnboarding(1)">✏️ Edit Profile</button>
+              <button class="btn btn-secondary btn-sm" onclick="navigator.clipboard.writeText('https://agricore.eg/u/${prof.agricore_id}').then(()=>alert('Profile link copied!'))">Share Profile</button>
+              <button class="btn btn-primary btn-sm" onclick="alert('Downloading CV: ${prof.cv?.fileName || 'CV.pdf'}')">Download CV</button>
             </div>
           </header>
 
           <div class="dashboard-body">
+            <!-- Profile Completion Banner -->
+            <div style="background: linear-gradient(135deg, var(--color-brand-900) 0%, var(--color-brand-700) 100%); border-radius:var(--radius-lg); padding:18px 24px; margin-bottom:20px; color:#ffffff; display:flex; align-items:center; justify-content:space-between;">
+              <div>
+                <div style="font-size:0.875rem; font-weight:600; opacity:0.85; margin-bottom:4px;">Profile Completion</div>
+                <div style="font-size:1.5rem; font-weight:800;">${completionPct}% Complete</div>
+                <div style="font-size:0.8125rem; opacity:0.75; margin-top:2px;">Add a profile photo to reach 100%</div>
+              </div>
+              <div style="display:flex; align-items:center; gap:16px;">
+                <div style="background:rgba(255,255,255,0.15); border-radius:var(--radius-md); padding:8px 16px; font-size:0.8125rem; font-weight:700;">
+                  ID: ${prof.agricore_id}
+                </div>
+                <button class="btn btn-sm" style="background:#ffffff; color:var(--color-brand-800); font-weight:700;" onclick="window.agriApp.onboardingManager.goToMatches()">
+                  View My Matches &rarr;
+                </button>
+              </div>
+            </div>
+
             <!-- Cover Banner -->
-            <div class="profile-cover-banner" style="background-image: url('${ahmed.cover}');"></div>
+            <div class="profile-cover-banner" style="background: linear-gradient(135deg, #0a3824 0%, #146845 60%, #10b981 100%);"></div>
 
             <!-- Profile Header Card -->
             <div class="profile-header-card">
               <div class="profile-avatar-row">
-                <img src="${ahmed.avatar}" class="profile-avatar-large" alt="${ahmed.name}">
+                <img src="${prof.avatar}" class="profile-avatar-large" alt="${prof.name}">
                 <div style="display:flex; gap:10px;">
-                  <button class="btn btn-primary btn-sm" onclick="alert('Downloading verified PDF Resume...')">Download CV</button>
-                  <button class="btn btn-secondary btn-sm" onclick="alert('Share link generated: https://agricore.eg/u/${ahmed.agricore_id}')">Share Profile</button>
+                  <button class="btn btn-primary btn-sm" onclick="alert('Downloading CV: ${prof.cv?.fileName || 'CV.pdf'}')">Download CV</button>
+                  <button class="btn btn-secondary btn-sm" onclick="window.agriApp.startProfessionalOnboarding(1)">✏️ Edit Profile</button>
                 </div>
               </div>
               <div class="profile-title-area">
                 <h2>
-                  ${ahmed.name}
+                  ${prof.name}
                   <span class="verified-badge">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
                     Verified
                   </span>
                 </h2>
-                <p style="font-size: 1rem; color:var(--color-brand-700); font-weight:600; margin-top:2px;">${ahmed.title}</p>
-                <div style="display:flex; gap:12px; margin-top:6px; font-size:0.875rem; color:var(--color-text-muted);">
-                  <span>📍 ${ahmed.governorate}, Egypt</span>
+                <p style="font-size: 1rem; color:var(--color-brand-700); font-weight:600; margin-top:2px;">${prof.title}</p>
+                <div style="display:flex; flex-wrap:wrap; gap:12px; margin-top:6px; font-size:0.875rem; color:var(--color-text-muted);">
+                  <span>📍 ${prof.governorate}, Egypt</span>
                   <span>•</span>
-                  <span>⏳ 1-3 Years Experience</span>
+                  <span>⏳ ${prof.experience_years}+ Years Experience</span>
                   <span>•</span>
-                  <span>🎓 ${ahmed.education[0].university}</span>
+                  <span>🎓 ${prof.education?.[0]?.university || 'University'}</span>
                 </div>
               </div>
 
@@ -888,35 +1129,36 @@ class AgriCoreApp {
                 <h3 style="font-size:1.0625rem; font-weight:700; margin-bottom:16px;">Personal Information</h3>
                 <div style="display:flex; flex-direction:column; gap: 14px; font-size:0.875rem;">
                   <div>
-                    <span style="color:var(--color-text-muted); display:block; font-size:0.75rem;">Date of Birth</span>
-                    <strong>${ahmed.birth_date}</strong>
-                  </div>
-                  <div>
-                    <span style="color:var(--color-text-muted); display:block; font-size:0.75rem;">Phone Number</span>
-                    <strong>${ahmed.phone}</strong>
-                  </div>
-                  <div>
                     <span style="color:var(--color-text-muted); display:block; font-size:0.75rem;">Email Address</span>
-                    <strong>${ahmed.email}</strong>
+                    <strong>${prof.email}</strong>
+                  </div>
+                  <div>
+                    <span style="color:var(--color-text-muted); display:block; font-size:0.75rem;">Phone / WhatsApp</span>
+                    <strong>${prof.phone}</strong>
                   </div>
                   <div>
                     <span style="color:var(--color-text-muted); display:block; font-size:0.75rem;">Location</span>
-                    <strong>${ahmed.governorate}, Egypt</strong>
+                    <strong>${prof.governorate}, Egypt</strong>
                   </div>
                   <div>
                     <span style="color:var(--color-text-muted); display:block; font-size:0.75rem;">Nationality</span>
-                    <strong>${ahmed.nationality}</strong>
+                    <strong>${prof.nationality || 'Egyptian'}</strong>
                   </div>
                   <div style="margin-top:12px; padding: 12px; background:var(--color-bg); border-radius:var(--radius-md);">
-                    <span style="color:var(--color-text-muted); display:block; font-size:0.75rem;">AgriCore System ID</span>
-                    <strong style="color:var(--color-brand-700); font-family:var(--font-mono);">${ahmed.agricore_id}</strong>
+                    <span style="color:var(--color-text-muted); display:block; font-size:0.75rem;">AgriCore ID</span>
+                    <strong style="color:var(--color-brand-700); font-family:var(--font-mono);">${prof.agricore_id}</strong>
+                  </div>
+                  <div style="padding-top:12px; border-top:1px solid var(--color-border);">
+                    <button class="btn btn-primary" style="width:100%; font-size:0.8125rem;" onclick="window.agriApp.onboardingManager.goToMatches()">
+                      🔍 View My Matches
+                    </button>
                   </div>
                 </div>
               </div>
 
               <!-- Right Column: Active Tab Content -->
               <div class="card">
-                ${this.renderProfileTabContent(ahmed)}
+                ${this.renderProfileTabContent(prof)}
               </div>
             </div>
           </div>
@@ -936,76 +1178,103 @@ class AgriCoreApp {
         return `
           <div>
             <h3 style="font-size:1.125rem; font-weight:700; margin-bottom:12px;">About Me</h3>
-            <p style="color:var(--color-text-muted); line-height:1.7;">${cand.about}</p>
+            <p style="color:var(--color-text-muted); line-height:1.7;">${cand.about || 'No summary provided yet.'}</p>
             
             <h3 style="font-size:1.125rem; font-weight:700; margin:24px 0 12px;">Specializations</h3>
             <div style="display:flex; flex-wrap:wrap; gap:8px;">
-              ${cand.specializations.map(s => `<span class="chip chip-active">${s}</span>`).join('')}
+              ${(cand.specializations || []).map(s => `<span class="chip chip-active">${s}</span>`).join('')}
             </div>
 
             <h3 style="font-size:1.125rem; font-weight:700; margin:24px 0 12px;">Key Skills</h3>
             <div style="display:flex; flex-wrap:wrap; gap:8px;">
-              ${cand.skills.map(sk => `<span class="chip">${sk}</span>`).join('')}
+              ${(cand.skills || []).map(sk => `<span class="chip">${sk}</span>`).join('')}
             </div>
           </div>
         `;
-      case 'experience':
+      case 'experience': {
+        const exps = cand.experiences || [];
         return `
           <div>
             <h3 style="font-size:1.125rem; font-weight:700; margin-bottom:20px;">Work Experience</h3>
-            ${cand.experiences.map(exp => `
+            ${exps.length === 0 ? `
+              <div style="text-align:center; padding:32px; color:var(--color-text-muted);">
+                <div style="font-size:2rem; margin-bottom:8px;">💼</div>
+                <p>No work experience added yet.</p>
+                <button class="btn btn-secondary btn-sm" style="margin-top:12px;" onclick="window.agriApp.startProfessionalOnboarding(5)">Add Experience</button>
+              </div>
+            ` : exps.map(exp => `
               <div class="timeline-item">
-                <h4 style="font-size:1rem; font-weight:700;">${exp.title}</h4>
+                <h4 style="font-size:1rem; font-weight:700;">${exp.role || exp.title || ''}</h4>
                 <div style="font-size:0.875rem; color:var(--color-brand-700); font-weight:600; margin:2px 0 6px;">
-                  ${exp.company} • <span style="color:var(--color-text-muted);">${exp.period}</span>
+                  ${exp.company || ''} • <span style="color:var(--color-text-muted);">${exp.period || ''}</span>
                 </div>
-                <ul style="padding-left:18px; color:var(--color-text-muted); font-size:0.875rem; line-height:1.6;">
-                  ${exp.bullets.map(b => `<li>${b}</li>`).join('')}
-                </ul>
+                ${exp.bullets ? `
+                  <ul style="padding-left:18px; color:var(--color-text-muted); font-size:0.875rem; line-height:1.6;">
+                    ${exp.bullets.map(b => `<li>${b}</li>`).join('')}
+                  </ul>
+                ` : exp.desc ? `
+                  <p style="color:var(--color-text-muted); font-size:0.875rem; line-height:1.6;">${exp.desc}</p>
+                ` : ''}
               </div>
             `).join('')}
           </div>
         `;
-      case 'education':
+      }
+      case 'education': {
+        const edus = cand.education || [];
         return `
           <div>
             <h3 style="font-size:1.125rem; font-weight:700; margin-bottom:20px;">Educational Qualifications</h3>
-            ${cand.education.map(edu => `
+            ${edus.map(edu => `
               <div style="padding:16px; border:1px solid var(--color-border); border-radius:var(--radius-md); margin-bottom:12px;">
                 <h4 style="font-size:1rem; font-weight:700;">${edu.degree}</h4>
-                <p style="color:var(--color-brand-700); font-weight:600; font-size:0.875rem;">${edu.university} • ${edu.faculty}</p>
+                <p style="color:var(--color-brand-700); font-weight:600; font-size:0.875rem;">
+                  ${edu.university}
+                  ${edu.faculty ? ` • ${edu.faculty}` : ''}
+                  ${edu.department ? ` (${edu.department})` : ''}
+                </p>
                 <div style="display:flex; gap:12px; font-size:0.8125rem; color:var(--color-text-muted); margin-top:4px;">
-                  <span>Graduation: ${edu.years}</span>
-                  <span>•</span>
-                  <span>Grade: ${edu.grade}</span>
+                  <span>Graduation: ${edu.years || edu.year}</span>
+                  ${edu.grade ? `<span>•</span><span>Grade: ${edu.grade}</span>` : ''}
                 </div>
               </div>
             `).join('')}
           </div>
         `;
-      case 'certifications':
+      }
+      case 'certifications': {
+        const certs = cand.certifications || [];
         return `
           <div>
             <h3 style="font-size:1.125rem; font-weight:700; margin-bottom:20px;">Certifications & Training</h3>
-            <div style="display:flex; flex-direction:column; gap:12px;">
-              ${cand.certifications.map(cert => `
-                <div style="display:flex; align-items:center; justify-content:space-between; padding:16px; background:var(--color-bg); border-radius:var(--radius-md);">
-                  <div>
-                    <h4 style="font-size:0.9375rem; font-weight:700;">${cert.name}</h4>
-                    <p style="font-size:0.8125rem; color:var(--color-text-muted);">${cert.issuer} • ${cert.year}</p>
+            ${certs.length === 0 ? `
+              <div style="text-align:center; padding:32px; color:var(--color-text-muted);">
+                <div style="font-size:2rem; margin-bottom:8px;">📜</div>
+                <p>No certifications added yet.</p>
+                <button class="btn btn-secondary btn-sm" style="margin-top:12px;" onclick="window.agriApp.startProfessionalOnboarding(6)">Add Certifications</button>
+              </div>
+            ` : `
+              <div style="display:flex; flex-direction:column; gap:12px;">
+                ${certs.map(cert => `
+                  <div style="display:flex; align-items:center; justify-content:space-between; padding:16px; background:var(--color-bg); border-radius:var(--radius-md);">
+                    <div>
+                      <h4 style="font-size:0.9375rem; font-weight:700;">${cert.name}</h4>
+                      <p style="font-size:0.8125rem; color:var(--color-text-muted);">${cert.issuer || cert.org || cert.organization || ''} • ${cert.year}</p>
+                    </div>
+                    <span class="verified-badge">Completed</span>
                   </div>
-                  <span class="verified-badge">Completed</span>
-                </div>
-              `).join('')}
-            </div>
+                `).join('')}
+              </div>
+            `}
           </div>
         `;
+      }
       case 'skills':
         return `
           <div>
             <h3 style="font-size:1.125rem; font-weight:700; margin-bottom:16px;">Core Competencies</h3>
             <div style="display:flex; flex-wrap:wrap; gap:8px;">
-              ${cand.skills.map(sk => `<span class="chip" style="font-size:0.875rem; padding:8px 16px;">${sk}</span>`).join('')}
+              ${(cand.skills || []).map(sk => `<span class="chip" style="font-size:0.875rem; padding:8px 16px;">${sk}</span>`).join('')}
             </div>
           </div>
         `;
@@ -1859,7 +2128,28 @@ class AgriCoreApp {
   bindCompanyEvents() {}
   bindCandidateProfileEvents() {}
   bindAcademyEvents() {}
+
+  // ---------------------------------------------------------------------------
+  // Professional Onboarding Entry Points
+  // ---------------------------------------------------------------------------
+  startProfessionalOnboarding(step = 1) {
+    if (step === 1) {
+      // Reset onboarding for fresh start
+      this.onboardingManager.currentStep = 1;
+      this.onboardingManager.isCompleted = false;
+    } else {
+      // Jump directly to a specific step for editing
+      this.onboardingManager.currentStep = step;
+      this.onboardingManager.isCompleted = false;
+    }
+    this.navigateTo('professional_onboarding');
+  }
 }
 
 // Instantiate and expose globally
 window.agriApp = new AgriCoreApp();
+
+// Also expose onboarding instance globally after app is ready
+Object.defineProperty(window, 'agriOnboarding', {
+  get() { return window.agriApp?.onboardingManager; }
+});
