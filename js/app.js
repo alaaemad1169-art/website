@@ -1753,23 +1753,36 @@ class AgriCoreApp {
       modal.setAttribute('data-target-job-id', jobId);
       
       if (cvDetailsEl) {
-        cvDetailsEl.innerHTML = `
-          <div style="display:flex; align-items:center; gap:12px;">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-              style="color:var(--color-brand-700);">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-              <polyline points="14 2 14 8 20 8"></polyline>
-              <line x1="16" y1="13" x2="8" y2="13"></line>
-              <line x1="16" y1="17" x2="8" y2="17"></line>
-              <polyline points="10 9 9 9 8 9"></polyline>
-            </svg>
-            <div>
-              <strong style="display:block; font-size:0.875rem;">${this.currentUser.cvFilename || 'My_CV.pdf'}</strong>
-              <small style="color:var(--color-text-muted);">Uploaded via Supabase Storage</small>
+        const cvName = this.currentUser.cvFilename
+          || this.currentUser.cv_filename
+          || (this.currentUser.cv_url ? this.currentUser.cv_url.split('/').pop() : null);
+
+        if (cvName) {
+          cvDetailsEl.innerHTML = `
+            <div style="display:flex; align-items:center; gap:12px;">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                style="color:var(--color-brand-700);">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+                <polyline points="10 9 9 9 8 9"></polyline>
+              </svg>
+              <div>
+                <strong style="display:block; font-size:0.875rem;">${cvName}</strong>
+                <small style="color:var(--color-text-muted);">Uploaded via Supabase Storage</small>
+              </div>
             </div>
-          </div>
-          <span class="verified-badge">Verified</span>
-        `;
+            <span class="verified-badge">Verified</span>
+          `;
+        } else {
+          cvDetailsEl.innerHTML = `
+            <div style="color:var(--color-text-muted); font-size:0.875rem;">
+              ⚠️ No CV uploaded yet.
+              <a href="#" onclick="window.agriApp.navigateTo('candidate_profile'); return false;" style="color:var(--color-brand-700); font-weight:600;">Upload your CV</a> to apply.
+            </div>
+          `;
+        }
       }
       
       if (coverNoteEl) coverNoteEl.value = '';
@@ -1780,7 +1793,7 @@ class AgriCoreApp {
 
   async submitApplication() {
     if (!this.currentUser || this.currentUser.userType !== 'seeker') {
-      this._showToast('⚠️ Unauthorized to apply.', 'error');
+      this._showToast('⚠️ يجب تسجيل الدخول كباحث عن عمل للتقديم.', 'error');
       return;
     }
 
@@ -1789,26 +1802,53 @@ class AgriCoreApp {
     const job = this.jobs.find(j => j.id === jobId);
     const coverNoteEl = document.getElementById('applyModalCoverNote');
     const coverNote = coverNoteEl ? coverNoteEl.value.trim() : '';
+    const submitBtn = modal?.querySelector('button[onclick*="submitApplication"]');
 
-    if (job) {
-      if (job.applied) {
-        this._showToast('⚠️ You have already applied for this vacancy.', 'error');
-        return;
-      }
-      
-      // Attempt to save application in Supabase
+    if (!job) return;
+
+    if (job.applied) {
+      this._showToast('⚠️ لقد تقدمت بالفعل لهذه الوظيفة.', 'error');
+      return;
+    }
+
+    // Disable button to prevent double-submit
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span class="btn-spinner"></span> جاري الإرسال...';
+    }
+
+    if (supabaseBridge.session?.access_token) {
       try {
-        if (supabaseBridge.session?.access_token) {
-           await supabaseBridge.applyForJob(jobId, coverNote);
-        }
+        await supabaseBridge.applyForJob(jobId, coverNote);
+        // Only mark as applied after confirmed Supabase success
+        job.applied = true;
+        this._showToast(`✅ تم إرسال طلبك بنجاح إلى ${job.company}.`, 'success');
+        this.closeAllModals();
+        this.renderCurrentView();
       } catch (err) {
-        console.warn('Supabase application failed, adding locally:', err);
+        // Surface real error – duplicate constraint, auth error, etc.
+        const isDuplicate = err.message?.toLowerCase().includes('unique') ||
+                            err.message?.toLowerCase().includes('duplicate') ||
+                            err.message?.toLowerCase().includes('already');
+        if (isDuplicate) {
+          job.applied = true; // sync local state
+          this._showToast('⚠️ لقد تقدمت بالفعل لهذه الوظيفة.', 'error');
+        } else {
+          this._showToast(`❌ فشل إرسال الطلب: ${err.message || 'خطأ غير معروف'}`, 'error');
+        }
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'تأكيد التقديم';
+        }
       }
-
-      job.applied = true;
-      this._showToast(`✅ Success! Your verified application has been submitted to ${job.company}.`, 'success');
-      this.closeAllModals();
-      this.renderCurrentView();
+    } else {
+      // No session – should not reach here, but guard anyway
+      this._showToast('⚠️ انتهت جلستك. يرجى تسجيل الدخول مجددًا.', 'error');
+      this.openAuthModal('login');
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'تأكيد التقديم';
+      }
     }
   }
 
