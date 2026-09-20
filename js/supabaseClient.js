@@ -401,7 +401,7 @@ export class AgriCoreSupabaseClient {
     if (!this.session?.access_token) return null;
     try {
       const res = await fetch(
-        `${this.url}/storage/v1/object/sign/cv_uploads/${storagePath}`,
+        `${this.url}/storage/v1/object/sign/resumes/${storagePath}`,
         {
           method: 'POST',
           headers: this.getHeaders(true),
