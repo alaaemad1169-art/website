@@ -791,4 +791,183 @@ a {
   .companies-grid {
     grid-template-columns: repeat(2, 1fr);
   }
+  /* Sidebar hidden on mobile */
+  .sidebar {
+    display: none;
+  }
+  .dashboard-body {
+    padding: 20px 16px;
+  }
+  .dashboard-topbar {
+    padding: 0 16px;
+  }
 }
+
+/* -----------------------------------------------------------------------------
+   9. Hamburger Menu (Mobile Navigation)
+   ----------------------------------------------------------------------------- */
+.hamburger-btn {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  width: 40px;
+  height: 40px;
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  padding: 8px;
+  transition: background var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.hamburger-btn:hover {
+  background: var(--color-brand-50);
+}
+
+.hamburger-btn .bar {
+  width: 18px;
+  height: 2px;
+  background: var(--color-brand-900);
+  border-radius: 2px;
+  transition: all 0.25s ease;
+  display: block;
+}
+
+.hamburger-btn[aria-expanded="true"] .bar:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+.hamburger-btn[aria-expanded="true"] .bar:nth-child(2) {
+  opacity: 0;
+  transform: scaleX(0);
+}
+.hamburger-btn[aria-expanded="true"] .bar:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+/* Mobile nav overlay (backdrop) */
+.mobile-nav-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 198;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.mobile-nav-overlay.open {
+  display: block;
+  opacity: 1;
+}
+
+/* Mobile nav menu (drawer) */
+.mobile-nav-menu {
+  position: fixed;
+  top: 0;
+  right: -280px;
+  width: 280px;
+  height: 100vh;
+  background: #ffffff;
+  z-index: 199;
+  box-shadow: -4px 0 32px rgba(0, 0, 0, 0.15);
+  transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.mobile-nav-menu.open {
+  right: 0;
+}
+
+.mobile-nav-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 20px 16px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.mobile-nav-brand {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--color-brand-900);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mobile-nav-close {
+  width: 32px;
+  height: 32px;
+  background: var(--color-brand-50);
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 1.125rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-brand-700);
+}
+
+.mobile-nav-links {
+  padding: 16px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.mobile-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-text-main);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.mobile-nav-link:hover {
+  background: var(--color-brand-50);
+  color: var(--color-brand-700);
+}
+
+.mobile-nav-actions {
+  padding: 16px 12px;
+  border-top: 1px solid var(--color-border);
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+@media (max-width: 768px) {
+  .hamburger-btn {
+    display: flex;
+  }
+  .header-actions .btn:not(.hamburger-btn) {
+    display: none;
+  }
+}
+
+/* -----------------------------------------------------------------------------
+   10. Toast Notification Animation
+   ----------------------------------------------------------------------------- */
+@keyframes slideInToast {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
