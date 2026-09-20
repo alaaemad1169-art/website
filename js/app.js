@@ -4,14 +4,19 @@
 
 import {
   specializationsData,
-  skillsData,
-  candidatesData,
-  companiesData,
-  jobsData,
-  academyCoursesData
+  skillsData
 } from './data.js';
 
-import { calculateMatchScore } from './matchingEngine.js';
+import {
+  IS_DEMO_MODE,
+  DEMO_LABEL,
+  demoCandidates,
+  demoCompanies,
+  demoJobs,
+  demoCourses,
+  demoTestimonials
+} from './demo_data.js';
+
 import { supabaseBridge } from './supabaseClient.js';
 import { ProfessionalOnboardingManager } from './onboarding.js';
 
@@ -110,15 +115,36 @@ class AgriCoreApp {
           created_at: j.created_at,
           applied: false
         }));
+      } else if (IS_DEMO_MODE) {
+        console.warn("No live jobs found. Loading DEMO data.");
+        this.jobs = [...demoJobs];
+        this.candidates = [...demoCandidates];
+        this._showDemoBanner();
       }
     } catch (err) {
       console.warn("Operating without live jobs:", err);
+      if (IS_DEMO_MODE) {
+        this.jobs = [...demoJobs];
+        this.candidates = [...demoCandidates];
+        this._showDemoBanner();
+      }
     }
 
     this.renderCurrentView();
     // Update live metrics after data is loaded
     this._updateLandingMetrics();
   }
+
+  _showDemoBanner() {
+    if (!document.getElementById('demo-banner')) {
+      const banner = document.createElement('div');
+      banner.id = 'demo-banner';
+      banner.className = 'bg-yellow-500 text-white text-center text-sm py-2 px-4 font-bold shadow-md z-50 relative';
+      banner.innerHTML = `${DEMO_LABEL} - يتم عرض بيانات تجريبية لأغراض الاختبار`;
+      document.body.prepend(banner);
+    }
+  }
+
 
   // ---------------------------------------------------------------------------
   // Navigation & Role Controller
@@ -1143,7 +1169,7 @@ class AgriCoreApp {
             <div style="display:flex; gap:10px;">
               <button class="btn btn-ghost btn-sm" onclick="window.agriApp.startProfessionalOnboarding(1)">✏️ Edit Profile</button>
               <button class="btn btn-secondary btn-sm" onclick="navigator.clipboard.writeText('https://agricore.eg/u/${prof.agricore_id}').then(()=>alert('Profile link copied!'))">Share Profile</button>
-              <button class="btn btn-primary btn-sm" onclick="alert('Downloading CV: ${prof.cv?.fileName || 'CV.pdf'}')">Download CV</button>
+              ${this.currentUser?.cv_storage_path || this.currentUser?.cvFilename ? `<button class="btn btn-primary btn-sm" onclick="window.agriApp.downloadCV('${this.currentUser.cv_storage_path || this.currentUser.cvFilename}')">Download CV</button>` : `<button class="btn btn-primary btn-sm disabled" disabled title="No CV uploaded">Download CV</button>`}
             </div>
           </header>
 
@@ -1173,7 +1199,7 @@ class AgriCoreApp {
               <div class="profile-avatar-row">
                 <img src="${prof.avatar}" class="profile-avatar-large" alt="${prof.name}">
                 <div style="display:flex; gap:10px;">
-                  <button class="btn btn-primary btn-sm" onclick="alert('Downloading CV: ${prof.cv?.fileName || 'CV.pdf'}')">Download CV</button>
+                  ${this.currentUser?.cv_storage_path || this.currentUser?.cvFilename ? `<button class="btn btn-primary btn-sm" onclick="window.agriApp.downloadCV('${this.currentUser.cv_storage_path || this.currentUser.cvFilename}')">Download CV</button>` : `<button class="btn btn-primary btn-sm disabled" disabled title="No CV uploaded">Download CV</button>`}
                   <button class="btn btn-secondary btn-sm" onclick="window.agriApp.startProfessionalOnboarding(1)">✏️ Edit Profile</button>
                 </div>
               </div>
@@ -1417,7 +1443,7 @@ class AgriCoreApp {
                     </div>
                   </div>
                   <div style="margin-top:20px; display:flex; justify-content:flex-end;">
-                    <button class="btn btn-primary btn-sm" onclick="alert('Enrolled in ${course.title}!')">Enroll Course</button>
+                    <button class="btn btn-primary btn-sm" onclick="window.agriApp.comingSoon('التسجيل في الدورات سيكون متاحاً قريباً')">Enroll Course</button>
                   </div>
                 </div>
               `).join('')}
@@ -1657,7 +1683,7 @@ class AgriCoreApp {
               <span>Insights</span>
             </div>
           </div>
-          <div class="sidebar-link" onclick="alert('Messaging channel: 3 unread messages from recruiters.')">
+          <div class="sidebar-link" onclick="window.agriApp.comingSoon('المحادثات ستكون متاحة قريباً')">
             <div class="sidebar-link-inner">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
               <span>Messages</span>
@@ -1779,6 +1805,17 @@ class AgriCoreApp {
       submitBtn.innerHTML = '<span class="btn-spinner"></span> جاري الإرسال...';
     }
 
+    if (job._is_demo) {
+      // Mock success for demo jobs
+      setTimeout(() => {
+        job.applied = true;
+        this._showToast(`✅ (DEMO) تم التقديم بنجاح إلى ${job.company}.`, 'success');
+        this.closeAllModals();
+        this.renderCurrentView();
+      }, 500);
+      return;
+    }
+
     if (supabaseBridge.session?.access_token) {
       try {
         await supabaseBridge.applyForJob(jobId, coverNote);
@@ -1812,6 +1849,29 @@ class AgriCoreApp {
         submitBtn.textContent = 'تأكيد التقديم';
       }
     }
+  }
+
+  async downloadCV(storagePath) {
+    if (!storagePath) {
+      this._showToast('No CV found.', 'error');
+      return;
+    }
+    this._showToast('جاري تحضير رابط التحميل...', 'info');
+    try {
+      const url = await supabaseBridge.getCVSignedUrl(storagePath);
+      if (url) {
+        window.open(url, '_blank');
+      } else {
+        this._showToast('⚠️ فشل في الحصول على الرابط. الرجاء المحاولة لاحقاً.', 'error');
+      }
+    } catch (err) {
+      console.error(err);
+      this._showToast('⚠️ حدث خطأ أثناء تحميل السيرة الذاتية.', 'error');
+    }
+  }
+
+  comingSoon(msg = 'هذه الميزة ستكون متاحة قريباً!') {
+    this._showToast(`⏳ ${msg}`, 'info');
   }
 
   openPostJobModal() {
@@ -2108,6 +2168,31 @@ class AgriCoreApp {
           avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(session.user.user_metadata?.full_name || 'U')}&background=15573b&color=ffffff&size=80`,
           userType: session.user.user_metadata?.user_type || 'professional'
         };
+
+        if (this.currentUser.userType === 'professional' || this.currentUser.userType === 'seeker') {
+          try {
+            const profProfile = await supabaseBridge.getProfessionalProfile();
+            if (profProfile) {
+              this.currentCandidateProfile = {
+                agricore_id: profProfile.id.split('-')[0].toUpperCase(),
+                name: this.currentUser.name,
+                title: profProfile.primary_specialization || 'Agricultural Professional',
+                governorate: profProfile.governorate || 'Cairo',
+                experience_years: profProfile.experience_years || 0,
+                education: profProfile.education_history || [],
+                email: this.currentUser.email,
+                phone: profProfile.phone_number || '',
+                nationality: 'Egyptian',
+                avatar: this.currentUser.avatar,
+                cvFilename: profProfile.cv_storage_path,
+                profile_completion_pct: 100
+              };
+              this.currentUser.cvFilename = profProfile.cv_storage_path;
+            }
+          } catch(e) {
+            console.error('Error fetching professional profile:', e);
+          }
+        }
       }
       this.showAuthAlert(`مرحباً! جاري تحميل لوحة التحكم...`, 'success');
       setTimeout(() => {
