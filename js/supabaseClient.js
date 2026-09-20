@@ -365,6 +365,56 @@ export class AgriCoreSupabaseClient {
       applied_at: new Date().toISOString()
     });
   }
+
+  // Seeker: fetches only own applications (RLS enforces isolation server-side)
+  async getMyApplications() {
+    if (!this.session?.access_token) return [];
+    try {
+      const res = await fetch(
+        `${this.url}/rest/v1/applications?select=*,jobs(title,company_profiles(company_name))&order=applied_at.desc`,
+        { headers: this.getHeaders(true) }
+      );
+      if (!res.ok) return [];
+      return await res.json();
+    } catch {
+      return [];
+    }
+  }
+
+  // Company: fetches applications for its own jobs (RLS enforces isolation server-side)
+  async getApplicationsForMyJobs() {
+    if (!this.session?.access_token) return [];
+    try {
+      const res = await fetch(
+        `${this.url}/rest/v1/applications?select=*,jobs!inner(id,title,company_user_id),profiles(full_name,email)&jobs.company_user_id=eq.${this.session.user?.id}&order=applied_at.desc`,
+        { headers: this.getHeaders(true) }
+      );
+      if (!res.ok) return [];
+      return await res.json();
+    } catch {
+      return [];
+    }
+  }
+
+  // Generate a signed URL for a private CV (valid 60 s; company must have applied-candidate)
+  async getCVSignedUrl(storagePath) {
+    if (!this.session?.access_token) return null;
+    try {
+      const res = await fetch(
+        `${this.url}/storage/v1/object/sign/cv_uploads/${storagePath}`,
+        {
+          method: 'POST',
+          headers: this.getHeaders(true),
+          body: JSON.stringify({ expiresIn: 60 })
+        }
+      );
+      if (!res.ok) return null;
+      const { signedURL } = await res.json();
+      return signedURL ? `${this.url}/storage/v1${signedURL}` : null;
+    } catch {
+      return null;
+    }
+  }
 }
 
 export const supabaseBridge = new AgriCoreSupabaseClient();
