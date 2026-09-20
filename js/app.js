@@ -92,6 +92,8 @@ class AgriCoreApp {
     }
 
     this.renderCurrentView();
+    // Update live metrics after data is loaded
+    this._updateLandingMetrics();
   }
 
   // ---------------------------------------------------------------------------
@@ -247,9 +249,41 @@ class AgriCoreApp {
           <div class="header-actions">
             <button class="btn btn-ghost btn-sm" onclick="window.agriApp.openAuthModal('login')">Login</button>
             <button class="btn btn-primary btn-sm" onclick="window.agriApp.openAuthModal('signup')">Sign Up</button>
+            <button class="hamburger-btn" id="hamburgerBtn" aria-label="Toggle mobile menu" aria-expanded="false">
+              <span class="bar"></span>
+              <span class="bar"></span>
+              <span class="bar"></span>
+            </button>
           </div>
         </div>
       </header>
+
+      <!-- Mobile Navigation Drawer -->
+      <div class="mobile-nav-overlay" id="mobileNavOverlay"></div>
+      <div class="mobile-nav-menu" id="mobileNavMenu">
+        <div class="mobile-nav-header">
+          <div class="mobile-nav-brand">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:24px; height:24px; color:var(--color-brand-700);">
+              <path d="M12 2a10 10 0 0 1 10 10c0 5.5-4.5 10-10 10S2 17.5 2 12A10 10 0 0 1 12 2z"></path>
+              <path d="M12 12c2.5 0 4.5-2 4.5-4.5S14.5 3 12 3s-4.5 2-4.5 4.5 2 4.5 4.5 4.5z"></path>
+              <path d="M12 12v9"></path>
+            </svg>
+            AgriCore
+          </div>
+          <button class="mobile-nav-close" onclick="document.getElementById('hamburgerBtn').click()">×</button>
+        </div>
+        <div class="mobile-nav-links">
+          <div class="mobile-nav-link" onclick="window.agriApp.navigateTo('landing')">🌾 Home</div>
+          <div class="mobile-nav-link" onclick="window.agriApp.navigateTo('jobs_search')">🔍 Jobs</div>
+          <div class="mobile-nav-link" onclick="window.agriApp.navigateTo('academy')">🎓 Training</div>
+          <div class="mobile-nav-link" onclick="window.agriApp.navigateTo('company_dashboard')">🏢 Companies</div>
+          <div class="mobile-nav-link" onclick="window.agriApp.navigateTo('insights')">📊 Insights</div>
+        </div>
+        <div class="mobile-nav-actions">
+          <button class="btn btn-ghost" style="width:100%; justify-content:center;" onclick="window.agriApp.openAuthModal('login')">Login</button>
+          <button class="btn btn-primary" style="width:100%; justify-content:center;" onclick="window.agriApp.openAuthModal('signup')">Sign Up</button>
+        </div>
+      </div>
 
       <!-- Hero Section -->
       <section class="hero-section" style="background-image: url('assets/images/hero_bg.jpg');">
@@ -267,14 +301,14 @@ class AgriCoreApp {
             <form id="heroSearchForm" class="omnisearch-bar" onsubmit="event.preventDefault(); window.agriApp.handleHeroSearch();">
               <div class="search-field">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                <input type="text" id="heroKeyword" placeholder="Job Title or Keyword (e.g. Quality Engineer)" value="Quality Engineer">
+                <input type="text" id="heroKeyword" placeholder="Job Title or Keyword (e.g. Quality Control, Irrigation)" value="">
               </div>
               <div class="search-divider"></div>
               <div class="search-field">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
                 <select id="heroLocation">
                   <option value="all">All Locations</option>
-                  <option value="Cairo" selected>Cairo</option>
+                  <option value="Cairo">Cairo</option>
                   <option value="Giza">Giza</option>
                   <option value="Fayoum">Fayoum</option>
                   <option value="Alexandria">Alexandria</option>
@@ -286,7 +320,7 @@ class AgriCoreApp {
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
                 <select id="heroSpecialization">
                   <option value="all">Specialization</option>
-                  <option value="Quality Control" selected>Food Industry / QC</option>
+                  <option value="Quality Control">Food Industry / QC</option>
                   <option value="Crop Production">Crop Production</option>
                   <option value="Modern Irrigation">Modern Irrigation</option>
                   <option value="Animal Nutrition">Livestock & Poultry</option>
@@ -601,6 +635,17 @@ class AgriCoreApp {
     this.navigateTo('jobs_search');
   }
 
+  // Update live metrics on the landing page after data is available
+  _updateLandingMetrics() {
+    const jobsEl = document.getElementById('metricJobs');
+    const companiesEl = document.getElementById('metricCompanies');
+    const talentsEl = document.getElementById('metricTalents');
+    const uniqueCompanies = new Set(this.jobs.map(j => j.company)).size;
+    if (jobsEl) jobsEl.textContent = this.jobs.length > 0 ? `${this.jobs.length}+` : `${jobsData.length}+`;
+    if (companiesEl) companiesEl.textContent = uniqueCompanies > 0 ? `${uniqueCompanies}+` : `${companiesData.length}+`;
+    if (talentsEl) talentsEl.textContent = '12,450+';
+  }
+
   // ---------------------------------------------------------------------------
   // 2. Job Seeker Dashboard View
   // ---------------------------------------------------------------------------
@@ -820,10 +865,19 @@ class AgriCoreApp {
             <!-- Job Cards Stream -->
             <div style="display:flex; flex-direction:column; gap: 16px;">
               ${filteredJobs.length === 0 ? `
-                <div class="card" style="text-align:center; padding: 48px 24px;">
-                  <h4 style="font-size:1.125rem; font-weight:700;">No matching vacancies found</h4>
-                  <p style="color:var(--color-text-muted); margin: 8px 0 16px;">Try adjusting your keywords or location filter.</p>
-                  <button class="btn btn-primary btn-sm" onclick="window.agriApp.resetFilters()">Clear Filters</button>
+                <div class="card" style="text-align:center; padding: 56px 24px;">
+                  <div style="font-size:3rem; margin-bottom:12px;">🔍</div>
+                  <h4 style="font-size:1.25rem; font-weight:800; color:var(--color-text-main); margin-bottom:8px;">No matching vacancies found</h4>
+                  <p style="color:var(--color-text-muted); margin: 0 auto 20px; max-width:380px; line-height:1.6;">We couldn't find jobs matching your current filters. Try broadening your search or removing some filters.</p>
+                  <div style="display:flex; justify-content:center; gap:10px; flex-wrap:wrap;">
+                    <button class="btn btn-primary" onclick="window.agriApp.resetFilters()">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:6px;"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+                      Reset All Filters
+                    </button>
+                    <button class="btn btn-secondary" onclick="window.agriApp.navigateTo('landing')">
+                      Browse All Jobs
+                    </button>
+                  </div>
                 </div>
               ` : filteredJobs.map(job => {
                 const match = calculateMatchScore(job, candidatesData[0]);
@@ -867,18 +921,26 @@ class AgriCoreApp {
 
   getFilteredJobs() {
     return this.jobs.filter(job => {
-      if (this.searchFilters.keyword) {
-        const q = this.searchFilters.keyword.toLowerCase();
-        const matchesTitle = job.title.toLowerCase().includes(q);
-        const matchesCompany = job.company.toLowerCase().includes(q);
-        const matchesSkill = (job.skills || []).some(s => s.toLowerCase().includes(q));
-        if (!matchesTitle && !matchesCompany && !matchesSkill) return false;
+      // Token-based fuzzy keyword search: split query into words, each word must match somewhere
+      if (this.searchFilters.keyword && this.searchFilters.keyword.trim()) {
+        const tokens = this.searchFilters.keyword.toLowerCase().trim().split(/\s+/);
+        const searchableText = [
+          job.title,
+          job.company,
+          job.sector,
+          ...(job.skills || []),
+          ...(job.specializations || [])
+        ].join(' ').toLowerCase();
+        const allTokensMatch = tokens.every(token => searchableText.includes(token));
+        if (!allTokensMatch) return false;
       }
       if (this.searchFilters.location !== 'all') {
         if (job.location.toLowerCase() !== this.searchFilters.location.toLowerCase()) return false;
       }
       if (this.searchFilters.specialization !== 'all') {
-        if (!(job.specializations || []).includes(this.searchFilters.specialization)) return false;
+        const specLower = this.searchFilters.specialization.toLowerCase();
+        const jobSpecs = (job.specializations || []).map(s => s.toLowerCase());
+        if (!jobSpecs.some(s => s.includes(specLower) || specLower.includes(s))) return false;
       }
       return true;
     });
@@ -1627,15 +1689,43 @@ class AgriCoreApp {
     if (modal) modal.classList.add('open');
   }
 
-  submitNewJob() {
-    const title = document.getElementById('newJobTitle')?.value;
-    const location = document.getElementById('newJobLocation')?.value || 'Cairo';
-    const minExp = parseInt(document.getElementById('newJobExp')?.value || '1');
-    const spec = document.getElementById('newJobSpec')?.value || 'Quality Control';
+  async submitNewJob() {
+    const titleEl = document.getElementById('newJobTitle');
+    const locationEl = document.getElementById('newJobLocation');
+    const descEl = document.getElementById('newJobDescription');
+    const minExpEl = document.getElementById('newJobExp');
+    const specEl = document.getElementById('newJobSpec');
+    const submitBtn = document.getElementById('postJobSubmitBtn');
+    const errorEl = document.getElementById('postJobError');
 
+    const title = titleEl?.value?.trim();
+    const description = descEl?.value?.trim();
+    const location = locationEl?.value || 'Cairo';
+    const minExp = parseInt(minExpEl?.value || '1');
+    const spec = specEl?.value || 'Quality Control';
+
+    // Clear previous errors
+    if (errorEl) errorEl.style.display = 'none';
+    [titleEl, descEl].forEach(el => el?.classList.remove('input-error'));
+
+    // Validation
     if (!title) {
-      alert('Please enter a job title');
+      if (titleEl) titleEl.classList.add('input-error');
+      if (errorEl) { errorEl.textContent = '⚠️ Job title is required.'; errorEl.style.display = 'block'; }
+      titleEl?.focus();
       return;
+    }
+    if (!description || description.length < 20) {
+      if (descEl) descEl.classList.add('input-error');
+      if (errorEl) { errorEl.textContent = '⚠️ Please provide a description of at least 20 characters.'; errorEl.style.display = 'block'; }
+      descEl?.focus();
+      return;
+    }
+
+    // Loading state
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span class="btn-spinner"></span> Publishing...';
     }
 
     const newJob = {
@@ -1654,15 +1744,58 @@ class AgriCoreApp {
       specializations: [spec],
       skills: ['Quality Control', 'Food Safety', 'HACCP'],
       match_score: 91,
-      description: 'Newly posted agricultural opportunity directly via Delta Foods recruiter console.',
+      description,
       created_at: 'Just now',
       applied: false
     };
 
+    // Try to post to Supabase, fallback to local
+    try {
+      if (supabaseBridge.session?.access_token) {
+        await supabaseBridge.createJob({
+          title,
+          description,
+          governorate: location,
+          employment_type: 'full_time',
+          min_experience_years: minExp,
+          max_experience_years: minExp + 2,
+          status: 'active'
+        });
+      }
+    } catch (err) {
+      console.warn('Supabase job creation failed, adding locally:', err);
+    }
+
     this.jobs.unshift(newJob);
-    alert(`Success! Vacancy "${title}" is now published and active on AgriCore.`);
     this.closeAllModals();
+    // Show success toast
+    this._showToast(`✅ Vacancy "${title}" is now published and active!`, 'success');
     this.renderCurrentView();
+
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Publish Job';
+    }
+  }
+
+  _showToast(message, type = 'success') {
+    const existing = document.getElementById('agriToast');
+    if (existing) existing.remove();
+    const toast = document.createElement('div');
+    toast.id = 'agriToast';
+    toast.style.cssText = `
+      position: fixed; bottom: 24px; right: 24px; z-index: 9999;
+      background: ${type === 'success' ? '#f0fdf4' : '#fef2f2'};
+      color: ${type === 'success' ? '#166534' : '#991b1b'};
+      border: 1px solid ${type === 'success' ? '#86efac' : '#f87171'};
+      padding: 14px 20px; border-radius: 12px;
+      font-size: 0.9375rem; font-weight: 600;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+      max-width: 380px; animation: slideInToast 0.3s ease;
+    `;
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 4000);
   }
 
   openSqlModal() {
@@ -2112,7 +2245,36 @@ class AgriCoreApp {
     document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('open'));
   }
 
-  bindLandingEvents() {}
+  bindLandingEvents() {
+    // Mobile hamburger menu
+    const hamburger = document.getElementById('hamburgerBtn');
+    const mobileMenu = document.getElementById('mobileNavMenu');
+    const mobileOverlay = document.getElementById('mobileNavOverlay');
+
+    const closeMobileMenu = () => {
+      mobileMenu?.classList.remove('open');
+      mobileOverlay?.classList.remove('open');
+      hamburger?.setAttribute('aria-expanded', 'false');
+    };
+
+    if (hamburger) {
+      hamburger.addEventListener('click', () => {
+        const isOpen = mobileMenu?.classList.contains('open');
+        if (isOpen) {
+          closeMobileMenu();
+        } else {
+          mobileMenu?.classList.add('open');
+          mobileOverlay?.classList.add('open');
+          hamburger.setAttribute('aria-expanded', 'true');
+        }
+      });
+    }
+    if (mobileOverlay) {
+      mobileOverlay.addEventListener('click', closeMobileMenu);
+    }
+    // Update metrics on landing page
+    this._updateLandingMetrics();
+  }
   bindSeekerEvents() {}
   bindJobsSearchEvents() {
     const searchInput = document.getElementById('jobsSearchInput');

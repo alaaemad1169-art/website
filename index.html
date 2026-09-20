@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -163,11 +163,21 @@
               <option value="Farm Management">Farm Management</option>
             </select>
           </div>
+          <div>
+            <label style="font-size:0.8125rem; font-weight:700; display:block; margin-bottom:4px;">Job Description *</label>
+            <textarea id="newJobDescription" rows="4"
+              style="width:100%; padding:10px; border:1px solid var(--color-border); border-radius:var(--radius-md); font-family:var(--font-sans); font-size:0.875rem; resize:vertical;"
+              placeholder="Describe the role, responsibilities, and requirements for agricultural professionals..."></textarea>
+            <small style="color:var(--color-text-muted); font-size:0.75rem;">Minimum 20 characters required.</small>
+          </div>
+          <div id="postJobError"
+            style="display:none; background:#fef2f2; color:#991b1b; border:1px solid #f87171; padding:10px 14px; border-radius:var(--radius-md); font-size:0.875rem; font-weight:600;">
+          </div>
         </div>
       </div>
       <div class="modal-footer">
         <button class="btn btn-secondary btn-sm" onclick="window.agriApp.closeAllModals()">Cancel</button>
-        <button class="btn btn-primary btn-sm" onclick="window.agriApp.submitNewJob()">Publish Vacancy</button>
+        <button id="postJobSubmitBtn" class="btn btn-primary btn-sm" onclick="window.agriApp.submitNewJob()">Publish Vacancy</button>
       </div>
     </div>
   </div>
