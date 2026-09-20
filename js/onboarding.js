@@ -191,10 +191,10 @@ export class ProfessionalOnboardingManager {
       },
       // Step 8: CV
       cv: {
-        fileName: "Ahmed_Mohamed_Agri_CV.pdf",
-        fileSize: "1.4 MB",
-        uploadedAt: "Just now",
-        verified: true
+        fileName: null,
+        fileSize: null,
+        uploadedAt: null,
+        verified: false
       },
       profileCompletion: 85
     };
