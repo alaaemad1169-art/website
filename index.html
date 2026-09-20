@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -68,31 +68,17 @@
           style="font-size:1.0625rem; font-weight:700; color:var(--color-brand-900); margin-bottom:12px;">Position Title
         </h4>
 
-        <div
+        <div id="applyModalCVDetails"
           style="background:var(--color-brand-50); border:1px solid var(--color-brand-100); border-radius:var(--radius-md); padding:16px; margin-bottom:16px; display:flex; align-items:center; justify-content:space-between;">
-          <div style="display:flex; align-items:center; gap:12px;">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-              style="color:var(--color-brand-700);">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-              <polyline points="14 2 14 8 20 8"></polyline>
-              <line x1="16" y1="13" x2="8" y2="13"></line>
-              <line x1="16" y1="17" x2="8" y2="17"></line>
-              <polyline points="10 9 9 9 8 9"></polyline>
-            </svg>
-            <div>
-              <strong style="display:block; font-size:0.875rem;">Ahmed_Mohamed_Agri_CV.pdf</strong>
-              <small style="color:var(--color-text-muted);">Uploaded via Supabase Storage • 1.4 MB</small>
-            </div>
-          </div>
-          <span class="verified-badge">Verified</span>
+          <!-- CV details will be injected here by app.js -->
         </div>
 
         <div style="margin-bottom:16px;">
           <label style="font-size:0.875rem; font-weight:600; display:block; margin-bottom:6px;">Short Introduction /
             Cover Note (Optional)</label>
-          <textarea rows="3"
+          <textarea id="applyModalCoverNote" rows="3"
             style="width:100%; border:1px solid var(--color-border); border-radius:var(--radius-md); padding:10px; font-family:var(--font-sans); font-size:0.875rem;"
-            placeholder="Briefly highlight why your agricultural or quality expertise is a great fit for this vacancy...">I have 2.5 years of experience in food quality control and HACCP compliance with Cairo 3A, and I am excited to contribute to your production standards.</textarea>
+            placeholder="Briefly highlight why your agricultural or quality expertise is a great fit for this vacancy..."></textarea>
         </div>
 
         <div style="font-size:0.75rem; color:var(--color-text-muted); line-height:1.5;">
@@ -120,57 +106,113 @@
         <div style="display:flex; flex-direction:column; gap:16px;">
           <div>
             <label style="font-size:0.8125rem; font-weight:700; display:block; margin-bottom:4px;">Job Title *</label>
-            <input type="text" id="newJobTitle"
+            <input type="text" id="newJobTitle" aria-describedby="titleError"
               style="width:100%; padding:10px; border:1px solid var(--color-border); border-radius:var(--radius-md);"
               placeholder="e.g. Modern Irrigation Engineer">
+            <span id="titleError" style="color:#dc2626; font-size:0.75rem; display:none; margin-top:4px;"></span>
           </div>
           <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
             <div>
-              <label style="font-size:0.8125rem; font-weight:700; display:block; margin-bottom:4px;">Location
-                (Governorate)</label>
-              <select id="newJobLocation"
+              <label style="font-size:0.8125rem; font-weight:700; display:block; margin-bottom:4px;">Location *</label>
+              <select id="newJobLocation" aria-describedby="locationError"
                 style="width:100%; padding:10px; border:1px solid var(--color-border); border-radius:var(--radius-md);">
+                <option value="">Select Location</option>
                 <option value="Cairo">Cairo</option>
                 <option value="Giza">Giza</option>
                 <option value="Fayoum">Fayoum</option>
-                <option value="Beheira">Beheira</option>
                 <option value="Alexandria">Alexandria</option>
+                <option value="Beheira">Beheira</option>
                 <option value="Minya">Minya</option>
               </select>
+              <span id="locationError" style="color:#dc2626; font-size:0.75rem; display:none; margin-top:4px;"></span>
             </div>
             <div>
-              <label style="font-size:0.8125rem; font-weight:700; display:block; margin-bottom:4px;">Minimum
-                Experience</label>
-              <select id="newJobExp"
+              <label style="font-size:0.8125rem; font-weight:700; display:block; margin-bottom:4px;">Employment Type *</label>
+              <select id="newJobType" aria-describedby="typeError"
                 style="width:100%; padding:10px; border:1px solid var(--color-border); border-radius:var(--radius-md);">
-                <option value="0">Fresh Graduate (0-1 yrs)</option>
-                <option value="1" selected>Junior (1-3 yrs)</option>
-                <option value="3">Mid-Level (3-6 yrs)</option>
-                <option value="6">Senior (6+ yrs)</option>
+                <option value="">Select Type</option>
+                <option value="Full Time">Full Time</option>
+                <option value="Part Time">Part Time</option>
+                <option value="Seasonal">Seasonal</option>
+                <option value="Internship">Internship</option>
+                <option value="Freelance">Freelance</option>
               </select>
+              <span id="typeError" style="color:#dc2626; font-size:0.75rem; display:none; margin-top:4px;"></span>
+            </div>
+          </div>
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+            <div>
+              <label style="font-size:0.8125rem; font-weight:700; display:block; margin-bottom:4px;">Min Experience (Years) *</label>
+              <input type="number" id="newJobMinExp" min="0" aria-describedby="minExpError"
+                style="width:100%; padding:10px; border:1px solid var(--color-border); border-radius:var(--radius-md);">
+              <span id="minExpError" style="color:#dc2626; font-size:0.75rem; display:none; margin-top:4px;"></span>
+            </div>
+            <div>
+              <label style="font-size:0.8125rem; font-weight:700; display:block; margin-bottom:4px;">Max Experience (Years) *</label>
+              <input type="number" id="newJobMaxExp" min="0" aria-describedby="maxExpError"
+                style="width:100%; padding:10px; border:1px solid var(--color-border); border-radius:var(--radius-md);">
+              <span id="maxExpError" style="color:#dc2626; font-size:0.75rem; display:none; margin-top:4px;"></span>
             </div>
           </div>
           <div>
-            <label style="font-size:0.8125rem; font-weight:700; display:block; margin-bottom:4px;">Primary
-              Specialization</label>
-            <select id="newJobSpec"
+            <label style="font-size:0.8125rem; font-weight:700; display:block; margin-bottom:4px;">Primary Specialization *</label>
+            <select id="newJobSpec" aria-describedby="specError"
               style="width:100%; padding:10px; border:1px solid var(--color-border); border-radius:var(--radius-md);">
-              <option value="Quality Control">Quality Control (QC)</option>
-              <option value="Food Safety">Food Safety & HACCP</option>
+              <option value="">Select Specialization</option>
+              <option value="Quality Control">Quality Control</option>
+              <option value="Food Safety & HACCP">Food Safety & HACCP</option>
               <option value="Crop Production">Crop Production</option>
-              <option value="Modern Irrigation">Modern Irrigation Systems</option>
+              <option value="Modern Irrigation">Modern Irrigation</option>
+              <option value="Horticulture">Horticulture</option>
+              <option value="Greenhouse Production">Greenhouse Production</option>
+              <option value="Precision Agriculture">Precision Agriculture</option>
               <option value="Poultry Production">Poultry Production</option>
+              <option value="Animal Nutrition">Animal Nutrition</option>
               <option value="Farm Management">Farm Management</option>
+              <option value="Agricultural Export">Agricultural Export</option>
+              <option value="Microbiology">Microbiology</option>
             </select>
+            <span id="specError" style="color:#dc2626; font-size:0.75rem; display:none; margin-top:4px;"></span>
+          </div>
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+            <div>
+              <label style="font-size:0.8125rem; font-weight:700; display:block; margin-bottom:4px;">Required Skills *</label>
+              <input type="text" id="newJobSkills" placeholder="e.g. GAP, HACCP, Auditing" aria-describedby="skillsError"
+                style="width:100%; padding:10px; border:1px solid var(--color-border); border-radius:var(--radius-md);">
+              <span id="skillsError" style="color:#dc2626; font-size:0.75rem; display:none; margin-top:4px;"></span>
+            </div>
+            <div>
+              <label style="font-size:0.8125rem; font-weight:700; display:block; margin-bottom:4px;">Education Level *</label>
+              <select id="newJobEdu" aria-describedby="eduError"
+                style="width:100%; padding:10px; border:1px solid var(--color-border); border-radius:var(--radius-md);">
+                <option value="Bachelor's Degree">Bachelor's Degree</option>
+                <option value="Master's Degree">Master's Degree</option>
+                <option value="PhD">PhD</option>
+                <option value="Diploma">Diploma</option>
+              </select>
+              <span id="eduError" style="color:#dc2626; font-size:0.75rem; display:none; margin-top:4px;"></span>
+            </div>
+          </div>
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+            <div>
+              <label style="font-size:0.8125rem; font-weight:700; display:block; margin-bottom:4px;">Salary Range (Optional)</label>
+              <input type="text" id="newJobSalary" placeholder="e.g. 5000 - 8000 EGP"
+                style="width:100%; padding:10px; border:1px solid var(--color-border); border-radius:var(--radius-md);">
+            </div>
+            <div>
+              <label style="font-size:0.8125rem; font-weight:700; display:block; margin-bottom:4px;">Application Deadline (Optional)</label>
+              <input type="date" id="newJobDeadline"
+                style="width:100%; padding:10px; border:1px solid var(--color-border); border-radius:var(--radius-md);">
+            </div>
           </div>
           <div>
             <label style="font-size:0.8125rem; font-weight:700; display:block; margin-bottom:4px;">Job Description *</label>
-            <textarea id="newJobDescription" rows="4"
+            <textarea id="newJobDescription" rows="4" aria-describedby="descError"
               style="width:100%; padding:10px; border:1px solid var(--color-border); border-radius:var(--radius-md); font-family:var(--font-sans); font-size:0.875rem; resize:vertical;"
               placeholder="Describe the role, responsibilities, and requirements for agricultural professionals..."></textarea>
-            <small style="color:var(--color-text-muted); font-size:0.75rem;">Minimum 20 characters required.</small>
+            <span id="descError" style="color:#dc2626; font-size:0.75rem; display:none; margin-top:4px;"></span>
           </div>
-          <div id="postJobError"
+          <div id="postJobGlobalError"
             style="display:none; background:#fef2f2; color:#991b1b; border:1px solid #f87171; padding:10px 14px; border-radius:var(--radius-md); font-size:0.875rem; font-weight:600;">
           </div>
         </div>
