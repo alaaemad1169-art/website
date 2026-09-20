@@ -415,6 +415,277 @@ export class AgriCoreSupabaseClient {
       return null;
     }
   }
+
+  // ---------------------------------------------------------------------------
+  // Profile Management
+  // ---------------------------------------------------------------------------
+  async getProfile() {
+    if (!this.session?.user?.id) return null;
+    const res = await fetch(
+      `${this.url}/rest/v1/profiles?id=eq.${this.session.user.id}&select=*`,
+      { headers: this.getHeaders(true) }
+    );
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data?.[0] || null;
+  }
+
+  async getProfessionalProfile() {
+    if (!this.session?.user?.id) return null;
+    const res = await fetch(
+      `${this.url}/rest/v1/professional_profiles?id=eq.${this.session.user.id}&select=*`,
+      { headers: this.getHeaders(true) }
+    );
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data?.[0] || null;
+  }
+
+  async updateProfile(data) {
+    if (!this.session?.user?.id) throw new Error('Not authenticated');
+    const userId = this.session.user.id;
+    const res = await fetch(
+      `${this.url}/rest/v1/profiles?id=eq.${userId}`,
+      {
+        method: 'PATCH',
+        headers: this.getHeaders(true),
+        body: JSON.stringify(data)
+      }
+    );
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.message || 'Failed to update profile');
+    }
+    return await res.json().catch(() => ({}));
+  }
+
+  async updateProfessionalProfile(data) {
+    if (!this.session?.user?.id) throw new Error('Not authenticated');
+    const userId = this.session.user.id;
+    const res = await fetch(
+      `${this.url}/rest/v1/professional_profiles?id=eq.${userId}`,
+      {
+        method: 'PATCH',
+        headers: { ...this.getHeaders(true), 'Prefer': 'return=minimal' },
+        body: JSON.stringify(data)
+      }
+    );
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.message || 'Failed to update professional profile');
+    }
+    return true;
+  }
+
+  async updateCompanyProfile(data) {
+    if (!this.session?.user?.id) throw new Error('Not authenticated');
+    const userId = this.session.user.id;
+    const res = await fetch(
+      `${this.url}/rest/v1/company_profiles?id=eq.${userId}`,
+      {
+        method: 'PATCH',
+        headers: { ...this.getHeaders(true), 'Prefer': 'return=minimal' },
+        body: JSON.stringify(data)
+      }
+    );
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.message || 'Failed to update company profile');
+    }
+    return true;
+  }
+
+  // ---------------------------------------------------------------------------
+  // CV Upload to private 'resumes' bucket
+  // ---------------------------------------------------------------------------
+  async uploadCV(file) {
+    if (!this.session?.access_token || !this.session?.user?.id) {
+      throw new Error('Not authenticated');
+    }
+    const userId = this.session.user.id;
+    const ext = file.name.split('.').pop();
+    const path = `${userId}/cv_${Date.now()}.${ext}`;
+
+    const res = await fetch(
+      `${this.url}/storage/v1/object/resumes/${path}`,
+      {
+        method: 'POST',
+        headers: {
+          'apikey': this.anonKey,
+          'Authorization': `Bearer ${this.session.access_token}`,
+          'Content-Type': file.type || 'application/octet-stream',
+          'x-upsert': 'true'
+        },
+        body: file
+      }
+    );
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.message || err.error || 'Failed to upload CV');
+    }
+    // Save path to profile
+    await this.updateProfessionalProfile({ cv_storage_path: path });
+    return path;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Job Management (Company)
+  // ---------------------------------------------------------------------------
+  async getCompanyJobs() {
+    if (!this.session?.user?.id) return [];
+    try {
+      const res = await fetch(
+        `${this.url}/rest/v1/jobs?company_user_id=eq.${this.session.user.id}&select=*&order=created_at.desc`,
+        { headers: this.getHeaders(true) }
+      );
+      if (!res.ok) return [];
+      return await res.json();
+    } catch {
+      return [];
+    }
+  }
+
+  async updateJob(jobId, data) {
+    const res = await fetch(
+      `${this.url}/rest/v1/jobs?id=eq.${jobId}`,
+      {
+        method: 'PATCH',
+        headers: { ...this.getHeaders(true), 'Prefer': 'return=representation' },
+        body: JSON.stringify(data)
+      }
+    );
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.message || 'Failed to update job');
+    }
+    return await res.json();
+  }
+
+  async deleteJob(jobId) {
+    const res = await fetch(
+      `${this.url}/rest/v1/jobs?id=eq.${jobId}`,
+      {
+        method: 'DELETE',
+        headers: this.getHeaders(true)
+      }
+    );
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.message || 'Failed to delete job');
+    }
+    return true;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Application Status Management (Company)
+  // ---------------------------------------------------------------------------
+  async updateApplicationStatus(appId, status) {
+    const allowed = ['applied', 'under_review', 'shortlisted', 'rejected', 'hired'];
+    if (!allowed.includes(status)) throw new Error('Invalid status');
+    const res = await fetch(
+      `${this.url}/rest/v1/applications?id=eq.${appId}`,
+      {
+        method: 'PATCH',
+        headers: { ...this.getHeaders(true), 'Prefer': 'return=representation' },
+        body: JSON.stringify({ status, reviewed_at: new Date().toISOString() })
+      }
+    );
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.message || 'Failed to update status');
+    }
+    return await res.json();
+  }
+
+  // Get applications for company's jobs with seeker profile info
+  async getApplicationsForMyJobsFull() {
+    if (!this.session?.access_token) return [];
+    try {
+      const res = await fetch(
+        `${this.url}/rest/v1/applications?select=*,jobs(id,title,company_user_id),profiles(id,full_name,email),professional_profiles(cv_storage_path,headline,experience_years)&order=applied_at.desc`,
+        { headers: this.getHeaders(true) }
+      );
+      if (!res.ok) return [];
+      const all = await res.json();
+      // Filter client-side for company's own jobs (RLS also enforces this)
+      return all.filter(a => a.jobs?.company_user_id === this.session.user.id);
+    } catch {
+      return [];
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Saved Jobs (Seeker)
+  // ---------------------------------------------------------------------------
+  async saveJob(jobId) {
+    if (!this.session?.user?.id) throw new Error('Not authenticated');
+    const res = await fetch(
+      `${this.url}/rest/v1/saved_jobs`,
+      {
+        method: 'POST',
+        headers: { ...this.getHeaders(true), 'Prefer': 'return=representation,resolution=ignore-duplicates' },
+        body: JSON.stringify({ job_id: jobId, seeker_user_id: this.session.user.id })
+      }
+    );
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.message || 'Failed to save job');
+    }
+    return true;
+  }
+
+  async unsaveJob(jobId) {
+    if (!this.session?.user?.id) throw new Error('Not authenticated');
+    const res = await fetch(
+      `${this.url}/rest/v1/saved_jobs?job_id=eq.${jobId}&seeker_user_id=eq.${this.session.user.id}`,
+      { method: 'DELETE', headers: this.getHeaders(true) }
+    );
+    return res.ok;
+  }
+
+  async getSavedJobs() {
+    if (!this.session?.access_token) return [];
+    try {
+      const res = await fetch(
+        `${this.url}/rest/v1/saved_jobs?select=*,jobs(*)&order=saved_at.desc`,
+        { headers: this.getHeaders(true) }
+      );
+      if (!res.ok) return [];
+      return await res.json();
+    } catch {
+      return [];
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Courses (Academy)
+  // ---------------------------------------------------------------------------
+  async getCourses() {
+    try {
+      const res = await fetch(
+        `${this.url}/rest/v1/courses?is_active=eq.true&select=*&order=created_at.desc`,
+        { headers: this.getHeaders(false) }
+      );
+      if (!res.ok) return [];
+      return await res.json();
+    } catch {
+      return [];
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Messaging (Stub — Coming Soon)
+  // ---------------------------------------------------------------------------
+  async getMessages(otherUserId) {
+    // Coming Soon — returns empty array
+    return [];
+  }
+
+  async sendMessage(toUserId, text) {
+    // Coming Soon — stub
+    console.warn('[AgriCore] Messaging not yet available.');
+    return null;
+  }
 }
 
 export const supabaseBridge = new AgriCoreSupabaseClient();
