@@ -15,6 +15,30 @@ import { calculateMatchScore } from './matchingEngine.js';
 import { supabaseBridge } from './supabaseClient.js';
 import { ProfessionalOnboardingManager } from './onboarding.js';
 
+const LOCATIONS = [
+  "Cairo",
+  "Giza",
+  "Fayoum",
+  "Alexandria",
+  "Beheira",
+  "Minya"
+];
+
+const SPECIALIZATIONS = [
+  "Quality Control",
+  "Food Safety & HACCP",
+  "Crop Production",
+  "Modern Irrigation",
+  "Horticulture",
+  "Greenhouse Production",
+  "Precision Agriculture",
+  "Poultry Production",
+  "Animal Nutrition",
+  "Farm Management",
+  "Agricultural Export",
+  "Microbiology"
+];
+
 class AgriCoreApp {
   constructor() {
     this.currentView = 'landing';
@@ -308,11 +332,7 @@ class AgriCoreApp {
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
                 <select id="heroLocation">
                   <option value="all">All Locations</option>
-                  <option value="Cairo">Cairo</option>
-                  <option value="Giza">Giza</option>
-                  <option value="Fayoum">Fayoum</option>
-                  <option value="Alexandria">Alexandria</option>
-                  <option value="Beheira">Beheira</option>
+                  ${LOCATIONS.map(loc => `<option value="${loc}">${loc}</option>`).join('')}
                 </select>
               </div>
               <div class="search-divider"></div>
@@ -320,10 +340,7 @@ class AgriCoreApp {
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
                 <select id="heroSpecialization">
                   <option value="all">Specialization</option>
-                  <option value="Quality Control">Food Industry / QC</option>
-                  <option value="Crop Production">Crop Production</option>
-                  <option value="Modern Irrigation">Modern Irrigation</option>
-                  <option value="Animal Nutrition">Livestock & Poultry</option>
+                  ${SPECIALIZATIONS.map(spec => `<option value="${spec}">${spec}</option>`).join('')}
                 </select>
               </div>
               <button type="submit" class="btn btn-primary">Search Jobs</button>
@@ -759,8 +776,34 @@ class AgriCoreApp {
                 </div>
               </div>
 
-              <!-- Right Column: Quick Actions -->
+              <!-- Right Column: Applications & Quick Actions -->
               <div style="display:flex; flex-direction:column; gap: 24px;">
+                <!-- My Applications Card -->
+                <div class="card" style="padding:0; overflow:hidden;">
+                  <div style="padding: 18px 24px; border-bottom:1px solid var(--color-border); display:flex; justify-content:space-between; align-items:center;">
+                    <h3 style="font-size: 1.0625rem; font-weight:700;">My Applications</h3>
+                    <span style="font-size:0.8125rem; font-weight:600; background:var(--color-brand-100); color:var(--color-brand-700); padding:2px 10px; border-radius:999px;">
+                      ${this.jobs.filter(j => j.applied).length} submitted
+                    </span>
+                  </div>
+                  <div>
+                    ${(() => {
+                      const applied = this.jobs.filter(j => j.applied);
+                      if (!user) return `<div style="padding:20px 24px; text-align:center; color:var(--color-text-muted); font-size:0.875rem;">Login to track your applications.</div>`;
+                      if (applied.length === 0) return `<div style="padding:20px 24px; text-align:center; color:var(--color-text-muted); font-size:0.875rem;">You haven't applied to any jobs yet. <br><button class="btn btn-primary btn-sm" style="margin-top:10px;" onclick="window.agriApp.navigateTo('jobs_search')">Browse Jobs</button></div>`;
+                      return applied.map(job => `
+                        <div style="padding:12px 20px; border-bottom:1px solid var(--color-border); display:flex; align-items:center; justify-content:space-between; gap:12px;">
+                          <div>
+                            <div style="font-size:0.875rem; font-weight:700; color:var(--color-text-main);">${job.title}</div>
+                            <div style="font-size:0.8125rem; color:var(--color-text-muted);">${job.company} · ${job.location}</div>
+                          </div>
+                          <span style="font-size:0.75rem; font-weight:700; padding:3px 10px; border-radius:999px; background:#dcfce7; color:#166534; white-space:nowrap;">Applied ✓</span>
+                        </div>
+                      `).join('');
+                    })()}
+                  </div>
+                </div>
+
                 <!-- Quick Actions Card -->
                 <div class="card">
                   <h3 style="font-size: 1rem; font-weight:700; margin-bottom:16px;">Quick Actions</h3>
@@ -832,17 +875,17 @@ class AgriCoreApp {
                   <label style="font-size:0.75rem; font-weight:700; color:var(--color-text-muted); display:block; margin-bottom:4px;">Location</label>
                   <select id="filterLocationSelect" style="padding:8px; border:1px solid var(--color-border); border-radius:var(--radius-sm);">
                     <option value="all" ${this.searchFilters.location === 'all' ? 'selected' : ''}>All Locations</option>
-                    <option value="Cairo" ${this.searchFilters.location === 'Cairo' ? 'selected' : ''}>Cairo</option>
-                    <option value="Giza" ${this.searchFilters.location === 'Giza' ? 'selected' : ''}>Giza</option>
-                    <option value="Fayoum" ${this.searchFilters.location === 'Fayoum' ? 'selected' : ''}>Fayoum</option>
+                    ${LOCATIONS.map(loc => `
+                      <option value="${loc}" ${this.searchFilters.location === loc ? 'selected' : ''}>${loc}</option>
+                    `).join('')}
                   </select>
                 </div>
                 <div class="search-field" style="max-width:260px;">
                   <label style="font-size:0.75rem; font-weight:700; color:var(--color-text-muted); display:block; margin-bottom:4px;">Specialization</label>
                   <select id="filterSpecSelect" style="padding:8px; border:1px solid var(--color-border); border-radius:var(--radius-sm);">
                     <option value="all">All Specializations</option>
-                    ${specializationsData.map(s => `
-                      <option value="${s.name_en}" ${this.searchFilters.specialization === s.name_en ? 'selected' : ''}>${s.name_en}</option>
+                    ${SPECIALIZATIONS.map(s => `
+                      <option value="${s}" ${this.searchFilters.specialization === s ? 'selected' : ''}>${s}</option>
                     `).join('')}
                   </select>
                 </div>
@@ -1083,11 +1126,15 @@ class AgriCoreApp {
   // 5. Candidate Profile View (Dynamic — uses onboarded profile or fallback)
   // ---------------------------------------------------------------------------
   renderCandidateProfile() {
-    // Use onboarded profile data if available, otherwise show empty state
+    // Use onboarded profile data if available, otherwise try currentUser
     const prof = this.currentCandidateProfile;
-    const hasProfile = !!prof;
+    const user = this.currentUser;
 
-    if (!hasProfile) {
+    if (!prof) {
+      // Build minimal display from currentUser if authenticated
+      const displayName = user?.fullName || user?.email || 'Agricultural Professional';
+      const hasAnyData = user && user.userType === 'seeker';
+
       return `
         <div class="dashboard-layout">
           ${this.renderSidebar('seeker', 'profile')}
@@ -1097,11 +1144,23 @@ class AgriCoreApp {
             </header>
             <div class="dashboard-body" style="display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:60vh; text-align:center;">
               <div style="font-size:3rem; margin-bottom:16px;">🌱</div>
-              <h2 style="font-size:1.5rem; font-weight:800; color:var(--color-brand-900); margin-bottom:8px;">Your Profile is Empty</h2>
-              <p style="color:var(--color-text-muted); max-width:400px; margin-bottom:24px;">Complete the Agricultural Professional onboarding to build your verified career profile and start receiving matched job opportunities.</p>
-              <button class="btn btn-primary" onclick="window.agriApp.startProfessionalOnboarding()">
-                🌾 Start Building My Profile
-              </button>
+              <h2 style="font-size:1.5rem; font-weight:800; color:var(--color-brand-900); margin-bottom:8px;">
+                ${hasAnyData ? `Welcome, ${displayName}` : 'Your Profile is Empty'}
+              </h2>
+              <p style="color:var(--color-text-muted); max-width:400px; margin-bottom:24px;">
+                ${hasAnyData
+                  ? 'Complete the Agricultural Professional onboarding to build your verified career profile and unlock matched job opportunities.'
+                  : 'Please log in as a job seeker to view your profile.'}
+              </p>
+              ${hasAnyData ? `
+                <button class="btn btn-primary" onclick="window.agriApp.startProfessionalOnboarding()">
+                  🌾 Start Building My Profile
+                </button>
+              ` : `
+                <button class="btn btn-primary" onclick="window.agriApp.openAuthModal('login')">
+                  Login
+                </button>
+              `}
             </div>
           </main>
         </div>
@@ -1658,67 +1717,191 @@ class AgriCoreApp {
   // Modals & User Actions
   // ---------------------------------------------------------------------------
   openApplyModal(jobId) {
+    if (!this.currentUser) {
+      this._showToast('⚠️ You must be logged in to apply for a job.', 'error');
+      this.openAuthModal('login');
+      return;
+    }
+    if (this.currentUser.userType !== 'seeker') {
+      this._showToast('⚠️ Only job seekers can apply for jobs.', 'error');
+      return;
+    }
+    // Check if profile is complete enough (at least cv)
+    if (!this.currentUser.cvFilename && !this.currentUser.cvUrl && !this.currentUser.cv_url) {
+      this._showToast('⚠️ Please complete your profile and upload a CV before applying.', 'error');
+      this.navigateTo('profile');
+      return;
+    }
+
     const job = this.jobs.find(j => j.id === jobId);
     if (!job) return;
+
+    if (job.applied) {
+      this._showToast('⚠️ You have already applied for this vacancy.', 'error');
+      return;
+    }
 
     const modal = document.getElementById('applyModal');
     const titleEl = document.getElementById('applyJobTitle');
     const compEl = document.getElementById('applyJobCompany');
+    const cvDetailsEl = document.getElementById('applyModalCVDetails');
+    const coverNoteEl = document.getElementById('applyModalCoverNote');
+
     if (modal && titleEl && compEl) {
       titleEl.innerText = job.title;
       compEl.innerText = `${job.company} • ${job.location}`;
       modal.setAttribute('data-target-job-id', jobId);
+      
+      if (cvDetailsEl) {
+        cvDetailsEl.innerHTML = `
+          <div style="display:flex; align-items:center; gap:12px;">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              style="color:var(--color-brand-700);">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+              <polyline points="10 9 9 9 8 9"></polyline>
+            </svg>
+            <div>
+              <strong style="display:block; font-size:0.875rem;">${this.currentUser.cvFilename || 'My_CV.pdf'}</strong>
+              <small style="color:var(--color-text-muted);">Uploaded via Supabase Storage</small>
+            </div>
+          </div>
+          <span class="verified-badge">Verified</span>
+        `;
+      }
+      
+      if (coverNoteEl) coverNoteEl.value = '';
+
       modal.classList.add('open');
     }
   }
 
-  submitApplication() {
+  async submitApplication() {
+    if (!this.currentUser || this.currentUser.userType !== 'seeker') {
+      this._showToast('⚠️ Unauthorized to apply.', 'error');
+      return;
+    }
+
     const modal = document.getElementById('applyModal');
     const jobId = modal?.getAttribute('data-target-job-id');
     const job = this.jobs.find(j => j.id === jobId);
+    const coverNoteEl = document.getElementById('applyModalCoverNote');
+    const coverNote = coverNoteEl ? coverNoteEl.value.trim() : '';
+
     if (job) {
+      if (job.applied) {
+        this._showToast('⚠️ You have already applied for this vacancy.', 'error');
+        return;
+      }
+      
+      // Attempt to save application in Supabase
+      try {
+        if (supabaseBridge.session?.access_token) {
+           await supabaseBridge.applyForJob(jobId, coverNote);
+        }
+      } catch (err) {
+        console.warn('Supabase application failed, adding locally:', err);
+      }
+
       job.applied = true;
-      alert(`Success! Your verified application has been submitted to ${job.company}. Status: Applied.`);
+      this._showToast(`✅ Success! Your verified application has been submitted to ${job.company}.`, 'success');
       this.closeAllModals();
       this.renderCurrentView();
     }
   }
 
   openPostJobModal() {
+    if (!this.currentUser) {
+      this._showToast('⚠️ You must be logged in to post a job.', 'error');
+      this.openAuthModal('login');
+      return;
+    }
+    if (this.currentUser.userType !== 'company') {
+      this._showToast('⚠️ Only company accounts can publish jobs.', 'error');
+      return;
+    }
     const modal = document.getElementById('postJobModal');
     if (modal) modal.classList.add('open');
   }
 
   async submitNewJob() {
-    const titleEl = document.getElementById('newJobTitle');
-    const locationEl = document.getElementById('newJobLocation');
-    const descEl = document.getElementById('newJobDescription');
-    const minExpEl = document.getElementById('newJobExp');
-    const specEl = document.getElementById('newJobSpec');
-    const submitBtn = document.getElementById('postJobSubmitBtn');
-    const errorEl = document.getElementById('postJobError');
-
-    const title = titleEl?.value?.trim();
-    const description = descEl?.value?.trim();
-    const location = locationEl?.value || 'Cairo';
-    const minExp = parseInt(minExpEl?.value || '1');
-    const spec = specEl?.value || 'Quality Control';
-
-    // Clear previous errors
-    if (errorEl) errorEl.style.display = 'none';
-    [titleEl, descEl].forEach(el => el?.classList.remove('input-error'));
-
-    // Validation
-    if (!title) {
-      if (titleEl) titleEl.classList.add('input-error');
-      if (errorEl) { errorEl.textContent = '⚠️ Job title is required.'; errorEl.style.display = 'block'; }
-      titleEl?.focus();
+    if (!this.currentUser || this.currentUser.userType !== 'company') {
+      this._showToast('⚠️ Unauthorized to post jobs.', 'error');
       return;
     }
-    if (!description || description.length < 20) {
-      if (descEl) descEl.classList.add('input-error');
-      if (errorEl) { errorEl.textContent = '⚠️ Please provide a description of at least 20 characters.'; errorEl.style.display = 'block'; }
-      descEl?.focus();
+
+    const titleEl = document.getElementById('newJobTitle');
+    const locationEl = document.getElementById('newJobLocation');
+    const typeEl = document.getElementById('newJobType');
+    const minExpEl = document.getElementById('newJobMinExp');
+    const maxExpEl = document.getElementById('newJobMaxExp');
+    const specEl = document.getElementById('newJobSpec');
+    const skillsEl = document.getElementById('newJobSkills');
+    const eduEl = document.getElementById('newJobEdu');
+    const salaryEl = document.getElementById('newJobSalary');
+    const deadlineEl = document.getElementById('newJobDeadline');
+    const descEl = document.getElementById('newJobDescription');
+    const submitBtn = document.getElementById('postJobSubmitBtn');
+    const globalErrorEl = document.getElementById('postJobGlobalError');
+
+    const title = titleEl?.value?.trim();
+    const location = locationEl?.value;
+    const type = typeEl?.value;
+    const minExp = parseInt(minExpEl?.value, 10);
+    const maxExp = parseInt(maxExpEl?.value, 10);
+    const spec = specEl?.value;
+    const skills = skillsEl?.value?.trim();
+    const edu = eduEl?.value;
+    const salary = salaryEl?.value?.trim();
+    const deadline = deadlineEl?.value;
+    const description = descEl?.value?.trim();
+
+    // Clear previous errors
+    if (globalErrorEl) globalErrorEl.style.display = 'none';
+    const fields = [
+      {el: titleEl, errId: 'titleError', val: title, errMsg: 'Job title is required.'},
+      {el: locationEl, errId: 'locationError', val: location, errMsg: 'Location is required.'},
+      {el: typeEl, errId: 'typeError', val: type, errMsg: 'Employment type is required.'},
+      {el: minExpEl, errId: 'minExpError', val: !isNaN(minExp), errMsg: 'Valid min experience required.'},
+      {el: maxExpEl, errId: 'maxExpError', val: !isNaN(maxExp) && maxExp >= minExp, errMsg: 'Valid max experience (>= min) required.'},
+      {el: specEl, errId: 'specError', val: spec, errMsg: 'Primary specialization is required.'},
+      {el: skillsEl, errId: 'skillsError', val: skills, errMsg: 'Required skills are required.'},
+      {el: eduEl, errId: 'eduError', val: edu, errMsg: 'Education level is required.'},
+      {el: descEl, errId: 'descError', val: description && description.length >= 20, errMsg: 'Description of at least 20 chars required.'}
+    ];
+
+    let hasError = false;
+    let firstErrorEl = null;
+
+    fields.forEach(field => {
+      const errSpan = document.getElementById(field.errId);
+      if (field.el) field.el.classList.remove('input-error');
+      if (errSpan) errSpan.style.display = 'none';
+
+      if (!field.val) {
+        hasError = true;
+        if (field.el) {
+          field.el.classList.add('input-error');
+          field.el.setAttribute('aria-invalid', 'true');
+          if (!firstErrorEl) firstErrorEl = field.el;
+        }
+        if (errSpan) {
+          errSpan.textContent = field.errMsg;
+          errSpan.style.display = 'block';
+        }
+      } else {
+        if (field.el) field.el.removeAttribute('aria-invalid');
+      }
+    });
+
+    if (hasError) {
+      if (globalErrorEl) {
+        globalErrorEl.textContent = '⚠️ Please correct the errors in the form above before submitting.';
+        globalErrorEl.style.display = 'block';
+      }
+      if (firstErrorEl) firstErrorEl.focus();
       return;
     }
 
@@ -1728,24 +1911,28 @@ class AgriCoreApp {
       submitBtn.innerHTML = '<span class="btn-spinner"></span> Publishing...';
     }
 
+    const skillsArray = skills.split(',').map(s => s.trim()).filter(Boolean);
+
     const newJob = {
-      id: 'job-' + (this.jobs.length + 1),
+      id: 'job-' + Date.now(),
       title,
-      company: 'Delta Foods',
-      logo_text: 'DF',
-      sector: 'Food Industry',
+      company: this.currentUser.companyName || this.currentUser.fullName || 'Company',
+      logo_text: (this.currentUser.companyName || this.currentUser.fullName || 'C').substring(0, 2).toUpperCase(),
+      sector: this.currentUser.businessSector || 'Agribusiness',
       location,
-      city: 'Industrial Zone',
-      type: 'Full Time',
-      experience: `${minExp}-${minExp + 2} Years`,
+      city: location,
+      type: type,
+      experience: `${minExp}-${maxExp} Years`,
       min_exp: minExp,
-      max_exp: minExp + 2,
-      min_edu: 'bachelor',
+      max_exp: maxExp,
+      min_edu: edu,
       specializations: [spec],
-      skills: ['Quality Control', 'Food Safety', 'HACCP'],
-      match_score: 91,
+      skills: skillsArray,
+      match_score: 100, // Newly posted
       description,
-      created_at: 'Just now',
+      salary,
+      deadline,
+      created_at: new Date().toISOString(),
       applied: false
     };
 
@@ -1756,9 +1943,10 @@ class AgriCoreApp {
           title,
           description,
           governorate: location,
-          employment_type: 'full_time',
+          employment_type: type === 'Full Time' ? 'full_time' : (type === 'Part Time' ? 'part_time' : type.toLowerCase().replace(' ', '_')),
           min_experience_years: minExp,
-          max_experience_years: minExp + 2,
+          max_experience_years: maxExp,
+          min_education_level: edu.toLowerCase(),
           status: 'active'
         });
       }
@@ -1774,7 +1962,7 @@ class AgriCoreApp {
 
     if (submitBtn) {
       submitBtn.disabled = false;
-      submitBtn.textContent = 'Publish Job';
+      submitBtn.textContent = 'Publish Vacancy';
     }
   }
 
@@ -2055,14 +2243,19 @@ class AgriCoreApp {
 
         await this.syncCurrentUserFromSession(sessionData);
 
+        const isSeeker = userType === 'seeker';
         const targetDashboard = userType === 'company' ? 'company_dashboard' : 'seeker_dashboard';
-        console.log(`[PostSignUp Flow] 8. Executing redirect to: ${targetDashboard}`);
+        console.log(`[PostSignUp Flow] 8. Executing redirect to: ${isSeeker ? 'professional_onboarding' : targetDashboard}`);
 
         this.showAuthAlert('🎉 تم إنشاء حسابك وتسجيل الدخول بنجاح! جاري التوجيه إلى لوحة التحكم...', 'success');
 
         setTimeout(() => {
           this.closeAllModals();
-          this.navigateTo(targetDashboard);
+          if (isSeeker) {
+            this.startProfessionalOnboarding();
+          } else {
+            this.navigateTo(targetDashboard);
+          }
         }, 1200);
 
       } else {

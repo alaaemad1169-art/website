@@ -356,6 +356,15 @@ export class AgriCoreSupabaseClient {
     }
     return await res.json();
   }
+
+  async applyForJob(jobId, coverNote = '') {
+    return this.applyToJob({
+      job_id: jobId,
+      cover_note: coverNote,
+      status: 'applied',
+      applied_at: new Date().toISOString()
+    });
+  }
 }
 
 export const supabaseBridge = new AgriCoreSupabaseClient();
