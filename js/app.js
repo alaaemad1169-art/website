@@ -870,26 +870,26 @@ class AgriCoreApp {
 
             <!-- Filter Controls Row -->
             <div class="card" style="padding: 16px 20px; margin-bottom: 24px;">
-              <div style="display:flex; align-items:center; gap: 16px; flex-wrap:wrap;">
-                <div class="search-field" style="max-width:240px;">
+              <div class="jobs-filter-row" style="display:flex; align-items:center; gap: 16px; flex-wrap:wrap;">
+                <div class="search-field" style="flex:1; min-width:180px;">
                   <label style="font-size:0.75rem; font-weight:700; color:var(--color-text-muted); display:block; margin-bottom:4px;">Location</label>
-                  <select id="filterLocationSelect" style="padding:8px; border:1px solid var(--color-border); border-radius:var(--radius-sm);">
+                  <select id="filterLocationSelect" style="padding:8px; border:1px solid var(--color-border); border-radius:var(--radius-sm); width:100%;">
                     <option value="all" ${this.searchFilters.location === 'all' ? 'selected' : ''}>All Locations</option>
                     ${LOCATIONS.map(loc => `
                       <option value="${loc}" ${this.searchFilters.location === loc ? 'selected' : ''}>${loc}</option>
                     `).join('')}
                   </select>
                 </div>
-                <div class="search-field" style="max-width:260px;">
+                <div class="search-field" style="flex:1; min-width:200px;">
                   <label style="font-size:0.75rem; font-weight:700; color:var(--color-text-muted); display:block; margin-bottom:4px;">Specialization</label>
-                  <select id="filterSpecSelect" style="padding:8px; border:1px solid var(--color-border); border-radius:var(--radius-sm);">
+                  <select id="filterSpecSelect" style="padding:8px; border:1px solid var(--color-border); border-radius:var(--radius-sm); width:100%;">
                     <option value="all">All Specializations</option>
                     ${SPECIALIZATIONS.map(s => `
                       <option value="${s}" ${this.searchFilters.specialization === s ? 'selected' : ''}>${s}</option>
                     `).join('')}
                   </select>
                 </div>
-                <div style="display:flex; align-items:flex-end; gap:8px; margin-left:auto;">
+                <div style="display:flex; align-items:flex-end; gap:8px; flex-wrap:wrap;">
                   <button class="btn btn-secondary btn-sm" onclick="window.agriApp.resetFilters()">Reset</button>
                   <button class="btn btn-primary btn-sm" onclick="window.agriApp.applyFilters()">Apply Filters</button>
                 </div>
@@ -1593,8 +1593,21 @@ class AgriCoreApp {
   // Reusable Sidebar Template
   // ---------------------------------------------------------------------------
   renderSidebar(role = 'seeker', activeTab = 'dashboard') {
+    // Mobile-only sticky header with hamburger (hidden on desktop via CSS)
+    const mobileHeader = `
+      <div class="dashboard-mobile-header">
+        <span style="font-size:1.125rem; font-weight:800; color:var(--color-brand-900);">AgriCore</span>
+        <button class="hamburger-btn" id="dashHamburgerBtn" aria-label="Open sidebar menu" aria-expanded="false">
+          <span class="bar"></span>
+          <span class="bar"></span>
+          <span class="bar"></span>
+        </button>
+      </div>
+      <div id="sidebarOverlay" class="mobile-nav-overlay"></div>
+    `;
+
     if (role === 'company') {
-      return `
+      return mobileHeader + `
         <aside class="sidebar">
           <div class="sidebar-header">
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--color-brand-400);">
@@ -1654,7 +1667,7 @@ class AgriCoreApp {
     }
 
     // Default: Job Seeker Sidebar
-    return `
+    return mobileHeader + `
       <aside class="sidebar">
         <div class="sidebar-header">
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--color-brand-400);">
@@ -2484,32 +2497,92 @@ class AgriCoreApp {
     const mobileMenu = document.getElementById('mobileNavMenu');
     const mobileOverlay = document.getElementById('mobileNavOverlay');
 
+    const openMobileMenu = () => {
+      mobileMenu?.classList.add('open');
+      mobileOverlay?.classList.add('open');
+      document.body.classList.add('nav-open');
+      hamburger?.setAttribute('aria-expanded', 'true');
+    };
+
     const closeMobileMenu = () => {
       mobileMenu?.classList.remove('open');
       mobileOverlay?.classList.remove('open');
+      document.body.classList.remove('nav-open');
       hamburger?.setAttribute('aria-expanded', 'false');
     };
 
     if (hamburger) {
       hamburger.addEventListener('click', () => {
         const isOpen = mobileMenu?.classList.contains('open');
-        if (isOpen) {
-          closeMobileMenu();
-        } else {
-          mobileMenu?.classList.add('open');
-          mobileOverlay?.classList.add('open');
-          hamburger.setAttribute('aria-expanded', 'true');
-        }
+        isOpen ? closeMobileMenu() : openMobileMenu();
       });
     }
     if (mobileOverlay) {
       mobileOverlay.addEventListener('click', closeMobileMenu);
     }
+
+    // Close mobile menu when any nav link inside it is clicked
+    mobileMenu?.querySelectorAll('a, span[onclick], button').forEach(link => {
+      link.addEventListener('click', closeMobileMenu);
+    });
+
+    // Escape key also closes mobile nav (global handler closes modals;
+    // this handles only the nav menu)
+    const escHandler = (e) => {
+      if (e.key === 'Escape' && mobileMenu?.classList.contains('open')) {
+        closeMobileMenu();
+      }
+    };
+    document.addEventListener('keydown', escHandler);
+
     // Update metrics on landing page
     this._updateLandingMetrics();
   }
-  bindSeekerEvents() {}
+
+  // Shared helper: binds a hamburger icon that toggles the sidebar drawer
+  // on mobile for any dashboard view. Call this from each bindXxxEvents().
+  _bindDashboardMobileMenu() {
+    const sidebar = document.querySelector('.sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    const hamburger = document.getElementById('dashHamburgerBtn');
+
+    if (!sidebar || !hamburger) return;
+
+    const openSidebar = () => {
+      sidebar.classList.add('open');
+      overlay?.classList.add('open');
+      document.body.classList.add('nav-open');
+    };
+    const closeSidebar = () => {
+      sidebar.classList.remove('open');
+      overlay?.classList.remove('open');
+      document.body.classList.remove('nav-open');
+    };
+
+    hamburger.addEventListener('click', () => {
+      sidebar.classList.contains('open') ? closeSidebar() : openSidebar();
+    });
+
+    if (overlay) {
+      overlay.addEventListener('click', closeSidebar);
+    }
+
+    // Close on Escape
+    const escHandler = (e) => {
+      if (e.key === 'Escape' && sidebar.classList.contains('open')) closeSidebar();
+    };
+    document.addEventListener('keydown', escHandler);
+
+    // Close when any sidebar link is clicked (navigateTo triggers re-render anyway)
+    sidebar.querySelectorAll('.sidebar-link').forEach(link => {
+      link.addEventListener('click', closeSidebar);
+    });
+  }
+  bindSeekerEvents() {
+    this._bindDashboardMobileMenu();
+  }
   bindJobsSearchEvents() {
+    this._bindDashboardMobileMenu();
     const searchInput = document.getElementById('jobsSearchInput');
     if (searchInput) {
       searchInput.addEventListener('input', (e) => {
@@ -2520,9 +2593,15 @@ class AgriCoreApp {
       });
     }
   }
-  bindCompanyEvents() {}
-  bindCandidateProfileEvents() {}
-  bindAcademyEvents() {}
+  bindCompanyEvents() {
+    this._bindDashboardMobileMenu();
+  }
+  bindCandidateProfileEvents() {
+    this._bindDashboardMobileMenu();
+  }
+  bindAcademyEvents() {
+    this._bindDashboardMobileMenu();
+  }
 
   // ---------------------------------------------------------------------------
   // Professional Onboarding Entry Points
