@@ -971,3 +971,317 @@ a {
   }
 }
 
+/* =============================================================================
+   11. Responsive Layout — Mobile, Tablet, Laptop
+   ============================================================================= */
+
+/* ---- Hamburger button (hidden on desktop) ---- */
+.hamburger-btn {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  z-index: 110;
+  flex-shrink: 0;
+}
+.hamburger-btn .bar {
+  display: block;
+  width: 24px;
+  height: 2px;
+  background: var(--color-brand-900);
+  border-radius: 2px;
+  transition: transform 0.3s, opacity 0.3s;
+}
+
+/* ---- Mobile nav drawer ---- */
+.mobile-nav-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 998;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+.mobile-nav-overlay.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.mobile-nav-menu {
+  position: fixed;
+  top: 0;
+  right: -300px;
+  width: 280px;
+  height: 100%;
+  background: #ffffff;
+  z-index: 999;
+  transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 24px 20px;
+  box-shadow: -4px 0 20px rgba(0, 0, 0, 0.12);
+  overflow-y: auto;
+}
+.mobile-nav-menu.open {
+  right: 0;
+}
+
+.mobile-nav-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--color-text-muted);
+  line-height: 1;
+  padding: 0;
+}
+
+.mobile-nav-links {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 20px;
+}
+.mobile-nav-links a,
+.mobile-nav-links span {
+  display: block;
+  padding: 12px 8px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--color-text-main);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: background 0.15s;
+}
+.mobile-nav-links a:hover,
+.mobile-nav-links span:hover {
+  background: var(--color-brand-50);
+  color: var(--color-brand-700);
+}
+
+/* ---- Body scroll lock when nav/modal open ---- */
+body.nav-open {
+  overflow: hidden;
+}
+
+/* ---- Dashboard mobile header (hamburger row inside dashboard) ---- */
+.dashboard-mobile-header {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  background: #ffffff;
+  border-bottom: 1px solid var(--color-border);
+  position: sticky;
+  top: 0;
+  z-index: 90;
+}
+
+/* =============================================================================
+   Mobile max-width 768px
+   ============================================================================= */
+@media (max-width: 768px) {
+
+  /* Prevent body-level horizontal overflow */
+  body, #appRoot {
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
+
+  /* --- Role bar --- */
+  .role-bar {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 10px 12px;
+    gap: 8px;
+  }
+  .role-bar-nav {
+    overflow-x: auto;
+    padding-bottom: 4px;
+    gap: 6px;
+  }
+
+  /* --- Public header: hide nav links, show hamburger --- */
+  .public-nav {
+    display: none !important;
+  }
+  .header-actions {
+    display: none !important;
+  }
+  .hamburger-btn {
+    display: flex;
+  }
+  .mobile-nav-overlay {
+    display: block;
+  }
+
+  /* --- Dashboard layout: sidebar becomes drawer --- */
+  .dashboard-layout {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  .sidebar {
+    position: fixed !important;
+    top: 0;
+    right: -280px;
+    width: 280px;
+    height: 100%;
+    z-index: 999;
+    transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow-y: auto;
+    box-shadow: -4px 0 20px rgba(0, 0, 0, 0.12);
+  }
+  .sidebar.open {
+    right: 0;
+  }
+
+  /* Show mobile header inside dashboard */
+  .dashboard-mobile-header {
+    display: flex;
+  }
+
+  /* --- Dashboard topbar --- */
+  .dashboard-topbar {
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 12px 16px;
+  }
+  .topbar-search {
+    flex: 1 1 100%;
+  }
+  .topbar-user {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  /* --- Dashboard body padding --- */
+  .dashboard-body {
+    padding: 16px !important;
+  }
+
+  /* --- Dashboard main: full width when sidebar hidden --- */
+  .dashboard-main {
+    width: 100%;
+    min-width: 0;
+  }
+
+  /* --- Seeker dashboard grid: single column --- */
+  .seeker-dash-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px;
+  }
+
+  /* --- Cards --- */
+  .card {
+    padding: 16px;
+  }
+
+  /* --- Company dashboard grid --- */
+  .company-dash-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* --- Job cards --- */
+  .job-card {
+    padding: 16px !important;
+  }
+  .job-card-header {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  /* --- Jobs filter row: stack vertically --- */
+  .jobs-filter-row {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+  .search-field {
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+  select, input[type="text"], input[type="email"],
+  input[type="password"], input[type="tel"], input[type="number"],
+  input[type="date"], textarea {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  /* --- Hero search on landing: stack vertically --- */
+  .hero-search-bar {
+    flex-direction: column !important;
+    gap: 10px;
+  }
+  .hero-search-bar input,
+  .hero-search-bar select,
+  .hero-search-bar button {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* --- Stats grid: 2 columns on phone --- */
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  /* --- Wide tables / code blocks: scroll horizontally --- */
+  .overflow-table-wrapper,
+  .chart-placeholder,
+  pre {
+    overflow-x: auto;
+    max-width: 100%;
+  }
+
+  /* --- Academy course grid --- */
+  .courses-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* --- Footer link columns --- */
+  .footer-columns {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 24px;
+  }
+}
+
+/* =============================================================================
+   Tablet 769px to 1024px
+   ============================================================================= */
+@media (min-width: 769px) and (max-width: 1024px) {
+
+  .seeker-dash-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .company-dash-grid {
+    grid-template-columns: 1fr 1fr !important;
+  }
+
+  .courses-grid {
+    grid-template-columns: 1fr 1fr !important;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  .dashboard-body {
+    padding: 20px !important;
+  }
+}
+
+/* =============================================================================
+   Laptop 1025px to 1366px
+   ============================================================================= */
+@media (min-width: 1025px) and (max-width: 1366px) {
+  .header-container {
+    padding: 0 20px;
+  }
+  .dashboard-body {
+    padding: 24px !important;
+  }
+}
+

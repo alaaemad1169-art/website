@@ -460,3 +460,79 @@
 .auth-alert-shake {
   animation: shakeAlert 0.4s ease-in-out;
 }
+
+/* =============================================================================
+   Responsive: Modals and Forms — Mobile max-width 768px
+   ============================================================================= */
+@media (max-width: 768px) {
+
+  /* Modal dialog: full-width sheet on small screens */
+  .modal-dialog {
+    width: calc(100% - 32px) !important;
+    max-width: none !important;
+    max-height: 90vh;
+    overflow-y: auto;
+    margin: auto 16px;
+  }
+
+  /* Modal body: smaller padding */
+  .modal-body {
+    padding: 16px !important;
+  }
+
+  /* Modal footer: stack buttons vertically */
+  .modal-footer {
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px 16px !important;
+  }
+  .modal-footer .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* Apply modal CV details row: stack vertically */
+  #applyModalCVDetails {
+    flex-direction: column !important;
+    gap: 10px;
+    align-items: flex-start !important;
+  }
+
+  /* Post Job modal: inline grids stack to single column */
+  #postJobModal .modal-body div[style*="grid-template-columns: 1fr 1fr"] {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px;
+  }
+
+  /* Auth modal: account type selector stacks */
+  #authModal div[style*="grid-template-columns: 1fr 1fr"] {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px;
+  }
+
+  /* SQL viewer modal: hide file list sidebar on very small screens */
+  #sqlViewerModal .modal-body div[style*="grid-template-columns: 240px"] {
+    display: flex !important;
+    flex-direction: column !important;
+  }
+
+  /* All buttons: minimum touch target 44px */
+  .btn {
+    min-height: 44px;
+  }
+  .btn-sm {
+    min-height: 36px;
+  }
+
+  /* Nav tabs in modals */
+  .nav-tabs {
+    gap: 4px;
+  }
+  .tab-btn {
+    flex: 1;
+    font-size: 0.875rem;
+    padding: 8px 10px;
+  }
+}
