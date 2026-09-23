@@ -1,18 +1,18 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AgriCore - The Core of Agricultural Careers in Egypt & Arab Region</title>
+  <title>AgriCore - المنصة المركزية للوظائف الزراعية في مصر والعالم العربي</title>
   <meta name="description"
-    content="Connecting agricultural engineers, consultants, researchers, food safety specialists, and agribusinesses across Egypt and the Arab region with advanced candidate matching.">
+    content="ربط المهندسين الزراعيين، الاستشاريين، الباحثين، مسؤولي سلامة الغذاء، والشركات الزراعية في مصر والوطن العربي بأحدث محركات المطابقة.">
 
   <!-- Modern Typography -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
-    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap"
     rel="stylesheet">
 
   <!-- CSS Stylesheets -->
@@ -33,14 +33,14 @@
       <span class="role-badge-tag">AgriCore Platform</span>
     </div>
     <div class="role-bar-nav">
-      <button class="role-btn active" data-view="landing">🌾 Public Portal</button>
-      <button class="role-btn" data-view="seeker_dashboard">👤 Seeker Dashboard</button>
-      <button class="role-btn" data-view="jobs_search">🔍 Jobs & Match Engine</button>
-      <button class="role-btn" data-view="company_dashboard">🏢 Company Portal (Delta Foods)</button>
-      <button class="role-btn" data-view="candidate_profile">📄 Candidate Profile (Ahmed)</button>
-      <button class="role-btn" data-view="academy">🎓 AgriCore Academy</button>
-      <button class="role-btn" data-view="insights">📊 Sector Insights</button>
-      <button class="role-btn role-sql-btn" id="openSqlModalBtn">⚡ Supabase SQL Blueprint</button>
+      <button class="role-btn active" data-view="landing">🌾 البوابة العامة</button>
+      <button class="role-btn" data-view="seeker_dashboard">👤 لوحة تحكم الكادر (Dashboard)</button>
+      <button class="role-btn" data-view="jobs_search">🔍 الوظائف ومحرك المطابقة</button>
+      <button class="role-btn" data-view="company_dashboard">🏢 بوابة الشركات (دلتا فودز)</button>
+      <button class="role-btn" data-view="candidate_profile">📄 الملف الشخصي للمرشح (أحمد)</button>
+      <button class="role-btn" data-view="academy">🎓 أكاديمية أجريكور</button>
+      <button class="role-btn" data-view="insights">📊 رؤى القطاع</button>
+      <button class="role-btn role-sql-btn" id="openSqlModalBtn">⚡ مخطط قاعدة البيانات (SQL Blueprint)</button>
     </div>
   </nav>
 
@@ -58,14 +58,14 @@
     <div class="modal-dialog">
       <div class="modal-header">
         <div>
-          <h3 id="applyModalTitle" style="font-size:1.125rem; font-weight:800;">Submit Application</h3>
-          <p id="applyJobCompany" style="font-size:0.8125rem; color:var(--color-text-muted);">Company details</p>
+          <h3 id="applyModalTitle" style="font-size:1.125rem; font-weight:800;">تقديم الطلب (Apply)</h3>
+          <p id="applyJobCompany" style="font-size:0.8125rem; color:var(--color-text-muted);">تفاصيل الشركة</p>
         </div>
         <button class="btn btn-ghost btn-sm" onclick="window.agriApp.closeAllModals()">&times;</button>
       </div>
       <div class="modal-body">
         <h4 id="applyJobTitle"
-          style="font-size:1.0625rem; font-weight:700; color:var(--color-brand-900); margin-bottom:12px;">Position Title
+          style="font-size:1.0625rem; font-weight:700; color:var(--color-brand-900); margin-bottom:12px;">المسمى الوظيفي
         </h4>
 
         <div id="applyModalCVDetails"
@@ -74,21 +74,19 @@
         </div>
 
         <div style="margin-bottom:16px;">
-          <label style="font-size:0.875rem; font-weight:600; display:block; margin-bottom:6px;">Short Introduction /
-            Cover Note (Optional)</label>
+          <label style="font-size:0.875rem; font-weight:600; display:block; margin-bottom:6px;">نبذة تعريفية (اختياري)</label>
           <textarea id="applyModalCoverNote" rows="3"
             style="width:100%; border:1px solid var(--color-border); border-radius:var(--radius-md); padding:10px; font-family:var(--font-sans); font-size:0.875rem;"
-            placeholder="Briefly highlight why your agricultural or quality expertise is a great fit for this vacancy..."></textarea>
+            placeholder="وضح باختصار لماذا تعتبر خبراتك الزراعية أو الرقابية مناسبة لهذه الوظيفة..."></textarea>
         </div>
 
         <div style="font-size:0.75rem; color:var(--color-text-muted); line-height:1.5;">
-          🔒 <strong>Privacy Note:</strong> Your application creates a private snapshot stored under Supabase Row Level
-          Security. The employer can only view your verified credentials and submitted CV for this vacancy.
+          🔒 <strong>ملاحظة الخصوصية:</strong> ينشئ تقديمك نسخة خاصة من بياناتك محمية عبر (Row Level Security). يمكن لصاحب العمل فقط عرض بياناتك وسيرتك الذاتية (CV) لهذه الوظيفة المحددة.
         </div>
       </div>
       <div class="modal-footer">
-        <button class="btn btn-secondary btn-sm" onclick="window.agriApp.closeAllModals()">Cancel</button>
-        <button class="btn btn-primary btn-sm" onclick="window.agriApp.submitApplication()">Confirm & Apply</button>
+        <button class="btn btn-secondary btn-sm" onclick="window.agriApp.closeAllModals()">إلغاء</button>
+        <button class="btn btn-primary btn-sm" onclick="window.agriApp.submitApplication()">تأكيد التقديم (Apply)</button>
       </div>
     </div>
   </div>
@@ -99,117 +97,117 @@
   <div class="modal-overlay" id="postJobModal" role="dialog" aria-modal="true">
     <div class="modal-dialog">
       <div class="modal-header">
-        <h3 style="font-size:1.125rem; font-weight:800;">Post a New Agricultural Job</h3>
+        <h3 style="font-size:1.125rem; font-weight:800;">نشر وظيفة زراعية جديدة (Post Job)</h3>
         <button class="btn btn-ghost btn-sm" onclick="window.agriApp.closeAllModals()">&times;</button>
       </div>
       <div class="modal-body">
         <div style="display:flex; flex-direction:column; gap:16px;">
           <div>
-            <label style="font-size:0.8125rem; font-weight:700; display:block; margin-bottom:4px;">Job Title *</label>
+            <label style="font-size:0.8125rem; font-weight:700; display:block; margin-bottom:4px;">المسمى الوظيفي *</label>
             <input type="text" id="newJobTitle" aria-describedby="titleError"
               style="width:100%; padding:10px; border:1px solid var(--color-border); border-radius:var(--radius-md);"
-              placeholder="e.g. Modern Irrigation Engineer">
+              placeholder="مثال: مهندس ري حديث">
             <span id="titleError" style="color:#dc2626; font-size:0.75rem; display:none; margin-top:4px;"></span>
           </div>
           <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
             <div>
-              <label style="font-size:0.8125rem; font-weight:700; display:block; margin-bottom:4px;">Location *</label>
+              <label style="font-size:0.8125rem; font-weight:700; display:block; margin-bottom:4px;">الموقع *</label>
               <select id="newJobLocation" aria-describedby="locationError"
                 style="width:100%; padding:10px; border:1px solid var(--color-border); border-radius:var(--radius-md);">
-                <option value="">Select Location</option>
-                <option value="Cairo">Cairo</option>
-                <option value="Giza">Giza</option>
-                <option value="Fayoum">Fayoum</option>
-                <option value="Alexandria">Alexandria</option>
-                <option value="Beheira">Beheira</option>
-                <option value="Minya">Minya</option>
+                <option value="">اختر الموقع</option>
+                <option value="Cairo">القاهرة</option>
+                <option value="Giza">الجيزة</option>
+                <option value="Fayoum">الفيوم</option>
+                <option value="Alexandria">الإسكندرية</option>
+                <option value="Beheira">البحيرة</option>
+                <option value="Minya">المنيا</option>
               </select>
               <span id="locationError" style="color:#dc2626; font-size:0.75rem; display:none; margin-top:4px;"></span>
             </div>
             <div>
-              <label style="font-size:0.8125rem; font-weight:700; display:block; margin-bottom:4px;">Employment Type *</label>
+              <label style="font-size:0.8125rem; font-weight:700; display:block; margin-bottom:4px;">نوع التوظيف *</label>
               <select id="newJobType" aria-describedby="typeError"
                 style="width:100%; padding:10px; border:1px solid var(--color-border); border-radius:var(--radius-md);">
-                <option value="">Select Type</option>
-                <option value="Full Time">Full Time</option>
-                <option value="Part Time">Part Time</option>
-                <option value="Seasonal">Seasonal</option>
-                <option value="Internship">Internship</option>
-                <option value="Freelance">Freelance</option>
+                <option value="">اختر النوع</option>
+                <option value="Full Time">دوام كامل (Full Time)</option>
+                <option value="Part Time">دوام جزئي (Part Time)</option>
+                <option value="Seasonal">موسمي (Seasonal)</option>
+                <option value="Internship">تدريب (Internship)</option>
+                <option value="Freelance">عمل حر (Freelance)</option>
               </select>
               <span id="typeError" style="color:#dc2626; font-size:0.75rem; display:none; margin-top:4px;"></span>
             </div>
           </div>
           <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
             <div>
-              <label style="font-size:0.8125rem; font-weight:700; display:block; margin-bottom:4px;">Min Experience (Years) *</label>
+              <label style="font-size:0.8125rem; font-weight:700; display:block; margin-bottom:4px;">الحد الأدنى للخبرة (سنوات) *</label>
               <input type="number" id="newJobMinExp" min="0" aria-describedby="minExpError"
                 style="width:100%; padding:10px; border:1px solid var(--color-border); border-radius:var(--radius-md);">
               <span id="minExpError" style="color:#dc2626; font-size:0.75rem; display:none; margin-top:4px;"></span>
             </div>
             <div>
-              <label style="font-size:0.8125rem; font-weight:700; display:block; margin-bottom:4px;">Max Experience (Years) *</label>
+              <label style="font-size:0.8125rem; font-weight:700; display:block; margin-bottom:4px;">الحد الأقصى للخبرة (سنوات) *</label>
               <input type="number" id="newJobMaxExp" min="0" aria-describedby="maxExpError"
                 style="width:100%; padding:10px; border:1px solid var(--color-border); border-radius:var(--radius-md);">
               <span id="maxExpError" style="color:#dc2626; font-size:0.75rem; display:none; margin-top:4px;"></span>
             </div>
           </div>
           <div>
-            <label style="font-size:0.8125rem; font-weight:700; display:block; margin-bottom:4px;">Primary Specialization *</label>
+            <label style="font-size:0.8125rem; font-weight:700; display:block; margin-bottom:4px;">التخصص الأساسي *</label>
             <select id="newJobSpec" aria-describedby="specError"
               style="width:100%; padding:10px; border:1px solid var(--color-border); border-radius:var(--radius-md);">
-              <option value="">Select Specialization</option>
-              <option value="Quality Control">Quality Control</option>
-              <option value="Food Safety & HACCP">Food Safety & HACCP</option>
-              <option value="Crop Production">Crop Production</option>
-              <option value="Modern Irrigation">Modern Irrigation</option>
-              <option value="Horticulture">Horticulture</option>
-              <option value="Greenhouse Production">Greenhouse Production</option>
-              <option value="Precision Agriculture">Precision Agriculture</option>
-              <option value="Poultry Production">Poultry Production</option>
-              <option value="Animal Nutrition">Animal Nutrition</option>
-              <option value="Farm Management">Farm Management</option>
-              <option value="Agricultural Export">Agricultural Export</option>
-              <option value="Microbiology">Microbiology</option>
+              <option value="">اختر التخصص</option>
+              <option value="Quality Control">مراقبة الجودة</option>
+              <option value="Food Safety & HACCP">سلامة الغذاء والهاسب</option>
+              <option value="Crop Production">الإنتاج النباتي</option>
+              <option value="Modern Irrigation">الري الحديث</option>
+              <option value="Horticulture">البساتين</option>
+              <option value="Greenhouse Production">زراعة الصوب</option>
+              <option value="Precision Agriculture">الزراعة الدقيقة</option>
+              <option value="Poultry Production">الإنتاج الداجني</option>
+              <option value="Animal Nutrition">تغذية الحيوان</option>
+              <option value="Farm Management">إدارة المزارع</option>
+              <option value="Agricultural Export">التصدير الزراعي</option>
+              <option value="Microbiology">الميكروبيولوجي</option>
             </select>
             <span id="specError" style="color:#dc2626; font-size:0.75rem; display:none; margin-top:4px;"></span>
           </div>
           <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
             <div>
-              <label style="font-size:0.8125rem; font-weight:700; display:block; margin-bottom:4px;">Required Skills *</label>
-              <input type="text" id="newJobSkills" placeholder="e.g. GAP, HACCP, Auditing" aria-describedby="skillsError"
+              <label style="font-size:0.8125rem; font-weight:700; display:block; margin-bottom:4px;">المهارات المطلوبة *</label>
+              <input type="text" id="newJobSkills" placeholder="مثال: GAP, HACCP, مراجعة" aria-describedby="skillsError"
                 style="width:100%; padding:10px; border:1px solid var(--color-border); border-radius:var(--radius-md);">
               <span id="skillsError" style="color:#dc2626; font-size:0.75rem; display:none; margin-top:4px;"></span>
             </div>
             <div>
-              <label style="font-size:0.8125rem; font-weight:700; display:block; margin-bottom:4px;">Education Level *</label>
+              <label style="font-size:0.8125rem; font-weight:700; display:block; margin-bottom:4px;">المستوى التعليمي *</label>
               <select id="newJobEdu" aria-describedby="eduError"
                 style="width:100%; padding:10px; border:1px solid var(--color-border); border-radius:var(--radius-md);">
-                <option value="Bachelor's Degree">Bachelor's Degree</option>
-                <option value="Master's Degree">Master's Degree</option>
-                <option value="PhD">PhD</option>
-                <option value="Diploma">Diploma</option>
+                <option value="Bachelor's Degree">درجة البكالوريوس</option>
+                <option value="Master's Degree">درجة الماجستير</option>
+                <option value="PhD">دكتوراه</option>
+                <option value="Diploma">دبلوم</option>
               </select>
               <span id="eduError" style="color:#dc2626; font-size:0.75rem; display:none; margin-top:4px;"></span>
             </div>
           </div>
           <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
             <div>
-              <label style="font-size:0.8125rem; font-weight:700; display:block; margin-bottom:4px;">Salary Range (Optional)</label>
-              <input type="text" id="newJobSalary" placeholder="e.g. 5000 - 8000 EGP"
+              <label style="font-size:0.8125rem; font-weight:700; display:block; margin-bottom:4px;">نطاق الراتب (اختياري)</label>
+              <input type="text" id="newJobSalary" placeholder="مثال: 5000 - 8000 EGP"
                 style="width:100%; padding:10px; border:1px solid var(--color-border); border-radius:var(--radius-md);">
             </div>
             <div>
-              <label style="font-size:0.8125rem; font-weight:700; display:block; margin-bottom:4px;">Application Deadline (Optional)</label>
+              <label style="font-size:0.8125rem; font-weight:700; display:block; margin-bottom:4px;">آخر موعد للتقديم (اختياري)</label>
               <input type="date" id="newJobDeadline"
                 style="width:100%; padding:10px; border:1px solid var(--color-border); border-radius:var(--radius-md);">
             </div>
           </div>
           <div>
-            <label style="font-size:0.8125rem; font-weight:700; display:block; margin-bottom:4px;">Job Description *</label>
+            <label style="font-size:0.8125rem; font-weight:700; display:block; margin-bottom:4px;">الوصف الوظيفي *</label>
             <textarea id="newJobDescription" rows="4" aria-describedby="descError"
               style="width:100%; padding:10px; border:1px solid var(--color-border); border-radius:var(--radius-md); font-family:var(--font-sans); font-size:0.875rem; resize:vertical;"
-              placeholder="Describe the role, responsibilities, and requirements for agricultural professionals..."></textarea>
+              placeholder="صف الدور الوظيفي والمسؤوليات والمتطلبات..."></textarea>
             <span id="descError" style="color:#dc2626; font-size:0.75rem; display:none; margin-top:4px;"></span>
           </div>
           <div id="postJobGlobalError"
@@ -218,8 +216,8 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button class="btn btn-secondary btn-sm" onclick="window.agriApp.closeAllModals()">Cancel</button>
-        <button id="postJobSubmitBtn" class="btn btn-primary btn-sm" onclick="window.agriApp.submitNewJob()">Publish Vacancy</button>
+        <button class="btn btn-secondary btn-sm" onclick="window.agriApp.closeAllModals()">إلغاء</button>
+        <button id="postJobSubmitBtn" class="btn btn-primary btn-sm" onclick="window.agriApp.submitNewJob()">نشر الوظيفة (Publish)</button>
       </div>
     </div>
   </div>
@@ -231,10 +229,8 @@
     <div class="modal-dialog" style="max-width:880px;">
       <div class="modal-header">
         <div>
-          <h3 style="font-size:1.25rem; font-weight:800; color:var(--color-brand-900);">AgriCore Supabase PostgreSQL
-            Blueprint</h3>
-          <p style="font-size:0.8125rem; color:var(--color-text-muted);">8 Ordered SQL Migrations with RLS, Triggers &
-            Matching Engine</p>
+          <h3 style="font-size:1.25rem; font-weight:800; color:var(--color-brand-900);">مخطط قاعدة بيانات AgriCore (Supabase)</h3>
+          <p style="font-size:0.8125rem; color:var(--color-text-muted);">8 عمليات ترحيل (Migrations) مع RLS ومحرك المطابقة</p>
         </div>
         <button class="btn btn-ghost btn-sm" onclick="window.agriApp.closeAllModals()">&times;</button>
       </div>
@@ -242,7 +238,7 @@
         <div style="display:grid; grid-template-columns: 240px 1fr; gap:20px;">
           <!-- SQL Files List -->
           <div
-            style="display:flex; flex-direction:column; gap:6px; border-right:1px solid var(--color-border); padding-right:12px;">
+            style="display:flex; flex-direction:column; gap:6px; border-inline-end:1px solid var(--color-border); padding-inline-end:12px;">
             <button class="btn btn-secondary btn-sm active" style="justify-content:flex-start;"
               onclick="showSqlFile('01')">01_extensions.sql</button>
             <button class="btn btn-secondary btn-sm" style="justify-content:flex-start;"
@@ -264,17 +260,17 @@
           <!-- Code Snippet Display -->
           <div>
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-              <strong id="sqlFileTitle" style="font-size:0.875rem; color:var(--color-brand-700);">01_extensions.sql -
+              <strong id="sqlFileTitle" style="font-size:0.875rem; color:var(--color-brand-700); direction:ltr; text-align:left;">01_extensions.sql -
                 PostgreSQL Extensions</strong>
-              <button class="btn btn-ghost btn-sm" style="font-size:0.75rem;" onclick="copySqlCode()">Copy SQL</button>
+              <button class="btn btn-ghost btn-sm" style="font-size:0.75rem;" onclick="copySqlCode()">نسخ الكود</button>
             </div>
             <pre id="sqlCodeBlock"
-              style="background:#092c1d; color:#e2e8f0; padding:16px; border-radius:var(--radius-md); font-family:var(--font-mono); font-size:0.75rem; max-height:360px; overflow-y:auto; line-height:1.5;"></pre>
+              style="background:#092c1d; color:#e2e8f0; padding:16px; border-radius:var(--radius-md); font-family:var(--font-mono); font-size:0.75rem; max-height:360px; overflow-y:auto; line-height:1.5; direction:ltr; text-align:left;"></pre>
           </div>
         </div>
       </div>
       <div class="modal-footer">
-        <button class="btn btn-primary btn-sm" onclick="window.agriApp.closeAllModals()">Close Inspector</button>
+        <button class="btn btn-primary btn-sm" onclick="window.agriApp.closeAllModals()">إغلاق</button>
       </div>
     </div>
   </div>
