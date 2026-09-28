@@ -639,23 +639,21 @@ class AgriCoreApp {
               </div>
             </div>
 
-            <!-- Company -->
+            <!-- الشركة والسياسات -->
             <div>
-              <h4 style="font-size:0.875rem; font-weight:700; color:#ffffff; margin-bottom:14px; text-transform:uppercase; letter-spacing:0.05em;">Company</h4>
+              <h4 style="font-size:0.875rem; font-weight:700; color:#ffffff; margin-bottom:14px; text-transform:uppercase; letter-spacing:0.05em;">السياسات والشروط</h4>
               <div style="display:flex; flex-direction:column; gap:10px;">
-                ${['About AgriCore', 'Contact Us', 'Privacy Policy', 'Terms of Service', 'Supabase Architecture'].map(l => `
-                  <span style="font-size:0.875rem; color:rgba(255,255,255,0.65); cursor:pointer; transition:color 0.15s;" onmouseenter="this.style.color='#4ade80'" onmouseleave="this.style.color='rgba(255,255,255,0.65)'">${l}</span>
-                `).join('')}
+                <a href="privacy.html" style="font-size:0.875rem; color:rgba(255,255,255,0.65); text-decoration:none; transition:color 0.15s;" onmouseenter="this.style.color='#4ade80'" onmouseleave="this.style.color='rgba(255,255,255,0.65)'">سياسة الخصوصية</a>
+                <a href="terms.html" style="font-size:0.875rem; color:rgba(255,255,255,0.65); text-decoration:none; transition:color 0.15s;" onmouseenter="this.style.color='#4ade80'" onmouseleave="this.style.color='rgba(255,255,255,0.65)'">شروط الاستخدام</a>
               </div>
             </div>
           </div>
 
           <div style="border-top:1px solid rgba(255,255,255,0.1); padding-top:24px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
-            <p style="font-size:0.8125rem; color:rgba(255,255,255,0.45);">© 2026 AgriCore Platform. All rights reserved. Built with Supabase PostgreSQL.</p>
+            <p style="font-size:0.8125rem; color:rgba(255,255,255,0.45);">© 2026 منصة AgriCore. جميع الحقوق محفوظة.</p>
             <div style="display:flex; gap:16px;">
-              <span style="font-size:0.75rem; color:rgba(255,255,255,0.45); cursor:pointer;" onmouseenter="this.style.color='rgba(255,255,255,0.7)'" onmouseleave="this.style.color='rgba(255,255,255,0.45)'">Privacy</span>
-              <span style="font-size:0.75rem; color:rgba(255,255,255,0.45); cursor:pointer;" onmouseenter="this.style.color='rgba(255,255,255,0.7)'" onmouseleave="this.style.color='rgba(255,255,255,0.45)'">Terms</span>
-              <span style="font-size:0.75rem; color:rgba(255,255,255,0.45); cursor:pointer;" onmouseenter="this.style.color='rgba(255,255,255,0.7)'" onmouseleave="this.style.color='rgba(255,255,255,0.45)'">Sitemap</span>
+              <a href="privacy.html" style="font-size:0.75rem; color:rgba(255,255,255,0.45); text-decoration:none;" onmouseenter="this.style.color='rgba(255,255,255,0.7)'" onmouseleave="this.style.color='rgba(255,255,255,0.45)'">الخصوصية</a>
+              <a href="terms.html" style="font-size:0.75rem; color:rgba(255,255,255,0.45); text-decoration:none;" onmouseenter="this.style.color='rgba(255,255,255,0.7)'" onmouseleave="this.style.color='rgba(255,255,255,0.45)'">الشروط</a>
             </div>
           </div>
         </div>
