@@ -2439,6 +2439,30 @@ class AgriCoreApp {
     }
   }
 
+  async handleForgotPassword() {
+    const loginEmailInput = document.getElementById('loginEmail');
+    let email = loginEmailInput?.value?.trim();
+
+    if (!email) {
+      email = prompt('يرجى إدخال البريد الإلكتروني الخاص بحسابك لإعادة تعيين كلمة المرور:');
+      if (!email || !email.trim()) return;
+      if (loginEmailInput) loginEmailInput.value = email.trim();
+    }
+
+    this.showAuthAlert('⏳ جاري إرسال رابط إعادة تعيين كلمة المرور...', 'info');
+
+    try {
+      await supabaseBridge.resetPasswordForEmail(email);
+      this.showAuthAlert(`✅ تم إرسال رابط إعادة تعيين كلمة المرور بنجاح إلى: ${email}. يرجى فحص صندوق الوارد بريدك الإلكتروني.`, 'success');
+      if (typeof this.showToast === 'function') {
+        this.showToast('تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني', 'success');
+      }
+    } catch (err) {
+      const msg = err.message || 'فشل إرسال رابط إعادة تعيين كلمة المرور';
+      this.showAuthAlert(`⚠️ ${msg}`, 'error');
+    }
+  }
+
   async handleResendVerification(email) {
     const btn = document.getElementById('resendEmailBtn');
     if (btn) {

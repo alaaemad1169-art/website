@@ -55,6 +55,7 @@ export class AgriCoreSupabaseClient {
       },
       signInWithPassword: async ({ email, password }) => this.signIn({ email, password }),
       signOut: async () => this.signOut(),
+      resetPasswordForEmail: async (email) => this.resetPasswordForEmail(email),
       getUser: () => this.session?.user || null,
       getSession: () => this.session,
       resend: async ({ type = 'signup', email }) => this.resendVerificationEmail({ type, email }),
@@ -129,6 +130,28 @@ export class AgriCoreSupabaseClient {
         console.error('[Supabase AuthState] Error executing listener callback:', err);
       }
     });
+  }
+
+  async resetPasswordForEmail(email) {
+    const targetEmail = typeof email === 'string' ? email : email?.email;
+    if (!targetEmail || !targetEmail.trim()) {
+      throw new Error('يرجى إدخال البريد الإلكتروني الخاص بحسابك');
+    }
+    const endpoint = `${this.url}/auth/v1/recover`;
+    console.log('[Supabase Auth] Sending password reset email to:', targetEmail);
+    const res = await fetch(endpoint, {
+      method: "POST",
+      headers: this.getHeaders(false),
+      body: JSON.stringify({ email: targetEmail.trim() })
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      const msg = data.msg || data.message || data.error_description || "فشل إرسال رابط إعادة تعيين كلمة المرور";
+      console.warn('[Supabase Auth] Password reset failed:', msg);
+      throw new Error(msg);
+    }
+    console.log('[Supabase Auth] Password reset email sent successfully!');
+    return data;
   }
 
   async resendVerificationEmail({ type = 'signup', email }) {
