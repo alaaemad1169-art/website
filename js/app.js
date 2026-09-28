@@ -994,6 +994,31 @@ class AgriCoreApp {
           </header>
 
           <div class="dashboard-body">
+            <!-- ⚠️ Demo Data Notice — Remove once dashboard is fully wired to Supabase -->
+            <div role="alert" style="
+              display: flex;
+              align-items: flex-start;
+              gap: 12px;
+              background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+              border: 1px solid #f59e0b;
+              border-right: 4px solid #d97706;
+              border-radius: var(--radius-md);
+              padding: 14px 18px;
+              margin-bottom: 24px;
+              font-size: 0.875rem;
+              line-height: 1.6;
+            ">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0; margin-top:1px;">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                <line x1="12" y1="9" x2="12" y2="13"/>
+                <line x1="12" y1="17" x2="12.01" y2="17"/>
+              </svg>
+              <div>
+                <strong style="color:#92400e; display:block; margin-bottom:3px;">بيانات تجريبية للعرض فقط</strong>
+                <span style="color:#78350f;">الأسماء والأرقام الظاهرة أدناه (Delta Foods، Sarah Ahmed، KPIs) هي بيانات نموذجية لأغراض العرض فقط ولا تعكس بيانات حسابك الفعلي على Supabase. سيتم ربط الداشبورد ببيانات حسابك الحقيقي في التحديث القادم.</span>
+              </div>
+            </div>
+
             <!-- Top KPI Cards -->
             <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 28px;">
               <div class="kpi-card">
