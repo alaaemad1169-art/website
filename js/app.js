@@ -15,14 +15,26 @@ import { calculateMatchScore } from './matchingEngine.js';
 import { supabaseBridge } from './supabaseClient.js';
 import { ProfessionalOnboardingManager } from './onboarding.js';
 
-const LOCATIONS = [
-  "Cairo",
-  "Giza",
-  "Fayoum",
-  "Alexandria",
-  "Beheira",
-  "Minya"
+// Unified governorate list — single source of truth for all forms & filters
+// { value: DB/filter key, label_ar: Arabic display, label_en: English display }
+const GOVERNORATES = [
+  { value: "Cairo",       label_ar: "القاهرة",     label_en: "Cairo" },
+  { value: "Giza",        label_ar: "الجيزة",     label_en: "Giza" },
+  { value: "Alexandria",  label_ar: "الإسكندرية", label_en: "Alexandria" },
+  { value: "Fayoum",      label_ar: "الفيوم",     label_en: "Fayoum" },
+  { value: "Beheira",     label_ar: "البحيرة",    label_en: "Beheira" },
+  { value: "Dakahlia",    label_ar: "الدقهلية",   label_en: "Dakahlia" },
+  { value: "Sharqia",     label_ar: "الشرقية",    label_en: "Sharqia" },
+  { value: "Gharbia",     label_ar: "الغربية",    label_en: "Gharbia" },
+  { value: "KafrElSheikh",label_ar: "كفر الشيخ", label_en: "Kafr El-Sheikh" },
+  { value: "Minya",       label_ar: "المنيا",     label_en: "Minya" },
+  { value: "Sohag",       label_ar: "سوهاج",      label_en: "Sohag" },
+  { value: "Assiut",      label_ar: "أسيوط",      label_en: "Assiut" },
+  { value: "RedSea",      label_ar: "البحر الأحمر",label_en: "Red Sea" },
 ];
+
+// Backward-compatible alias: value strings only (used in filter dropdowns)
+const LOCATIONS = GOVERNORATES.map(g => g.value);
 
 const SPECIALIZATIONS = [
   "Quality Control",
@@ -132,11 +144,6 @@ class AgriCoreApp {
       });
     });
 
-    // SQL Architecture Modal Trigger
-    const sqlBtn = document.getElementById('openSqlModalBtn');
-    if (sqlBtn) {
-      sqlBtn.addEventListener('click', () => this.openSqlModal());
-    }
   }
 
   navigateTo(viewName) {
@@ -159,6 +166,9 @@ class AgriCoreApp {
         this.closeAllModals();
       }
     });
+
+    // Populate all governorate dropdowns from the unified GOVERNORATES constant
+    this.populateGovernorates();
 
     // 1 & 2: Dedicated Event Listeners for Registration & Login Forms
     const signUpForm = document.getElementById('signUpForm');
@@ -2039,9 +2049,29 @@ class AgriCoreApp {
     setTimeout(() => toast.remove(), 4000);
   }
 
-  openSqlModal() {
-    const modal = document.getElementById('sqlViewerModal');
-    if (modal) modal.classList.add('open');
+  /**
+   * Populates all governorate <select> elements in the HTML from the
+   * single GOVERNORATES constant — ensures all forms are always in sync.
+   */
+  populateGovernorates() {
+    const selects = [
+      { id: 'newJobLocation',  withBlank: true  },   // Post-job modal
+      { id: 'regGovernorate',  withBlank: false },   // Sign-up form
+    ];
+
+    selects.forEach(({ id, withBlank }) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.innerHTML = withBlank
+        ? '<option value="">اختر المحافظة</option>'
+        : '';
+      GOVERNORATES.forEach(gov => {
+        const opt = document.createElement('option');
+        opt.value = gov.value;
+        opt.textContent = `${gov.label_ar} (${gov.label_en})`;
+        el.appendChild(opt);
+      });
+    });
   }
 
   // ---------------------------------------------------------------------------

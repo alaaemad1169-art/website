@@ -26,7 +26,6 @@
 
   <!-- =========================================================================
        Top Master Controller Bar (Role & View Switcher)
-       Allows immediate inspection of all platform roles, dashboards & database specs
        ========================================================================= -->
   <nav class="role-bar" aria-label="Role Switcher">
     <div class="role-bar-left">
@@ -40,9 +39,21 @@
       <button class="role-btn" data-view="candidate_profile">📄 الملف الشخصي للمرشح (أحمد)</button>
       <button class="role-btn" data-view="academy">🎓 أكاديمية أجريكور</button>
       <button class="role-btn" data-view="insights">📊 رؤى القطاع</button>
-      <button class="role-btn role-sql-btn" id="openSqlModalBtn">⚡ مخطط قاعدة البيانات (SQL Blueprint)</button>
     </div>
   </nav>
+
+  <!-- =========================================================================
+       Beta Notice Banner
+       ========================================================================= -->
+  <div id="betaBanner" role="status" aria-live="polite"
+    style="background:linear-gradient(90deg,#065f46,#047857); color:#fff; padding:10px 20px; display:flex; align-items:center; justify-content:space-between; gap:12px; font-size:0.8125rem; font-family:var(--font-sans); z-index:900;">
+    <div style="display:flex; align-items:center; gap:10px;">
+      <span style="background:#34d399; color:#022c22; font-weight:800; font-size:0.6875rem; padding:2px 8px; border-radius:999px; letter-spacing:0.05em;">BETA</span>
+      <span><strong>نسخة تجريبية (Beta) —</strong> المنصة متصلة بـ Supabase وبياناتك <strong>تُحفظ فعلاً</strong>. بعض الميزات قد تكون قيد التطوير.</span>
+    </div>
+    <button onclick="document.getElementById('betaBanner').style.display='none'" aria-label="إغلاق التنبيه"
+      style="background:rgba(255,255,255,0.15); border:none; border-radius:6px; color:#fff; cursor:pointer; padding:4px 10px; font-size:1rem; line-height:1;">×</button>
+  </div>
 
   <!-- =========================================================================
        Dynamic Application Mount Root
@@ -114,13 +125,7 @@
               <label style="font-size:0.8125rem; font-weight:700; display:block; margin-bottom:4px;">الموقع *</label>
               <select id="newJobLocation" aria-describedby="locationError"
                 style="width:100%; padding:10px; border:1px solid var(--color-border); border-radius:var(--radius-md);">
-                <option value="">اختر الموقع</option>
-                <option value="Cairo">القاهرة</option>
-                <option value="Giza">الجيزة</option>
-                <option value="Fayoum">الفيوم</option>
-                <option value="Alexandria">الإسكندرية</option>
-                <option value="Beheira">البحيرة</option>
-                <option value="Minya">المنيا</option>
+                <!-- Options populated dynamically from GOVERNORATES in app.js -->
               </select>
               <span id="locationError" style="color:#dc2626; font-size:0.75rem; display:none; margin-top:4px;"></span>
             </div>
@@ -222,58 +227,7 @@
     </div>
   </div>
 
-  <!-- =========================================================================
-       Modal 3: Supabase SQL Architecture & Schema Inspector
-       ========================================================================= -->
-  <div class="modal-overlay" id="sqlViewerModal" role="dialog" aria-modal="true">
-    <div class="modal-dialog" style="max-width:880px;">
-      <div class="modal-header">
-        <div>
-          <h3 style="font-size:1.25rem; font-weight:800; color:var(--color-brand-900);">مخطط قاعدة بيانات AgriCore (Supabase)</h3>
-          <p style="font-size:0.8125rem; color:var(--color-text-muted);">8 عمليات ترحيل (Migrations) مع RLS ومحرك المطابقة</p>
-        </div>
-        <button class="btn btn-ghost btn-sm" onclick="window.agriApp.closeAllModals()">&times;</button>
-      </div>
-      <div class="modal-body" style="padding: 20px 24px;">
-        <div style="display:grid; grid-template-columns: 240px 1fr; gap:20px;">
-          <!-- SQL Files List -->
-          <div
-            style="display:flex; flex-direction:column; gap:6px; border-inline-end:1px solid var(--color-border); padding-inline-end:12px;">
-            <button class="btn btn-secondary btn-sm active" style="justify-content:flex-start;"
-              onclick="showSqlFile('01')">01_extensions.sql</button>
-            <button class="btn btn-secondary btn-sm" style="justify-content:flex-start;"
-              onclick="showSqlFile('02')">02_enums.sql</button>
-            <button class="btn btn-secondary btn-sm" style="justify-content:flex-start;"
-              onclick="showSqlFile('03')">03_tables.sql</button>
-            <button class="btn btn-secondary btn-sm" style="justify-content:flex-start;"
-              onclick="showSqlFile('04')">04_indexes.sql</button>
-            <button class="btn btn-secondary btn-sm" style="justify-content:flex-start;"
-              onclick="showSqlFile('05')">05_functions_triggers.sql</button>
-            <button class="btn btn-secondary btn-sm" style="justify-content:flex-start;"
-              onclick="showSqlFile('06')">06_rls_policies.sql</button>
-            <button class="btn btn-secondary btn-sm" style="justify-content:flex-start;"
-              onclick="showSqlFile('07')">07_storage.sql</button>
-            <button class="btn btn-secondary btn-sm" style="justify-content:flex-start;"
-              onclick="showSqlFile('08')">08_seed_data.sql</button>
-          </div>
-
-          <!-- Code Snippet Display -->
-          <div>
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-              <strong id="sqlFileTitle" style="font-size:0.875rem; color:var(--color-brand-700); direction:ltr; text-align:left;">01_extensions.sql -
-                PostgreSQL Extensions</strong>
-              <button class="btn btn-ghost btn-sm" style="font-size:0.75rem;" onclick="copySqlCode()">نسخ الكود</button>
-            </div>
-            <pre id="sqlCodeBlock"
-              style="background:#092c1d; color:#e2e8f0; padding:16px; border-radius:var(--radius-md); font-family:var(--font-mono); font-size:0.75rem; max-height:360px; overflow-y:auto; line-height:1.5; direction:ltr; text-align:left;"></pre>
-          </div>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-primary btn-sm" onclick="window.agriApp.closeAllModals()">إغلاق</button>
-      </div>
-    </div>
-  </div>
+  <!-- SQL Blueprint modal removed for security — schema files are in /supabase/migrations/ (not served publicly) -->
   <!-- =========================================================================
        Modal 4: Real Supabase Authentication Modal (Login & Sign Up)
        ========================================================================= -->
@@ -376,14 +330,7 @@
                 <label for="regGovernorate" style="font-size:0.8125rem; font-weight:700; display:block; margin-bottom:4px;">المحافظة</label>
                 <select id="regGovernorate" name="governorate"
                   style="width:100%; padding:10px; border:1px solid var(--color-border); border-radius:var(--radius-md);">
-                  <option value="Cairo">القاهرة (Cairo)</option>
-                  <option value="Giza">الجيزة (Giza)</option>
-                  <option value="Alexandria">الإسكندرية (Alexandria)</option>
-                  <option value="Fayoum">الفيوم (Fayoum)</option>
-                  <option value="Beheira">البحيرة (Beheira)</option>
-                  <option value="Dakahlia">الدقهلية (Dakahlia)</option>
-                  <option value="Sharqia">الشرقية (Sharqia)</option>
-                  <option value="Minya">المنيا (Minya)</option>
+                  <!-- Options populated dynamically from GOVERNORATES in app.js -->
                 </select>
               </div>
               <div>
@@ -422,32 +369,7 @@
 
   <script type="module" src="js/app.js"></script>
 
-  <!-- Inline Helper for SQL Modal Tabs -->
-  <script>
-    const sqlFileSnippets = {
-      '01': `-- 01_extensions.sql: Enables essential extensions\nCREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA extensions;\nCREATE EXTENSION IF NOT EXISTS "pg_trgm" WITH SCHEMA extensions;\nCREATE EXTENSION IF NOT EXISTS "unaccent" WITH SCHEMA extensions;\nCREATE EXTENSION IF NOT EXISTS "pgcrypto" WITH SCHEMA extensions;`,
-      '02': `-- 02_enums.sql: Platform Enumerations\nCREATE TYPE public.user_type_enum AS ENUM ('professional', 'company', 'admin');\nCREATE TYPE public.education_level_enum AS ENUM ('diploma', 'bachelor', 'master', 'phd', 'other');\nCREATE TYPE public.visibility_enum AS ENUM ('public', 'anonymous', 'private');\nCREATE TYPE public.application_status_enum AS ENUM ('applied', 'under_review', 'contacted', 'accepted', 'rejected', 'position_closed');`,
-      '03': `-- 03_tables.sql: 15+ Core Schema Entities\nCREATE TABLE public.profiles (id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE, ...);\nCREATE TABLE public.professional_profiles (id UUID PRIMARY KEY REFERENCES public.profiles(id), agricore_id TEXT UNIQUE, ...);\nCREATE TABLE public.company_profiles (id UUID PRIMARY KEY, company_name TEXT, ...);\nCREATE TABLE public.jobs (id UUID PRIMARY KEY, company_id UUID REFERENCES public.company_profiles(id), ...);\nCREATE TABLE public.applications (id UUID PRIMARY KEY, job_id UUID REFERENCES public.jobs(id), ...);`,
-      '04': `-- 04_indexes.sql: B-Tree and GIN Trigram Search Indexes\nCREATE INDEX idx_jobs_status ON public.jobs(status);\nCREATE INDEX idx_professional_title_trgm ON public.professional_profiles USING gin (professional_title extensions.gin_trgm_ops);\nCREATE INDEX idx_skills_name_en_trgm ON public.skills USING gin (name_en extensions.gin_trgm_ops);`,
-      '05': `-- 05_functions_triggers.sql: Multi-Criteria Candidate Matching Engine\nCREATE OR REPLACE FUNCTION public.calculate_candidate_match_score(p_job_id UUID, p_professional_id UUID) RETURNS INT AS $$\n-- Specialization Match: 30%\n-- Skills Match: 25%\n-- Experience Match: 20%\n-- Location Match: 15%\n-- Education Match: 10%\n$$ LANGUAGE plpgsql STABLE;`,
-      '06': `-- 06_rls_policies.sql: Row Level Security Matrix\nALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;\nALTER TABLE public.professional_profiles ENABLE ROW LEVEL SECURITY;\nALTER TABLE public.applications ENABLE ROW LEVEL SECURITY;\nCREATE POLICY "profiles_select_policy" ON public.profiles FOR SELECT TO authenticated, anon USING (true);`,
-      '07': `-- 07_storage.sql: Storage Buckets & Policies\nINSERT INTO storage.buckets (id, name, public) VALUES ('avatars', 'avatars', true), ('company-logos', 'company-logos', true), ('resumes', 'resumes', false);\n-- Authenticated users upload only to their own folders`,
-      '08': `-- 08_seed_data.sql: 55+ Specializations & 45+ Skills\nINSERT INTO public.specializations (name_en, name_ar, category_group) VALUES ('Quality Control', 'مراقبة الجودة (QC)', 'Food Science & Quality'), ...;\nINSERT INTO public.training_categories (name_en, name_ar, code) VALUES ('HACCP', 'نظام تحليل المخاطر ونقاط التحكم الحرجة', 'HACCP'), ('ISO 22000', 'نظام إدارة سلامة الغذاء', 'ISO-22000'), ...;`
-    };
-
-    window.showSqlFile = function (num) {
-      document.getElementById('sqlCodeBlock').innerText = sqlFileSnippets[num] || '-- File content';
-      document.getElementById('sqlFileTitle').innerText = `0${num} file migration preview`;
-    };
-
-    window.copySqlCode = function () {
-      const code = document.getElementById('sqlCodeBlock').innerText;
-      navigator.clipboard.writeText(code).then(() => alert('SQL copied to clipboard!'));
-    };
-
-    // Initialize snippet display
-    window.showSqlFile('01');
-  </script>
+  <!-- SQL snippets script removed — schema details are server-side only -->
 </body>
 
 </html>
