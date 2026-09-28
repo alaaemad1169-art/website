@@ -961,21 +961,35 @@ class AgriCoreApp {
   // 4. Company Dashboard View (Delta Foods)
   // ---------------------------------------------------------------------------
   renderCompanyDashboard() {
-    const candidates = this.candidates;
+    const user = this.currentUser;
+    // Extract company profile data from currentUser (populated via syncCurrentUserFromSession)
+    const companyName = user?.companyName || user?.company_name || null;
+    const sector = user?.businessSector || user?.business_sector || null;
+    const governorate = user?.governorate || null;
+    const fullName = user?.fullName || user?.full_name || user?.name || null;
+
+    // Logo initials: first 2 chars of company name or user name
+    const logoText = companyName
+      ? companyName.trim().substring(0, 2).toUpperCase()
+      : (fullName ? fullName.trim().substring(0, 2).toUpperCase() : '??');
+
+    const displayCompanyName = companyName || '<em style="color:var(--color-text-muted); font-style:italic;">اسم الشركة غير مكتمل — أكمل ملفك الشخصي</em>';
+    const displaySector = sector
+      ? `${sector}${governorate ? ' • ' + governorate : ''}`
+      : '<em style="color:var(--color-text-muted); font-style:italic;">القطاع غير محدد</em>';
 
     return `
       <div class="dashboard-layout">
-        <!-- Sidebar Navigation -->
         ${this.renderSidebar('company', 'dashboard')}
 
         <main class="dashboard-main">
-          <!-- Topbar -->
+          <!-- Topbar: Real company data -->
           <header class="dashboard-topbar">
             <div style="display:flex; align-items:center; gap: 12px;">
-              <div class="company-logo-badge" style="width:36px; height:36px; font-size:0.875rem;">DF</div>
+              <div class="company-logo-badge" style="width:36px; height:36px; font-size:0.875rem;">${logoText}</div>
               <div>
-                <h3 style="font-size:0.9375rem; font-weight:800; line-height:1.2;">Delta Foods</h3>
-                <p style="font-size:0.75rem; color:var(--color-text-muted);">Food Industry • Cairo, Egypt</p>
+                <h3 style="font-size:0.9375rem; font-weight:800; line-height:1.2;">${displayCompanyName}</h3>
+                <p style="font-size:0.75rem; color:var(--color-text-muted);">${displaySector}</p>
               </div>
             </div>
             <div class="topbar-user">
@@ -984,114 +998,68 @@ class AgriCoreApp {
                 Post a Job
               </button>
               <div class="user-avatar-pill">
-                <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=120&q=80" class="user-avatar-img" alt="HR Sarah">
+                <div style="width:36px; height:36px; border-radius:50%; background:var(--color-brand-700); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:0.875rem;">${logoText}</div>
                 <div class="user-avatar-info">
-                  <h4>Sarah Ahmed</h4>
-                  <p>HR Manager</p>
+                  <h4>${fullName || 'مستخدم'}</h4>
+                  <p>HR / Manager</p>
                 </div>
               </div>
+              <button class="btn btn-ghost btn-sm" onclick="window.agriApp.handleLogout()" title="تسجيل الخروج">خروج</button>
             </div>
           </header>
 
           <div class="dashboard-body">
-            <!-- ⚠️ Demo Data Notice — Remove once dashboard is fully wired to Supabase -->
-            <div role="alert" style="
-              display: flex;
-              align-items: flex-start;
-              gap: 12px;
-              background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
-              border: 1px solid #f59e0b;
-              border-right: 4px solid #d97706;
-              border-radius: var(--radius-md);
-              padding: 14px 18px;
-              margin-bottom: 24px;
-              font-size: 0.875rem;
-              line-height: 1.6;
-            ">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0; margin-top:1px;">
-                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-                <line x1="12" y1="9" x2="12" y2="13"/>
-                <line x1="12" y1="17" x2="12.01" y2="17"/>
-              </svg>
-              <div>
-                <strong style="color:#92400e; display:block; margin-bottom:3px;">بيانات تجريبية للعرض فقط</strong>
-                <span style="color:#78350f;">الأسماء والأرقام الظاهرة أدناه (Delta Foods، Sarah Ahmed، KPIs) هي بيانات نموذجية لأغراض العرض فقط ولا تعكس بيانات حسابك الفعلي على Supabase. سيتم ربط الداشبورد ببيانات حسابك الحقيقي في التحديث القادم.</span>
-              </div>
-            </div>
-
-            <!-- Top KPI Cards -->
-            <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 28px;">
+            <!-- KPI Cards: IDs allow loadCompanyDashboardData() to inject real values -->
+            <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 28px;">
               <div class="kpi-card">
-                <span class="kpi-title">Your Active Jobs</span>
+                <span class="kpi-title">وظائفي النشطة</span>
                 <div class="kpi-value-row">
-                  <span class="kpi-number">12</span>
-                  <span class="kpi-badge">+2 new</span>
+                  <span class="kpi-number" id="kpiActiveJobs" style="font-size:1.5rem;">…</span>
                 </div>
+                <p style="font-size:0.75rem; color:var(--color-text-muted); margin-top:4px;">عدد الوظائف التي نشرتها</p>
               </div>
               <div class="kpi-card">
-                <span class="kpi-title">Applications</span>
+                <span class="kpi-title">إجمالي المتقدمين</span>
                 <div class="kpi-value-row">
-                  <span class="kpi-number">248</span>
-                  <span class="kpi-badge">+18%</span>
+                  <span class="kpi-number" id="kpiApplications" style="font-size:1.5rem;">…</span>
                 </div>
+                <p style="font-size:0.75rem; color:var(--color-text-muted); margin-top:4px;">على جميع وظائفك</p>
               </div>
-              <div class="kpi-card">
-                <span class="kpi-title">Shortlisted</span>
-                <div class="kpi-value-row">
-                  <span class="kpi-number">32</span>
-                  <span class="kpi-badge">+5%</span>
+              <div class="kpi-card" style="background:#f8fafc;">
+                <span class="kpi-title">Shortlisted / Hired</span>
+                <div class="kpi-value-row" style="align-items:center; gap:6px;">
+                  <span style="font-size:0.8125rem; color:var(--color-text-muted); font-style:italic;">قريباً — لم يُطبَّق بعد</span>
                 </div>
-              </div>
-              <div class="kpi-card">
-                <span class="kpi-title">Hired</span>
-                <div class="kpi-value-row">
-                  <span class="kpi-number">8</span>
-                  <span class="kpi-badge">+3%</span>
-                </div>
+                <p style="font-size:0.75rem; color:var(--color-text-light); margin-top:4px;">يتطلب حقل status في جدول applications</p>
               </div>
             </div>
 
             <!-- Main Content Split -->
             <div style="display:grid; grid-template-columns: 2fr 1fr; gap: 24px;">
-              <!-- Recommended Candidates List -->
+              <!-- Registered Professionals (latest signups — no fake match score) -->
               <div class="card" style="padding:0; overflow:hidden;">
                 <div style="padding: 18px 24px; border-bottom:1px solid var(--color-border); display:flex; justify-content:space-between; align-items:center;">
-                  <h3 style="font-size: 1.0625rem; font-weight:700;">Recommended Candidates</h3>
-                  <span style="font-size:0.875rem; font-weight:600; color:var(--color-brand-600); cursor:pointer;">View All &rarr;</span>
+                  <h3 style="font-size: 1.0625rem; font-weight:700;">أحدث المرشحين المسجلين</h3>
+                  <span style="font-size:0.8125rem; font-weight:500; color:var(--color-text-muted);">مرتبة حسب تاريخ التسجيل</span>
                 </div>
-                <div>
-                  ${candidates.map(cand => `
-                    <div style="display:flex; align-items:center; justify-content:space-between; padding: 18px 24px; border-bottom:1px solid var(--color-border-light);">
-                      <div style="display:flex; align-items:center; gap: 16px;">
-                        <img src="${cand.avatar}" style="width:48px; height:48px; border-radius:999px; object-fit:cover;" alt="${cand.name}">
-                        <div>
-                          <h4 style="font-size: 1rem; font-weight:700; cursor:pointer;" onclick="window.agriApp.navigateTo('candidate_profile')">${cand.name}</h4>
-                          <div style="font-size: 0.8125rem; color:var(--color-text-muted); display:flex; gap:8px;">
-                            <span>${cand.title}</span>
-                            <span>•</span>
-                            <span>${cand.governorate}</span>
-                            <span>•</span>
-                            <span>${cand.experience_years} Years Exp</span>
-                          </div>
-                        </div>
-                      </div>
-                      <div style="display:flex; align-items:center; gap: 12px;">
-                        <button class="btn btn-secondary btn-sm" onclick="window.agriApp.navigateTo('candidate_profile')">View Profile</button>
-                      </div>
-                    </div>
-                  `).join('')}
+                <div id="companyDashCandidatesList">
+                  <!-- Populated by loadCompanyDashboardData() -->
+                  <div style="padding:32px 24px; text-align:center; color:var(--color-text-muted); font-size:0.875rem;">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin:0 auto 10px; display:block; opacity:0.4;"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                    جاري تحميل بيانات المرشحين…
+                  </div>
                 </div>
               </div>
 
-              <!-- Post a Job Call-to-Action Card -->
+              <!-- Post a Job CTA -->
               <div class="card" style="background: linear-gradient(135deg, #0a3824 0%, #15573b 100%); color:#ffffff; display:flex; flex-direction:column; justify-content:space-between; padding:28px;">
                 <div>
                   <span class="hero-badge" style="background:rgba(255,255,255,0.15); margin-bottom:16px;">Recruiter Suite</span>
-                  <h3 style="font-size: 1.35rem; font-weight:800; line-height:1.3; margin-bottom:12px;">Find the right talent for your team</h3>
-                  <p style="font-size: 0.875rem; color: rgba(255,255,255,0.85); line-height:1.6;">Access verified agricultural engineers, lab specialists, and farm managers across Egypt and build a stronger workforce.</p>
+                  <h3 style="font-size: 1.35rem; font-weight:800; line-height:1.3; margin-bottom:12px;">ابحث عن المواهب المناسبة لفريقك</h3>
+                  <p style="font-size: 0.875rem; color: rgba(255,255,255,0.85); line-height:1.6;">وصول إلى مهندسين زراعيين ومتخصصين معمليين ومديري مزارع موثقين عبر مصر.</p>
                 </div>
                 <div style="margin-top:24px;">
-                  <button class="btn btn-primary btn-lg" style="width:100%;" onclick="window.agriApp.openPostJobModal()">Post a Job</button>
+                  <button class="btn btn-primary btn-lg" style="width:100%;" onclick="window.agriApp.openPostJobModal()">نشر وظيفة جديدة</button>
                 </div>
               </div>
             </div>
@@ -1625,18 +1593,19 @@ class AgriCoreApp {
                 <span>Talent Pool</span>
               </div>
             </div>
-            <div class="sidebar-link" onclick="alert('Messaging channel open.')">
+            <div class="sidebar-link" style="opacity:0.55; cursor:not-allowed;" title="قريباً">
               <div class="sidebar-link-inner">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
                 <span>Messages</span>
               </div>
-              <span class="sidebar-badge">5</span>
+              <span style="font-size:0.6875rem; font-weight:700; background:#e2e8f0; color:#64748b; padding:2px 7px; border-radius:999px;">قريباً</span>
             </div>
-            <div class="sidebar-link" onclick="window.agriApp.navigateTo('landing')">
+            <div class="sidebar-link" style="opacity:0.55; cursor:not-allowed;" title="قريباً">
               <div class="sidebar-link-inner">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
                 <span>Settings</span>
               </div>
+              <span style="font-size:0.6875rem; font-weight:700; background:#e2e8f0; color:#64748b; padding:2px 7px; border-radius:999px;">قريباً</span>
             </div>
           </nav>
         </aside>
@@ -1685,18 +1654,19 @@ class AgriCoreApp {
               <span>Insights</span>
             </div>
           </div>
-          <div class="sidebar-link" onclick="alert('Messaging channel: 3 unread messages from recruiters.')">
+          <div class="sidebar-link" style="opacity:0.55; cursor:not-allowed;" title="قريباً">
             <div class="sidebar-link-inner">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
               <span>Messages</span>
             </div>
-            <span class="sidebar-badge">3</span>
+            <span style="font-size:0.6875rem; font-weight:700; background:#e2e8f0; color:#64748b; padding:2px 7px; border-radius:999px;">قريباً</span>
           </div>
-          <div class="sidebar-link" onclick="window.agriApp.navigateTo('landing')">
+          <div class="sidebar-link" style="opacity:0.55; cursor:not-allowed;" title="قريباً">
             <div class="sidebar-link-inner">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
               <span>Settings</span>
             </div>
+            <span style="font-size:0.6875rem; font-weight:700; background:#e2e8f0; color:#64748b; padding:2px 7px; border-radius:999px;">قريباً</span>
           </div>
         </nav>
       </aside>
@@ -2616,6 +2586,100 @@ class AgriCoreApp {
   }
   bindCompanyEvents() {
     this._bindDashboardMobileMenu();
+    // Fire Supabase data load after DOM is painted
+    requestAnimationFrame(() => this.loadCompanyDashboardData());
+  }
+
+  // ---------------------------------------------------------------------------
+  // Company Dashboard: Fetch Real Supabase Data
+  // ---------------------------------------------------------------------------
+  async loadCompanyDashboardData() {
+    const userId = this.currentUser?.id || supabaseBridge.session?.user?.id;
+    if (!userId) return;
+
+    // --- 1. Fetch active jobs posted by this company ---
+    let activeJobsCount = 0;
+    try {
+      const jobsRes = await fetch(
+        `${supabaseBridge.url}/rest/v1/jobs?company_user_id=eq.${userId}&status=eq.active&select=id`,
+        { headers: supabaseBridge.getHeaders(true) }
+      );
+      if (jobsRes.ok) {
+        const jobs = await jobsRes.json();
+        activeJobsCount = Array.isArray(jobs) ? jobs.length : 0;
+      }
+    } catch (e) {
+      console.warn('[CompanyDash] Failed to load active jobs count:', e);
+    }
+
+    // --- 2. Fetch application count across this company's jobs ---
+    let applicationsCount = 0;
+    try {
+      const appsData = await supabaseBridge.getApplicationsForMyJobs();
+      applicationsCount = Array.isArray(appsData) ? appsData.length : 0;
+    } catch (e) {
+      console.warn('[CompanyDash] Failed to load applications count:', e);
+    }
+
+    // --- 3. Inject KPI values into DOM ---
+    const kpiJobs = document.getElementById('kpiActiveJobs');
+    const kpiApps = document.getElementById('kpiApplications');
+    if (kpiJobs) kpiJobs.textContent = activeJobsCount;
+    if (kpiApps) kpiApps.textContent = applicationsCount;
+
+    // --- 4. Fetch latest registered professionals (ordered by created_at desc) ---
+    let candidates = [];
+    try {
+      const profRes = await fetch(
+        `${supabaseBridge.url}/rest/v1/profiles?user_type=eq.professional&select=id,full_name,governorate,created_at,professional_profiles(professional_title,years_of_experience)&order=created_at.desc&limit=5`,
+        { headers: supabaseBridge.getHeaders(true) }
+      );
+      if (profRes.ok) {
+        candidates = await profRes.json();
+      }
+    } catch (e) {
+      console.warn('[CompanyDash] Failed to load candidates:', e);
+    }
+
+    // --- 5. Render candidates list ---
+    const listEl = document.getElementById('companyDashCandidatesList');
+    if (!listEl) return;
+
+    if (!Array.isArray(candidates) || candidates.length === 0) {
+      listEl.innerHTML = `
+        <div style="padding:32px 24px; text-align:center; color:var(--color-text-muted); font-size:0.875rem;">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin:0 auto 10px; display:block; opacity:0.4;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+          لا يوجد مرشحون مسجلون حتى الآن
+        </div>`;
+      return;
+    }
+
+    listEl.innerHTML = candidates.map(cand => {
+      const name = cand.full_name || 'مرشح';
+      const initials = name.trim().substring(0, 2).toUpperCase();
+      const gov = cand.governorate || '—';
+      const title = cand.professional_profiles?.professional_title || 'متخصص زراعي';
+      const exp = cand.professional_profiles?.years_of_experience;
+      const expText = exp != null ? `${exp} سنة خبرة` : '';
+      const joinedDate = cand.created_at
+        ? new Date(cand.created_at).toLocaleDateString('ar-EG', { year: 'numeric', month: 'short' })
+        : '';
+      return `
+        <div style="display:flex; align-items:center; justify-content:space-between; padding:16px 24px; border-bottom:1px solid var(--color-border-light);">
+          <div style="display:flex; align-items:center; gap:14px;">
+            <div style="width:44px; height:44px; border-radius:50%; background:var(--color-brand-700); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:0.875rem; flex-shrink:0;">${initials}</div>
+            <div>
+              <h4 style="font-size:0.9375rem; font-weight:700; margin-bottom:2px;">${name}</h4>
+              <div style="font-size:0.8125rem; color:var(--color-text-muted); display:flex; gap:6px; flex-wrap:wrap;">
+                <span>${title}</span>
+                ${expText ? `<span>•</span><span>${expText}</span>` : ''}
+                <span>•</span><span>📍 ${gov}</span>
+                ${joinedDate ? `<span>•</span><span style="color:var(--color-text-light);">انضم ${joinedDate}</span>` : ''}
+              </div>
+            </div>
+          </div>
+        </div>`;
+    }).join('');
   }
   bindCandidateProfileEvents() {
     this._bindDashboardMobileMenu();
