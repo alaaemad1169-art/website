@@ -136,25 +136,35 @@ class AgriCoreApp {
   // Navigation & Role Controller
   // ---------------------------------------------------------------------------
   bindRoleSwitcher() {
-    const buttons = document.querySelectorAll('.role-btn[data-view]');
+    const buttons = document.querySelectorAll('[data-view]');
     buttons.forEach(btn => {
       btn.addEventListener('click', (e) => {
         const targetView = e.currentTarget.getAttribute('data-view');
-        this.navigateTo(targetView);
+        if (targetView) {
+          this.navigateTo(targetView);
+        }
       });
     });
-
   }
 
   navigateTo(viewName) {
-    this.currentView = viewName;
-    document.querySelectorAll('.role-btn[data-view]').forEach(btn => {
-      if (btn.getAttribute('data-view') === viewName) {
-        btn.classList.add('active');
-      } else {
-        btn.classList.remove('active');
+    // Auth Guard: Protected views require an active authenticated user
+    const protectedViews = ['seeker_dashboard', 'company_dashboard', 'candidate_profile'];
+    if (protectedViews.includes(viewName) && !this.currentUser) {
+      console.warn(`[Auth Guard] Access denied to '${viewName}'. User is not logged in.`);
+      if (typeof this.showToast === 'function') {
+        this.showToast('يرجى تسجيل الدخول أولاً للوصول إلى لوحة التحكم', 'warning');
       }
-    });
+      if (typeof this.openLoginModal === 'function') {
+        this.openLoginModal();
+      }
+      this.currentView = 'landing';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      this.renderCurrentView();
+      return;
+    }
+
+    this.currentView = viewName || 'landing';
     window.scrollTo({ top: 0, behavior: 'smooth' });
     this.renderCurrentView();
   }
