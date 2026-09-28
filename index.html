@@ -51,7 +51,7 @@
     <div class="modal-dialog">
       <div class="modal-header">
         <div>
-          <h3 id="applyModalTitle" style="font-size:1.125rem; font-weight:800;">تقديم الطلب (Apply)</h3>
+          <h3 id="applyModalTitle" style="font-size:1.125rem; font-weight:800;">تقديم الطلب</h3>
           <p id="applyJobCompany" style="font-size:0.8125rem; color:var(--color-text-muted);">تفاصيل الشركة</p>
         </div>
         <button class="btn btn-ghost btn-sm" onclick="window.agriApp.closeAllModals()">&times;</button>
@@ -79,7 +79,7 @@
       </div>
       <div class="modal-footer">
         <button class="btn btn-secondary btn-sm" onclick="window.agriApp.closeAllModals()">إلغاء</button>
-        <button class="btn btn-primary btn-sm" onclick="window.agriApp.submitApplication()">تأكيد التقديم (Apply)</button>
+        <button class="btn btn-primary btn-sm" onclick="window.agriApp.submitApplication()">تأكيد التقديم</button>
       </div>
     </div>
   </div>
@@ -90,7 +90,7 @@
   <div class="modal-overlay" id="postJobModal" role="dialog" aria-modal="true">
     <div class="modal-dialog">
       <div class="modal-header">
-        <h3 style="font-size:1.125rem; font-weight:800;">نشر وظيفة زراعية جديدة (Post Job)</h3>
+        <h3 style="font-size:1.125rem; font-weight:800;">نشر وظيفة زراعية جديدة</h3>
         <button class="btn btn-ghost btn-sm" onclick="window.agriApp.closeAllModals()">&times;</button>
       </div>
       <div class="modal-body">
@@ -116,11 +116,11 @@
               <select id="newJobType" aria-describedby="typeError"
                 style="width:100%; padding:10px; border:1px solid var(--color-border); border-radius:var(--radius-md);">
                 <option value="">اختر النوع</option>
-                <option value="Full Time">دوام كامل (Full Time)</option>
-                <option value="Part Time">دوام جزئي (Part Time)</option>
-                <option value="Seasonal">موسمي (Seasonal)</option>
-                <option value="Internship">تدريب (Internship)</option>
-                <option value="Freelance">عمل حر (Freelance)</option>
+                <option value="Full Time">دوام كامل</option>
+                <option value="Part Time">دوام جزئي</option>
+                <option value="Seasonal">موسمي</option>
+                <option value="Internship">تدريب</option>
+                <option value="Freelance">عمل حر</option>
               </select>
               <span id="typeError" style="color:#dc2626; font-size:0.75rem; display:none; margin-top:4px;"></span>
             </div>
@@ -181,7 +181,7 @@
           <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
             <div>
               <label style="font-size:0.8125rem; font-weight:700; display:block; margin-bottom:4px;">نطاق الراتب (اختياري)</label>
-              <input type="text" id="newJobSalary" placeholder="مثال: 5000 - 8000 EGP"
+              <input type="text" id="newJobSalary" placeholder="مثال: 5000 - 8000 ج.م"
                 style="width:100%; padding:10px; border:1px solid var(--color-border); border-radius:var(--radius-md);">
             </div>
             <div>
@@ -204,7 +204,7 @@
       </div>
       <div class="modal-footer">
         <button class="btn btn-secondary btn-sm" onclick="window.agriApp.closeAllModals()">إلغاء</button>
-        <button id="postJobSubmitBtn" class="btn btn-primary btn-sm" onclick="window.agriApp.submitNewJob()">نشر الوظيفة (Publish)</button>
+        <button id="postJobSubmitBtn" class="btn btn-primary btn-sm" onclick="window.agriApp.submitNewJob()">نشر الوظيفة</button>
       </div>
     </div>
   </div>
@@ -242,15 +242,13 @@
         <form id="loginForm" novalidate onsubmit="event.preventDefault(); window.agriApp?.handleLogin();">
           <div style="display:flex; flex-direction:column; gap:14px;">
             <div>
-              <label style="font-size:0.8125rem; font-weight:700; display:block; margin-bottom:4px;">البريد الإلكتروني
-                (Email)</label>
+              <label style="font-size:0.8125rem; font-weight:700; display:block; margin-bottom:4px;">البريد الإلكتروني</label>
               <input type="email" id="loginEmail" required
                 style="width:100%; padding:10px; border:1px solid var(--color-border); border-radius:var(--radius-md);"
                 placeholder="name@company.com">
             </div>
             <div>
-              <label style="font-size:0.8125rem; font-weight:700; display:block; margin-bottom:4px;">كلمة المرور
-                (Password)</label>
+              <label style="font-size:0.8125rem; font-weight:700; display:block; margin-bottom:4px;">كلمة المرور</label>
               <input type="password" id="loginPassword" required
                 style="width:100%; padding:10px; border:1px solid var(--color-border); border-radius:var(--radius-md);"
                 placeholder="••••••••">
@@ -265,7 +263,7 @@
           <div style="display:flex; flex-direction:column; gap:14px;">
             <!-- Account Type Selector -->
             <div>
-              <label style="font-size:0.8125rem; font-weight:700; display:block; margin-bottom:6px;">نوع الحساب (Account Type)</label>
+              <label style="font-size:0.8125rem; font-weight:700; display:block; margin-bottom:6px;">نوع الحساب</label>
               <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
                 <button type="button" class="btn btn-sm btn-primary" id="roleSeekerBtn"
                   onclick="window.agriApp.selectSignupRole('professional')">
@@ -279,7 +277,7 @@
             </div>
 
             <div>
-              <label for="regFullName" style="font-size:0.8125rem; font-weight:700; display:block; margin-bottom:4px;">الاسم بالكامل (Full Name) <span style="color:#ef4444;">*</span></label>
+              <label for="regFullName" style="font-size:0.8125rem; font-weight:700; display:block; margin-bottom:4px;">الاسم بالكامل <span style="color:#ef4444;">*</span></label>
               <input type="text" id="regFullName" name="fullName" autocomplete="name" required
                 style="width:100%; padding:10px; border:1px solid var(--color-border); border-radius:var(--radius-md);"
                 placeholder="مثال: م. أحمد محمد">
@@ -324,21 +322,21 @@
             </div>
 
             <div>
-              <label for="regEmail" style="font-size:0.8125rem; font-weight:700; display:block; margin-bottom:4px;">البريد الإلكتروني (Email) <span style="color:#ef4444;">*</span></label>
+              <label for="regEmail" style="font-size:0.8125rem; font-weight:700; display:block; margin-bottom:4px;">البريد الإلكتروني <span style="color:#ef4444;">*</span></label>
               <input type="email" id="regEmail" name="email" autocomplete="email" required
                 style="width:100%; padding:10px; border:1px solid var(--color-border); border-radius:var(--radius-md);"
                 placeholder="user@gmail.com">
             </div>
 
             <div>
-              <label for="regPassword" style="font-size:0.8125rem; font-weight:700; display:block; margin-bottom:4px;">كلمة المرور (Password - 6 خانات كحد أدنى) <span style="color:#ef4444;">*</span></label>
+              <label for="regPassword" style="font-size:0.8125rem; font-weight:700; display:block; margin-bottom:4px;">كلمة المرور (6 خانات كحد أدنى) <span style="color:#ef4444;">*</span></label>
               <input type="password" id="regPassword" name="password" autocomplete="new-password" required minlength="6"
                 style="width:100%; padding:10px; border:1px solid var(--color-border); border-radius:var(--radius-md);"
                 placeholder="••••••••">
             </div>
 
             <button type="submit" id="signUpSubmitBtn" class="btn btn-primary" style="width:100%; margin-top:8px;">
-              <span id="signUpSubmitBtnText">تأكيد وإنشاء الحساب (Sign Up)</span>
+              <span id="signUpSubmitBtnText">تأكيد وإنشاء الحساب</span>
             </button>
           </div>
         </form>
