@@ -28,7 +28,7 @@ export const skillsData = [
 export const candidatesData = [
   {
     id: "cand-1",
-    name: "م. أحمد محمد رمضان",
+    name: "مستخدم تجريبي (مهندس جودة)",
     title: "مهندس مراقبة الجودة",
     governorate: "القاهرة (Cairo)",
     experience_years: 2.5,
@@ -36,12 +36,12 @@ export const candidatesData = [
     specializations: ["Quality Control", "Food Safety"],
     skills: ["HACCP", "ISO 22000", "GMP", "GLP", "مراقبة الجودة", "Microsoft Excel"],
     match_score: 96,
-    avatar: "https://ui-avatars.com/api/?name=Ahmed+Mohamed&background=15573b&color=ffffff&size=80",
+    avatar: "https://ui-avatars.com/api/?name=Demo+User&background=15573b&color=ffffff&size=80",
     status: "actively_looking"
   },
   {
     id: "cand-2",
-    name: "م. سارة خالد إبراهيم",
+    name: "مستخدم تجريبي (مهندس ري)",
     title: "مهندس ري حديث",
     governorate: "الفيوم (Fayoum)",
     experience_years: 4,
@@ -49,12 +49,12 @@ export const candidatesData = [
     specializations: ["Modern Irrigation", "Crop Production"],
     skills: ["الري بالتنقيط", "تحليل التربة", "GIS", "إدارة المزارع", "التسميد مع الري"],
     match_score: 89,
-    avatar: "https://ui-avatars.com/api/?name=Sara+Khaled&background=1a6b4a&color=ffffff&size=80",
+    avatar: "https://ui-avatars.com/api/?name=Demo+User&background=1a6b4a&color=ffffff&size=80",
     status: "employed_open"
   },
   {
     id: "cand-3",
-    name: "م. محمد طارق عبدالله",
+    name: "مستخدم تجريبي (أخصائي سلامة غذاء)",
     title: "أخصائي سلامة الغذاء وهاسب",
     governorate: "الإسكندرية (Alexandria)",
     experience_years: 6,
@@ -62,12 +62,12 @@ export const candidatesData = [
     specializations: ["Food Safety", "Microbiology"],
     skills: ["HACCP", "ISO 22000", "BRCGS", "الميكروبيولوجي", "GMP", "FSSC 22000"],
     match_score: 93,
-    avatar: "https://ui-avatars.com/api/?name=Mohamed+Tarek&background=0d5c3a&color=ffffff&size=80",
+    avatar: "https://ui-avatars.com/api/?name=Demo+User&background=0d5c3a&color=ffffff&size=80",
     status: "actively_looking"
   },
   {
     id: "cand-4",
-    name: "م. نور الهدى حسن",
+    name: "مستخدم تجريبي (أخصائي محاصيل)",
     title: "أخصائي إنتاج نباتي ومحاصيل",
     governorate: "البحيرة (Beheira)",
     experience_years: 3,
@@ -75,7 +75,7 @@ export const candidatesData = [
     specializations: ["Crop Production", "Horticulture"],
     skills: ["تشخيص أمراض النبات", "مكافحة الآفات", "تحليل التربة", "إدارة الصوب الزراعية"],
     match_score: 82,
-    avatar: "https://ui-avatars.com/api/?name=Nour+Hassan&background=2d7a50&color=ffffff&size=80",
+    avatar: "https://ui-avatars.com/api/?name=Demo+User&background=2d7a50&color=ffffff&size=80",
     status: "actively_looking"
   }
 ];
@@ -83,7 +83,7 @@ export const candidatesData = [
 export const companiesData = [
   {
     id: "comp-1",
-    company_name: "شركة دلتا للصناعات الغذائية (Delta Foods)",
+    company_name: "شركة تجريبية للأغذية (Demo Foods Co.)",
     business_sector: "التصنيع الغذائي والألبان",
     governorate: "القاهرة (Cairo)",
     logo_text: "DF",
@@ -92,19 +92,19 @@ export const companiesData = [
   },
   {
     id: "comp-2",
-    company_name: "الشركة المصرية للتصدير الزراعي (Egyptian Agro Export)",
+    company_name: "مؤسسة تجريبية للتصدير الزراعي (Demo Agro Export)",
     business_sector: "التصدير الزراعي",
     governorate: "الإسكندرية (Alexandria)",
-    logo_text: "EA",
+    logo_text: "DA",
     active_jobs: 7,
     verified: true
   },
   {
     id: "comp-3",
-    company_name: "مزارع النيل الحديثة (Nile Valley Modern Farms)",
+    company_name: "مزرعة تجريبية حديثة (Demo Modern Farm)",
     business_sector: "المزارع والإنتاج",
     governorate: "الفيوم (Fayoum)",
-    logo_text: "NV",
+    logo_text: "DM",
     active_jobs: 5,
     verified: true
   }
@@ -114,7 +114,7 @@ export const jobsData = [
   {
     id: "job-demo-1",
     title: "مهندس مراقبة الجودة (Quality Control)",
-    company: "شركة دلتا للصناعات الغذائية (Delta Foods)",
+    company: "شركة تجريبية للأغذية (Demo Foods Co.)",
     logo_text: "DF",
     sector: "التصنيع الغذائي",
     location: "القاهرة (Cairo)",
@@ -134,8 +134,8 @@ export const jobsData = [
   {
     id: "job-demo-2",
     title: "مهندس نظم الري الحديث (Modern Irrigation)",
-    company: "مزارع النيل الحديثة (Nile Valley Modern Farms)",
-    logo_text: "NV",
+    company: "مزرعة تجريبية حديثة (Demo Modern Farm)",
+    logo_text: "DM",
     sector: "المزارع والإنتاج",
     location: "الفيوم (Fayoum)",
     city: "المنطقة الزراعية بالفيوم",
@@ -154,8 +154,8 @@ export const jobsData = [
   {
     id: "job-demo-3",
     title: "مراجع سلامة الغذاء وهاسب (HACCP Auditor)",
-    company: "الشركة المصرية للتصدير الزراعي (Egyptian Agro Export)",
-    logo_text: "EA",
+    company: "مؤسسة تجريبية للتصدير الزراعي (Demo Agro Export)",
+    logo_text: "DA",
     sector: "التصدير الزراعي",
     location: "الإسكندرية (Alexandria)",
     city: "برج العرب",
@@ -174,7 +174,7 @@ export const jobsData = [
   {
     id: "job-demo-4",
     title: "محلل معمل زراعي (ميكروبيولوجي)",
-    company: "شركة دلتا للصناعات الغذائية (Delta Foods)",
+    company: "شركة تجريبية للأغذية (Demo Foods Co.)",
     logo_text: "DF",
     sector: "التصنيع الغذائي",
     location: "القاهرة (Cairo)",
@@ -194,8 +194,8 @@ export const jobsData = [
   {
     id: "job-demo-5",
     title: "مشرف إنتاج محاصيل (Crop Production Supervisor)",
-    company: "مزارع النيل الحديثة (Nile Valley Modern Farms)",
-    logo_text: "NV",
+    company: "مزرعة تجريبية حديثة (Demo Modern Farm)",
+    logo_text: "DM",
     sector: "المزارع والإنتاج",
     location: "البحيرة (Beheira)",
     city: "منطقة النوبارية",
@@ -220,7 +220,7 @@ export const academyCoursesData = [
     category: "سلامة الغذاء",
     level: "مبتدئ",
     duration: "4 ساعات",
-    instructor: "د. عادل منصور (استشاري سلامة الغذاء)",
+    instructor: "محاضر تجريبي (سلامة الغذاء)",
     students: "1,420 طالب",
     rating: 4.9
   },
@@ -230,7 +230,7 @@ export const academyCoursesData = [
     category: "الجودة",
     level: "متوسط",
     duration: "6 ساعات",
-    instructor: "م. شريف الخولي (كبير مراجعين)",
+    instructor: "محاضر تجريبي (إدارة الجودة)",
     students: "980 طالب",
     rating: 4.8
   },
@@ -240,7 +240,7 @@ export const academyCoursesData = [
     category: "التكنولوجيا الزراعية",
     level: "متوسط",
     duration: "8 ساعات",
-    instructor: "م. طارق فريد (خبير الزراعة الدقيقة)",
+    instructor: "محاضر تجريبي (تكنولوجيا زراعية)",
     students: "650 طالب",
     rating: 4.9
   },
@@ -250,8 +250,9 @@ export const academyCoursesData = [
     category: "إدارة الأعمال",
     level: "متقدم",
     duration: "5 ساعات",
-    instructor: "د. هشام زكي (المجلس التصديري)",
+    instructor: "محاضر تجريبي (إدارة الأعمال)",
     students: "1,120 طالب",
     rating: 4.7
   }
 ];
+
