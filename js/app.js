@@ -402,7 +402,7 @@ class AgriCoreApp {
 
       <!-- Live Metrics Section -->
       <section class="metrics-section">
-        <div class="metrics-container">
+        <div class="metrics-container" style="max-width: 680px; grid-template-columns: repeat(2, 1fr);">
           <div class="metric-item">
             <div class="metric-icon-box">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
@@ -419,24 +419,6 @@ class AgriCoreApp {
             <div>
               <div class="metric-number" id="metricCompanies">—</div>
               <div class="metric-label">Registered Companies</div>
-            </div>
-          </div>
-          <div class="metric-item">
-            <div class="metric-icon-box">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
-            </div>
-            <div>
-              <div class="metric-number">${academyCoursesData.length}+</div>
-              <div class="metric-label">Training Programs</div>
-            </div>
-          </div>
-          <div class="metric-item">
-            <div class="metric-icon-box">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-            </div>
-            <div>
-              <div class="metric-number" id="metricTalents">—</div>
-              <div class="metric-label">Registered Talents</div>
             </div>
           </div>
         </div>
@@ -529,7 +511,7 @@ class AgriCoreApp {
                 <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:14px;">
                   <span class="chip" style="font-size:0.75rem; padding:3px 10px;">📍 ${job.location}</span>
                   <span class="chip" style="font-size:0.75rem; padding:3px 10px;">⏳ ${job.experience}</span>
-                  <span class="chip chip-active" style="font-size:0.75rem; padding:3px 10px;">⭐ ${job.match_score}% match</span>
+                  <span class="chip" style="font-size:0.75rem; padding:3px 10px;">💼 ${job.type}</span>
                 </div>
                 <p style="font-size:0.8125rem; color:var(--color-text-muted); line-height:1.5; margin-bottom:16px;">${job.description.substring(0, 80)}...</p>
                 <button class="btn btn-primary btn-sm" style="width:100%;" onclick="window.agriApp.openAuthModal('signup')">Apply Now &rarr;</button>
@@ -539,42 +521,6 @@ class AgriCoreApp {
         </div>
       </section>
 
-      <!-- ============================================================
-           Testimonials Section
-           ============================================================ -->
-      <section style="padding: 72px 0; background: linear-gradient(135deg, #0a3824 0%, #15573b 100%); color:#ffffff;">
-        <div style="max-width: 1160px; margin: 0 auto; padding: 0 24px;">
-          <div style="text-align:center; margin-bottom:48px;">
-            <div style="display:inline-flex; align-items:center; gap:8px; background:rgba(255,255,255,0.15); border-radius:999px; padding:6px 16px; font-size:0.8125rem; font-weight:700; color:rgba(255,255,255,0.9); margin-bottom:12px;">
-              ⭐ Success Stories
-            </div>
-            <h2 style="font-size:2rem; font-weight:800; margin-bottom:8px;">What Our Professionals Say</h2>
-            <p style="color:rgba(255,255,255,0.75); font-size:0.9375rem;">Real outcomes from Egypt's agricultural talent ecosystem</p>
-          </div>
-
-          <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:24px;">
-            ${[
-              { name: "م. أحمد رمضان", title: "Quality Control Engineer, Delta Foods", quote: "Through AgriCore I found my dream position in 3 weeks. The matching engine is incredibly accurate — it understood my HACCP expertise perfectly.", rating: 5, avatar: "AR" },
-              { name: "م. سارة محمود", title: "Irrigation Specialist, Nile Valley Farms", quote: "AgriCore Academy gave me an ISO 22000 certification that opened doors. The platform connected me with companies I never would have reached on my own.", rating: 5, avatar: "SM" },
-              { name: "م. عمر حسين", title: "Lab Analyst, Egyptian Agro Export", quote: "As a fresh graduate, I was lost. AgriCore's onboarding helped me structure my agricultural skills and the matching engine showed me real opportunities I qualified for.", rating: 5, avatar: "OH" }
-            ].map(t => `
-              <div style="background:rgba(255,255,255,0.1); backdrop-filter:blur(10px); border:1px solid rgba(255,255,255,0.15); border-radius:var(--radius-lg); padding:28px 24px;">
-                <div style="display:flex; gap:2px; margin-bottom:16px;">
-                  ${'⭐'.repeat(t.rating)}
-                </div>
-                <p style="font-size:0.9375rem; color:rgba(255,255,255,0.9); line-height:1.7; margin-bottom:20px; font-style:italic;">"${t.quote}"</p>
-                <div style="display:flex; align-items:center; gap:12px;">
-                  <div style="width:44px; height:44px; border-radius:50%; background:rgba(255,255,255,0.2); display:flex; align-items:center; justify-content:center; font-weight:800; font-size:0.875rem;">${t.avatar}</div>
-                  <div>
-                    <div style="font-weight:700; font-size:0.9375rem;">${t.name}</div>
-                    <div style="font-size:0.8125rem; color:rgba(255,255,255,0.65);">${t.title}</div>
-                  </div>
-                </div>
-              </div>
-            `).join('')}
-          </div>
-        </div>
-      </section>
 
       <!-- ============================================================
            CTA Banner
@@ -583,7 +529,7 @@ class AgriCoreApp {
         <div style="max-width:640px; margin:0 auto;">
           <div style="font-size:2.5rem; margin-bottom:16px;">🌱</div>
           <h2 style="font-size:2rem; font-weight:800; color:var(--color-brand-950); margin-bottom:12px;">Ready to Grow Your Agricultural Career?</h2>
-          <p style="color:var(--color-text-muted); font-size:1rem; margin-bottom:28px;">Join 12,450+ agricultural professionals and 150+ companies already on AgriCore. Start building your verified career profile today — it's free.</p>
+          <p style="color:var(--color-text-muted); font-size:1rem; margin-bottom:28px;">Connect with agricultural professionals and agribusinesses across Egypt and the Arab region. Start building your verified career profile today — it's free.</p>
           <div style="display:flex; justify-content:center; gap:14px; flex-wrap:wrap;">
             <button class="btn btn-primary btn-lg" onclick="window.agriApp.startProfessionalOnboarding()">
               🌾 Start My Profile Free
@@ -674,11 +620,9 @@ class AgriCoreApp {
   _updateLandingMetrics() {
     const jobsEl = document.getElementById('metricJobs');
     const companiesEl = document.getElementById('metricCompanies');
-    const talentsEl = document.getElementById('metricTalents');
     const uniqueCompanies = new Set(this.jobs.map(j => j.company)).size;
-    if (jobsEl) jobsEl.textContent = this.jobs.length > 0 ? `${this.jobs.length}+` : `${jobsData.length}+`;
-    if (companiesEl) companiesEl.textContent = uniqueCompanies > 0 ? `${uniqueCompanies}+` : `${companiesData.length}+`;
-    if (talentsEl) talentsEl.textContent = '12,450+';
+    if (jobsEl) jobsEl.textContent = this.jobs.length > 0 ? `${this.jobs.length}` : '0';
+    if (companiesEl) companiesEl.textContent = uniqueCompanies > 0 ? `${uniqueCompanies}` : '0';
   }
 
   // ---------------------------------------------------------------------------
@@ -940,9 +884,7 @@ class AgriCoreApp {
                     </button>
                   </div>
                 </div>
-              ` : filteredJobs.map(job => {
-                const match = calculateMatchScore(job, candidatesData[0]);
-                return `
+              ` : filteredJobs.map(job => `
                   <div class="card" style="display:flex; align-items:center; justify-content:space-between; padding:20px 24px;">
                     <div style="display:flex; align-items:center; gap: 20px;">
                       <div class="job-item-logo" style="width:52px; height:52px; font-size:1.125rem;">${job.logo_text}</div>
@@ -962,17 +904,12 @@ class AgriCoreApp {
                       </div>
                     </div>
                     <div style="display:flex; flex-direction:column; align-items:flex-end; gap: 12px; flex-shrink:0;">
-                      <span class="match-badge ${match >= 85 ? 'high' : 'medium'}">
-                        <svg class="match-icon" viewBox="0 0 24 24"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
-                        ${match}% match
-                      </span>
                       <button class="btn btn-primary btn-sm" onclick="window.agriApp.openApplyModal('${job.id}')">
                         ${job.applied ? 'Applied' : 'Apply Now'}
                       </button>
                     </div>
                   </div>
-                `;
-              }).join('')}
+                `).join('')}
             </div>
           </div>
         </main>
@@ -1114,7 +1051,6 @@ class AgriCoreApp {
                         </div>
                       </div>
                       <div style="display:flex; align-items:center; gap: 12px;">
-                        <span class="match-badge high">${cand.match_score || 95}% match</span>
                         <button class="btn btn-secondary btn-sm" onclick="window.agriApp.navigateTo('candidate_profile')">View Profile</button>
                       </div>
                     </div>
@@ -1511,15 +1447,13 @@ class AgriCoreApp {
               <div class="kpi-card">
                 <span class="kpi-title">Total Registered Talents</span>
                 <div class="kpi-value-row">
-                  <span class="kpi-number">12,450</span>
-                  <span class="kpi-badge">+12%</span>
+                  <span class="kpi-number">${this.candidates.length}</span>
                 </div>
               </div>
               <div class="kpi-card">
                 <span class="kpi-title">Active Vacancies</span>
                 <div class="kpi-value-row">
-                  <span class="kpi-number">186</span>
-                  <span class="kpi-badge">+8%</span>
+                  <span class="kpi-number">${this.jobs.length}</span>
                 </div>
               </div>
               <div class="kpi-card">
