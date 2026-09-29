@@ -2172,12 +2172,12 @@ class AgriCoreApp {
     const fullName = fullNameInput?.value?.trim() || '';
     const email = emailInput?.value?.trim() || '';
     const password = passwordInput?.value || '';
-    const governorate = document.getElementById('regGovernorate')?.value || 'Cairo';
+    const governorate = document.getElementById('regGovernorate')?.value || '';
     const phone = document.getElementById('regPhone')?.value?.trim() || '';
     const userType = this._signupRole || 'professional';
     const title = document.getElementById('regTitle')?.value?.trim() || '';
     const companyName = companyNameInput?.value?.trim() || '';
-    const businessSector = document.getElementById('regBusinessSector')?.value || 'Food Industry';
+    const businessSector = document.getElementById('regBusinessSector')?.value || '';
 
     console.log('[SignUp] 3. Validating inputs...', {
       userType,

@@ -200,15 +200,15 @@ export class AgriCoreSupabaseClient {
     const metadata = {
       full_name: fullName,
       user_type: userType,
-      governorate: governorate || "Cairo",
+      governorate: governorate || "",
       phone_number: phone || ""
     };
 
     if (userType === 'company') {
       metadata.company_name = companyName || fullName;
-      metadata.business_sector = businessSector || "Agribusiness";
+      metadata.business_sector = businessSector || "";
     } else {
-      metadata.professional_title = title || "Agricultural Engineer";
+      metadata.professional_title = title || "";
     }
 
     const payload = {
