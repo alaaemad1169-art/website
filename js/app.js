@@ -55,7 +55,8 @@ class AgriCoreApp {
   constructor() {
     this.currentView = 'landing';
     this.activeProfileTab = 'about';
-    this.jobs = [...jobsData];
+    this.jobs = [];           // Populated from Supabase in init() — never show demo data to real users
+    this.jobsLoadFailed = false; // Set to true if Supabase fetch throws a network/server error
     this.candidates = [...candidatesData];
     this._signupRole = 'professional';
     this.currentUser = null; // Will be set after login
@@ -122,9 +123,17 @@ class AgriCoreApp {
           created_at: j.created_at,
           applied: false
         }));
+        this.jobsLoadFailed = false;
+      } else {
+        // Supabase responded but no active jobs yet — this is valid (empty platform)
+        this.jobs = [];
+        this.jobsLoadFailed = false;
       }
     } catch (err) {
-      console.warn("Operating without live jobs:", err);
+      // Network/server error — do NOT fall back to demo data, flag the failure explicitly
+      console.warn("[Jobs] Supabase fetch failed, showing error state:", err);
+      this.jobs = [];
+      this.jobsLoadFailed = true;
     }
 
     this.renderCurrentView();
@@ -703,14 +712,20 @@ class AgriCoreApp {
                 <!-- Recent Jobs Feed -->
                 <div class="card" style="padding:0; overflow:hidden;">
                   <div style="padding: 18px 24px; border-bottom:1px solid var(--color-border); display:flex; justify-content:space-between; align-items:center;">
-                    <h3 style="font-size: 1.0625rem; font-weight:700;">Recent Jobs</h3>
-                    <span style="font-size:0.875rem; font-weight:600; color:var(--color-brand-600); cursor:pointer;" onclick="window.agriApp.navigateTo('jobs_search')">View All</span>
+                    <h3 style="font-size: 1.0625rem; font-weight:700;">وظائف حديثة</h3>
+                    <span style="font-size:0.875rem; font-weight:600; color:var(--color-brand-600); cursor:pointer;" onclick="window.agriApp.navigateTo('jobs_search')">عرض الكل</span>
                   </div>
                   <div class="job-list-container">
-                    ${this.jobs.length === 0 ? `
+                    ${this.jobsLoadFailed ? `
+                      <div style="padding:28px 24px; text-align:center; color:var(--color-text-muted);">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin:0 auto 10px; display:block; opacity:0.45;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                        <p style="font-size:0.9rem; margin-bottom:10px;">تعذّر تحميل الوظائف حالياً، حاول مرة أخرى لاحقاً.</p>
+                        <button class="btn btn-secondary btn-sm" onclick="location.reload()">🔄 إعادة المحاولة</button>
+                      </div>
+                    ` : this.jobs.length === 0 ? `
                       <div style="padding:32px 24px; text-align:center; color:var(--color-text-muted);">
-                        <p style="font-size:0.9375rem;">No jobs posted yet. Be the first company to post!</p>
-                        <button class="btn btn-primary btn-sm" style="margin-top:12px;" onclick="window.agriApp.openAuthModal('signup')">Register as a Company</button>
+                        <p style="font-size:0.9375rem;">لا توجد وظائف نشطة حالياً. كن أول شركة تنشر وظيفة!</p>
+                        <button class="btn btn-primary btn-sm" style="margin-top:12px;" onclick="window.agriApp.openAuthModal('signup')">تسجيل كشركة</button>
                       </div>
                     ` : this.jobs.slice(0, 5).map(job => `
                       <div class="job-list-card">
