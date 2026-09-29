@@ -642,6 +642,17 @@ class AgriCoreApp {
     const userName = user?.name || 'Guest';
     const userAvatar = user?.avatar || `https://ui-avatars.com/api/?name=User&background=15573b&color=ffffff&size=80`;
 
+    // Calculate Top Skills in Demand dynamically from active jobs
+    const skillCounts = {};
+    (this.jobs || []).forEach(job => {
+      (job.skills || []).forEach(skill => {
+        skillCounts[skill] = (skillCounts[skill] || 0) + 1;
+      });
+    });
+    const topSkills = Object.keys(skillCounts)
+      .sort((a, b) => skillCounts[b] - skillCounts[a])
+      .slice(0, 7);
+
     let completionPct = 0;
     if (user) {
       // 1. Name: 15%
@@ -836,20 +847,16 @@ class AgriCoreApp {
                 </div>
 
                 <!-- Recommended Skills Widget -->
+                ${topSkills.length > 0 ? `
                 <div class="card">
                   <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
                     <h3 style="font-size: 1rem; font-weight:700;">Top Skills in Demand</h3>
                   </div>
                   <div style="display:flex; flex-wrap:wrap; gap: 8px;">
-                    <span class="chip chip-active">HACCP</span>
-                    <span class="chip chip-active">ISO 22000</span>
-                    <span class="chip">Quality Control</span>
-                    <span class="chip">GIS & Mapping</span>
-                    <span class="chip">English Language</span>
-                    <span class="chip">GMP Practices</span>
-                    <span class="chip">Farm Management</span>
+                    ${topSkills.map((skill, index) => `<span class="chip ${index < 2 ? 'chip-active' : ''}">${skill}</span>`).join('')}
                   </div>
                 </div>
+                ` : ''}
               </div>
             </div>
           </div>
