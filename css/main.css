@@ -952,8 +952,20 @@ a {
   .hamburger-btn {
     display: flex;
   }
-  .header-actions .btn:not(.hamburger-btn) {
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  /* Keep Login button visible on mobile header, hide full Sign Up button to save header width */
+  .header-actions .btn-primary:not(.hamburger-btn) {
     display: none;
+  }
+  .header-actions .btn-ghost {
+    display: inline-flex;
+    padding: 6px 12px;
+    font-size: 0.8125rem;
+    font-weight: 600;
   }
 }
 
