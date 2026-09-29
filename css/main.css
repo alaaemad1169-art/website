@@ -1285,3 +1285,75 @@ body.nav-open {
   }
 }
 
+/* =============================================================================
+   Mobile Specific Layout Fixes (max-width: 768px)
+   ============================================================================= */
+@media (max-width: 768px) {
+  /* 1. Sidebar to Bottom Nav */
+  .dashboard-layout {
+    display: flex;
+    flex-direction: column;
+  }
+  .sidebar {
+    width: 100%;
+    height: 64px;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    flex-direction: row;
+    padding: 0 16px;
+    z-index: 1000;
+    border-right: none;
+    border-top: 1px solid var(--color-border);
+    justify-content: space-around;
+    align-items: center;
+  }
+  .sidebar-nav {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    justify-content: space-around;
+  }
+  .sidebar-link {
+    margin-bottom: 0 !important;
+  }
+  .sidebar-link-inner {
+    padding: 8px !important;
+    justify-content: center;
+  }
+  .sidebar-brand, .sidebar-link-inner span, .sidebar-badge {
+    display: none !important;
+  }
+  .dashboard-main {
+    margin-bottom: 64px;
+  }
+
+  /* 2. Jobs Search Layout (Stacking Filters) */
+  .jobs-filter-row {
+    flex-direction: column;
+    align-items: stretch !important;
+  }
+  .jobs-filter-row > div {
+    width: 100%;
+  }
+
+  /* 3. Company Dashboard Rows to Cards */
+  #companyDashCandidatesList > div {
+    flex-direction: column;
+    align-items: flex-start !important;
+    padding: 16px !important;
+  }
+  #companyDashCandidatesList > div > div:last-child {
+    width: 100%;
+    justify-content: space-between;
+    margin-top: 12px;
+  }
+  /* Also stack the KPI cards and main grid on small screens */
+  .dashboard-body > div[style*="grid-template-columns: repeat(3, 1fr)"] {
+    grid-template-columns: 1fr !important;
+  }
+  .dashboard-body > div[style*="grid-template-columns: 2fr 1fr"] {
+    grid-template-columns: 1fr !important;
+  }
+}
+
