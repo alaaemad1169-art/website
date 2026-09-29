@@ -1364,32 +1364,41 @@ export class ProfessionalOnboardingManager {
   // ---------------------------------------------------------------------------
   syncWithApplicationData() {
     const d = this.formData;
-    const name = d.account.fullName || "Ahmed Mohamed";
+    // Use the actual name the user entered — no fake fallback name
+    const name = d.account.fullName || '';
+    // Use the actual email the user entered — no fake fallback email
+    const email = d.account.email || '';
+    // Use the actual phone the user entered — no fake fallback phone
+    const phone = d.account.phone || '';
 
-    // Build standard candidate profile object
+    // Build standard candidate profile object — only include fields the user actually filled in
+    // NOTE: nationality and birth_date are intentionally omitted:
+    //   neither field exists in any onboarding step, so they must NEVER be hardcoded.
     const candidateProfile = {
       name: name,
       title: d.identity.professionalTitle,
-      email: d.account.email || "ahmed.agri@agricore.eg",
-      phone: d.account.phone || "+20 101 234 5678",
-      governorate: d.preferences.preferredLocations[0]?.split(' ')[0] || "Cairo",
-      nationality: "Egyptian",
-      birth_date: "1997-04-12",
+      email: email,
+      phone: phone,
+      governorate: d.preferences.preferredLocations[0]?.split(' ')[0] || '',
+      // nationality: not collected in onboarding — omitted intentionally
+      // birth_date: not collected in onboarding — omitted intentionally
       agricore_id: "AGRI-" + Math.floor(10000 + Math.random() * 90000),
-      avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=15573b&color=ffffff&size=160`,
+      avatar: name
+        ? `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=15573b&color=ffffff&size=160`
+        : `https://ui-avatars.com/api/?name=User&background=15573b&color=ffffff&size=160`,
       cover: "assets/images/profile_cover.jpg",
-      about: `${d.identity.professionalTitle} with specialized expertise in ${d.identity.mainSpecialization}. Holds a ${d.education.degree} from ${d.education.university}. Passionate about precision quality, agricultural standards, and modern sustainable systems.`,
+      about: `${d.identity.professionalTitle} with specialized expertise in ${d.identity.mainSpecialization}. Holds a ${d.education.degree} from ${d.education.university}.`,
       specializations: [d.identity.mainSpecialization],
       skills: [...d.skills],
-      experience_years: d.identity.yearsOfExperience || 2,
+      experience_years: d.identity.yearsOfExperience || 0,
       education_level: d.education.degree.toLowerCase().includes('master') ? 'master' : (d.education.degree.toLowerCase().includes('phd') ? 'phd' : 'bachelor'),
       education: [
         {
           degree: d.education.degree,
           university: d.education.university,
-          department: d.education.facultyDepartment,
+          department: d.education.facultyDepartment || '',
           year: `${d.education.graduationYear}`,
-          grade: "Excellent with Honors"
+          // grade: not collected in onboarding — omitted intentionally
         }
       ],
       experiences: d.experiences.map(e => ({
@@ -1404,7 +1413,8 @@ export class ProfessionalOnboardingManager {
         year: `${c.year}`
       })),
       cv: d.cv,
-      profile_completion_pct: 85
+      // profile_completion_pct: calculated dynamically in renderSeekerDashboard — not stored as a fixed number
+      profile_completion_pct: null
     };
 
     // Save as current candidate in app instance
@@ -1415,7 +1425,7 @@ export class ProfessionalOnboardingManager {
       this.app.currentUser = {
         id: "usr-" + Date.now(),
         name: name,
-        email: d.account.email,
+        email: email,
         avatar: candidateProfile.avatar,
         userType: 'professional'
       };
