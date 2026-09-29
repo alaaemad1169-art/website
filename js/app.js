@@ -642,6 +642,62 @@ class AgriCoreApp {
     const userName = user?.name || 'Guest';
     const userAvatar = user?.avatar || `https://ui-avatars.com/api/?name=User&background=15573b&color=ffffff&size=80`;
 
+    let completionPct = 0;
+    if (user) {
+      // 1. Name: 15%
+      if (user.name && user.name.trim() !== '' && user.name.trim() !== 'User' && user.name.trim() !== 'Guest') {
+        completionPct += 15;
+      }
+      
+      const profProfile = user.profile?.professional_profiles?.[0];
+      const onboardProfile = this.currentCandidateProfile; // Fallback to local onboarding state
+
+      // 2. Title & Specialization: 20%
+      const title = profProfile?.professional_title || onboardProfile?.title || '';
+      const spec = profProfile?.specialization || onboardProfile?.specializations?.[0] || '';
+      if ((title && title.trim() !== '') || (spec && spec.trim() !== '')) {
+        completionPct += 20;
+      }
+
+      // 3. Skills: 15%
+      const skills = profProfile?.skills || onboardProfile?.skills || [];
+      if (Array.isArray(skills) && skills.length > 0) {
+        completionPct += 15;
+      }
+
+      // 4. Education: 15%
+      const education = profProfile?.education || onboardProfile?.education || [];
+      if (Array.isArray(education) && education.length > 0) {
+        completionPct += 15;
+      }
+
+      // 5. Experience: 15%
+      const experience = profProfile?.experiences || profProfile?.experience || onboardProfile?.experiences || [];
+      const expYears = profProfile?.experience_years || onboardProfile?.experience_years || 0;
+      if ((Array.isArray(experience) && experience.length > 0) || expYears > 0) {
+        completionPct += 15;
+      }
+
+      // 6. CV (Resume): 10%
+      const resume = profProfile?.resume_url || onboardProfile?.cv || null;
+      if (resume) {
+        completionPct += 10;
+      }
+
+      // 7. Certifications: 5%
+      const certs = profProfile?.certifications || onboardProfile?.certifications || [];
+      if (Array.isArray(certs) && certs.length > 0) {
+        completionPct += 5;
+      }
+
+      // 8. Photo (Real Avatar): 5%
+      const avatarUrl = user.profile?.avatar_url || onboardProfile?.avatar || '';
+      if (avatarUrl && avatarUrl.trim() !== '' && !avatarUrl.includes('ui-avatars.com')) {
+        completionPct += 5;
+      }
+    }
+
+
     return `
       <div class="dashboard-layout">
         <!-- Sidebar Navigation -->
@@ -688,9 +744,9 @@ class AgriCoreApp {
                   <div class="progress-ring-container">
                     <svg class="progress-ring" width="80" height="80">
                       <circle class="progress-ring__circle-bg" stroke-width="8" fill="transparent" r="32" cx="40" cy="40"/>
-                      <circle class="progress-ring__circle" stroke-width="8" stroke-dasharray="201" stroke-dashoffset="${user ? 40 : 201}" fill="transparent" r="32" cx="40" cy="40"/>
+                      <circle class="progress-ring__circle" stroke-width="8" stroke-dasharray="201" stroke-dashoffset="${201 - (201 * completionPct) / 100}" fill="transparent" r="32" cx="40" cy="40"/>
                     </svg>
-                    <div class="progress-ring-text">${user ? '40%' : '0%'}</div>
+                    <div class="progress-ring-text">${completionPct}%</div>
                   </div>
                   <div style="flex:1;">
                     <h3 style="font-size: 1.0625rem; font-weight:700; color:var(--color-brand-950);">Profile Completion</h3>
