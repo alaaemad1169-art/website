@@ -740,29 +740,17 @@ class AgriCoreApp {
 
               <!-- Right Column: Applications & Quick Actions -->
               <div style="display:flex; flex-direction:column; gap: 24px;">
-                <!-- My Applications Card -->
+                <!-- My Applications Card (real data from Supabase) -->
                 <div class="card" style="padding:0; overflow:hidden;">
                   <div style="padding: 18px 24px; border-bottom:1px solid var(--color-border); display:flex; justify-content:space-between; align-items:center;">
-                    <h3 style="font-size: 1.0625rem; font-weight:700;">My Applications</h3>
-                    <span style="font-size:0.8125rem; font-weight:600; background:var(--color-brand-100); color:var(--color-brand-700); padding:2px 10px; border-radius:999px;">
-                      ${this.jobs.filter(j => j.applied).length} submitted
-                    </span>
+                    <h3 style="font-size: 1.0625rem; font-weight:700;">طلباتي</h3>
+                    <span id="myAppsCount" style="font-size:0.8125rem; font-weight:600; background:var(--color-brand-100); color:var(--color-brand-700); padding:2px 10px; border-radius:999px;">…</span>
                   </div>
-                  <div>
-                    ${(() => {
-                      const applied = this.jobs.filter(j => j.applied);
-                      if (!user) return `<div style="padding:20px 24px; text-align:center; color:var(--color-text-muted); font-size:0.875rem;">Login to track your applications.</div>`;
-                      if (applied.length === 0) return `<div style="padding:20px 24px; text-align:center; color:var(--color-text-muted); font-size:0.875rem;">You haven't applied to any jobs yet. <br><button class="btn btn-primary btn-sm" style="margin-top:10px;" onclick="window.agriApp.navigateTo('jobs_search')">Browse Jobs</button></div>`;
-                      return applied.map(job => `
-                        <div style="padding:12px 20px; border-bottom:1px solid var(--color-border); display:flex; align-items:center; justify-content:space-between; gap:12px;">
-                          <div>
-                            <div style="font-size:0.875rem; font-weight:700; color:var(--color-text-main);">${job.title}</div>
-                            <div style="font-size:0.8125rem; color:var(--color-text-muted);">${job.company} · ${job.location}</div>
-                          </div>
-                          <span style="font-size:0.75rem; font-weight:700; padding:3px 10px; border-radius:999px; background:#dcfce7; color:#166534; white-space:nowrap;">Applied ✓</span>
-                        </div>
-                      `).join('');
-                    })()}
+                  <div id="myApplicationsList">
+                    ${!user
+                      ? `<div style="padding:20px 24px; text-align:center; color:var(--color-text-muted); font-size:0.875rem;">سجّل دخولك لمتابعة طلباتك.</div>`
+                      : `<div style="padding:24px; text-align:center; color:var(--color-text-muted); font-size:0.875rem;">جاري تحميل طلباتك…</div>`
+                    }
                   </div>
                 </div>
 
@@ -1025,28 +1013,36 @@ class AgriCoreApp {
                 </div>
                 <p style="font-size:0.75rem; color:var(--color-text-muted); margin-top:4px;">على جميع وظائفك</p>
               </div>
-              <div class="kpi-card" style="background:#f8fafc;">
-                <span class="kpi-title">Shortlisted / Hired</span>
-                <div class="kpi-value-row" style="align-items:center; gap:6px;">
-                  <span style="font-size:0.8125rem; color:var(--color-text-muted); font-style:italic;">قريباً — لم يُطبَّق بعد</span>
+              <div class="kpi-card">
+                <span class="kpi-title">تم التواصل / تم القبول</span>
+                <div class="kpi-value-row" style="gap:12px;">
+                  <div style="display:flex; flex-direction:column; align-items:center;">
+                    <span class="kpi-number" id="kpiContacted" style="font-size:1.5rem;">…</span>
+                    <span style="font-size:0.6875rem; color:var(--color-text-muted); font-weight:600;">تواصل</span>
+                  </div>
+                  <span style="color:var(--color-border); font-size:1.25rem;">/</span>
+                  <div style="display:flex; flex-direction:column; align-items:center;">
+                    <span class="kpi-number" id="kpiHired" style="font-size:1.5rem; color:#16a34a;">…</span>
+                    <span style="font-size:0.6875rem; color:var(--color-text-muted); font-weight:600;">قبول</span>
+                  </div>
                 </div>
-                <p style="font-size:0.75rem; color:var(--color-text-light); margin-top:4px;">يتطلب حقل status في جدول applications</p>
+                <p style="font-size:0.75rem; color:var(--color-text-muted); margin-top:4px;">بناءً على حالة الطلبات الفعلية</p>
               </div>
             </div>
 
             <!-- Main Content Split -->
             <div style="display:grid; grid-template-columns: 2fr 1fr; gap: 24px;">
-              <!-- Registered Professionals (latest signups — no fake match score) -->
+              <!-- Applications List with Status Management -->
               <div class="card" style="padding:0; overflow:hidden;">
                 <div style="padding: 18px 24px; border-bottom:1px solid var(--color-border); display:flex; justify-content:space-between; align-items:center;">
-                  <h3 style="font-size: 1.0625rem; font-weight:700;">أحدث المرشحين المسجلين</h3>
-                  <span style="font-size:0.8125rem; font-weight:500; color:var(--color-text-muted);">مرتبة حسب تاريخ التسجيل</span>
+                  <h3 style="font-size: 1.0625rem; font-weight:700;">المتقدمون على وظائفي</h3>
+                  <span style="font-size:0.8125rem; font-weight:500; color:var(--color-text-muted);">يمكنك تغيير حالة كل متقدم</span>
                 </div>
                 <div id="companyDashCandidatesList">
                   <!-- Populated by loadCompanyDashboardData() -->
                   <div style="padding:32px 24px; text-align:center; color:var(--color-text-muted); font-size:0.875rem;">
                     <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin:0 auto 10px; display:block; opacity:0.4;"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-                    جاري تحميل بيانات المرشحين…
+                    جاري تحميل المتقدمين…
                   </div>
                 </div>
               </div>
@@ -2571,6 +2567,10 @@ class AgriCoreApp {
   }
   bindSeekerEvents() {
     this._bindDashboardMobileMenu();
+    // Load real applications from Supabase after DOM is painted
+    if (this.currentUser) {
+      requestAnimationFrame(() => this.loadSeekerApplications());
+    }
   }
   bindJobsSearchEvents() {
     this._bindDashboardMobileMenu();
@@ -2588,6 +2588,59 @@ class AgriCoreApp {
     this._bindDashboardMobileMenu();
     // Fire Supabase data load after DOM is painted
     requestAnimationFrame(() => this.loadCompanyDashboardData());
+  }
+
+  // ---------------------------------------------------------------------------
+  // Seeker Dashboard: Fetch Real Applications from Supabase
+  // ---------------------------------------------------------------------------
+  async loadSeekerApplications() {
+    const STATUS_MAP = {
+      applied:         { label: 'تم التقديم',              color: '#2563eb', bg: '#eff6ff' },
+      under_review:    { label: 'قيد المراجعة',            color: '#7c3aed', bg: '#f5f3ff' },
+      contacted:       { label: 'تم التواصل معك',          color: '#d97706', bg: '#fffbeb' },
+      accepted:        { label: 'تم القبول ✓',             color: '#16a34a', bg: '#dcfce7' },
+      rejected:        { label: 'تم الرفض',               color: '#dc2626', bg: '#fef2f2' },
+      position_closed: { label: 'تم إغلاق الوظيفة',     color: '#6b7280', bg: '#f3f4f6' },
+    };
+
+    const listEl  = document.getElementById('myApplicationsList');
+    const countEl = document.getElementById('myAppsCount');
+    if (!listEl) return;
+
+    let apps = [];
+    try {
+      apps = await supabaseBridge.getMyApplications();
+    } catch (e) {
+      console.warn('[SeekerDash] Failed to load applications:', e);
+    }
+
+    if (countEl) countEl.textContent = `${Array.isArray(apps) ? apps.length : 0} طلب`;
+
+    if (!Array.isArray(apps) || apps.length === 0) {
+      listEl.innerHTML = `
+        <div style="padding:20px 24px; text-align:center; color:var(--color-text-muted); font-size:0.875rem;">
+          لم تتقدم على أي وظيفة بعد.<br>
+          <button class="btn btn-primary btn-sm" style="margin-top:10px;" onclick="window.agriApp.navigateTo('jobs_search')">تصفح الوظائف</button>
+        </div>`;
+      return;
+    }
+
+    listEl.innerHTML = apps.map(app => {
+      const jobTitle  = app.jobs?.title || 'وظيفة';
+      const company   = app.jobs?.company_profiles?.company_name || '';
+      const st        = STATUS_MAP[app.status] || STATUS_MAP.applied;
+      const appliedAt = app.applied_at
+        ? new Date(app.applied_at).toLocaleDateString('ar-EG', { year: 'numeric', month: 'short', day: 'numeric' })
+        : '';
+      return `
+        <div style="padding:12px 20px; border-bottom:1px solid var(--color-border); display:flex; align-items:center; justify-content:space-between; gap:12px;">
+          <div style="min-width:0;">
+            <div style="font-size:0.875rem; font-weight:700; color:var(--color-text-main); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${jobTitle}</div>
+            <div style="font-size:0.775rem; color:var(--color-text-muted);">${company}${appliedAt ? ' · ' + appliedAt : ''}</div>
+          </div>
+          <span style="font-size:0.7rem; font-weight:700; padding:3px 10px; border-radius:999px; background:${st.bg}; color:${st.color}; white-space:nowrap; flex-shrink:0;">${st.label}</span>
+        </div>`;
+    }).join('');
   }
 
   // ---------------------------------------------------------------------------
@@ -2612,74 +2665,132 @@ class AgriCoreApp {
       console.warn('[CompanyDash] Failed to load active jobs count:', e);
     }
 
-    // --- 2. Fetch application count across this company's jobs ---
-    let applicationsCount = 0;
+    // --- 2. Fetch all applications for this company's jobs (with applicant profile + job title) ---
+    let appsData = [];
     try {
-      const appsData = await supabaseBridge.getApplicationsForMyJobs();
-      applicationsCount = Array.isArray(appsData) ? appsData.length : 0;
+      appsData = await supabaseBridge.getApplicationsForMyJobs();
     } catch (e) {
-      console.warn('[CompanyDash] Failed to load applications count:', e);
+      console.warn('[CompanyDash] Failed to load applications:', e);
     }
+    const applicationsCount = Array.isArray(appsData) ? appsData.length : 0;
 
-    // --- 3. Inject KPI values into DOM ---
-    const kpiJobs = document.getElementById('kpiActiveJobs');
-    const kpiApps = document.getElementById('kpiApplications');
-    if (kpiJobs) kpiJobs.textContent = activeJobsCount;
-    if (kpiApps) kpiApps.textContent = applicationsCount;
+    // --- 3. Compute KPI counts from real status values ---
+    const contactedCount = appsData.filter(a => a.status === 'contacted' || a.status === 'under_review').length;
+    const hiredCount     = appsData.filter(a => a.status === 'accepted').length;
 
-    // --- 4. Fetch latest registered professionals (ordered by created_at desc) ---
-    let candidates = [];
-    try {
-      const profRes = await fetch(
-        `${supabaseBridge.url}/rest/v1/profiles?user_type=eq.professional&select=id,full_name,governorate,created_at,professional_profiles(professional_title,years_of_experience)&order=created_at.desc&limit=5`,
-        { headers: supabaseBridge.getHeaders(true) }
-      );
-      if (profRes.ok) {
-        candidates = await profRes.json();
-      }
-    } catch (e) {
-      console.warn('[CompanyDash] Failed to load candidates:', e);
-    }
+    // --- 4. Inject KPI values into DOM ---
+    const kpiJobs      = document.getElementById('kpiActiveJobs');
+    const kpiApps      = document.getElementById('kpiApplications');
+    const kpiContacted = document.getElementById('kpiContacted');
+    const kpiHired     = document.getElementById('kpiHired');
+    if (kpiJobs)      kpiJobs.textContent      = activeJobsCount;
+    if (kpiApps)      kpiApps.textContent      = applicationsCount;
+    if (kpiContacted) kpiContacted.textContent = contactedCount;
+    if (kpiHired)     kpiHired.textContent     = hiredCount;
 
-    // --- 5. Render candidates list ---
+    // --- 5. Render applicants list with status dropdowns ---
     const listEl = document.getElementById('companyDashCandidatesList');
     if (!listEl) return;
 
-    if (!Array.isArray(candidates) || candidates.length === 0) {
+    const STATUS_AR = {
+      applied:         { label: 'تم التقديم',          color: '#2563eb', bg: '#eff6ff' },
+      under_review:    { label: 'قيد المراجعة',        color: '#7c3aed', bg: '#f5f3ff' },
+      contacted:       { label: 'تم التواصل',          color: '#d97706', bg: '#fffbeb' },
+      accepted:        { label: 'تم القبول ✓',         color: '#16a34a', bg: '#dcfce7' },
+      rejected:        { label: 'مرفوض',               color: '#dc2626', bg: '#fef2f2' },
+      position_closed: { label: 'الوظيفة مغلقة',      color: '#6b7280', bg: '#f3f4f6' },
+    };
+
+    if (!Array.isArray(appsData) || appsData.length === 0) {
       listEl.innerHTML = `
         <div style="padding:32px 24px; text-align:center; color:var(--color-text-muted); font-size:0.875rem;">
           <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin:0 auto 10px; display:block; opacity:0.4;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
-          لا يوجد مرشحون مسجلون حتى الآن
+          لم يتقدم أحد على وظائفك بعد
         </div>`;
       return;
     }
 
-    listEl.innerHTML = candidates.map(cand => {
-      const name = cand.full_name || 'مرشح';
-      const initials = name.trim().substring(0, 2).toUpperCase();
-      const gov = cand.governorate || '—';
-      const title = cand.professional_profiles?.professional_title || 'متخصص زراعي';
-      const exp = cand.professional_profiles?.years_of_experience;
-      const expText = exp != null ? `${exp} سنة خبرة` : '';
-      const joinedDate = cand.created_at
-        ? new Date(cand.created_at).toLocaleDateString('ar-EG', { year: 'numeric', month: 'short' })
+    listEl.innerHTML = appsData.map(app => {
+      const name      = app.profiles?.full_name || 'متقدم';
+      const email     = app.profiles?.email || '';
+      const initials  = name.trim().substring(0, 2).toUpperCase();
+      const jobTitle  = app.jobs?.title || 'وظيفة';
+      const appId     = app.id;
+      const curStatus = app.status || 'applied';
+      const st        = STATUS_AR[curStatus] || STATUS_AR.applied;
+      const appliedAt = app.applied_at
+        ? new Date(app.applied_at).toLocaleDateString('ar-EG', { year: 'numeric', month: 'short', day: 'numeric' })
         : '';
+
+      const options = Object.entries(STATUS_AR).map(([val, info]) =>
+        `<option value="${val}" ${val === curStatus ? 'selected' : ''}>${info.label}</option>`
+      ).join('');
+
       return `
-        <div style="display:flex; align-items:center; justify-content:space-between; padding:16px 24px; border-bottom:1px solid var(--color-border-light);">
-          <div style="display:flex; align-items:center; gap:14px;">
-            <div style="width:44px; height:44px; border-radius:50%; background:var(--color-brand-700); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:0.875rem; flex-shrink:0;">${initials}</div>
-            <div>
-              <h4 style="font-size:0.9375rem; font-weight:700; margin-bottom:2px;">${name}</h4>
-              <div style="font-size:0.8125rem; color:var(--color-text-muted); display:flex; gap:6px; flex-wrap:wrap;">
-                <span>${title}</span>
-                ${expText ? `<span>•</span><span>${expText}</span>` : ''}
-                <span>•</span><span>📍 ${gov}</span>
-                ${joinedDate ? `<span>•</span><span style="color:var(--color-text-light);">انضم ${joinedDate}</span>` : ''}
-              </div>
+        <div style="display:flex; align-items:center; justify-content:space-between; padding:14px 20px; border-bottom:1px solid var(--color-border-light); gap:12px;">
+          <div style="display:flex; align-items:center; gap:12px; flex:1; min-width:0;">
+            <div style="width:40px; height:40px; border-radius:50%; background:var(--color-brand-700); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:0.8125rem; flex-shrink:0;">${initials}</div>
+            <div style="min-width:0;">
+              <div style="font-size:0.9rem; font-weight:700; color:var(--color-text-main); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${name}</div>
+              <div style="font-size:0.775rem; color:var(--color-text-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${jobTitle}${appliedAt ? ' · ' + appliedAt : ''}</div>
             </div>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px; flex-shrink:0;">
+            <span style="font-size:0.7rem; font-weight:700; padding:3px 9px; border-radius:999px; background:${st.bg}; color:${st.color}; white-space:nowrap;">${st.label}</span>
+            <select
+              onchange="window.agriApp.updateApplicationStatus('${appId}', this.value, this)"
+              style="font-size:0.775rem; padding:4px 8px; border:1px solid var(--color-border); border-radius:var(--radius-md); cursor:pointer; background:#fff; color:var(--color-text-main);"
+              title="تغيير الحالة"
+            >
+              ${options}
+            </select>
           </div>
         </div>`;
     }).join('');
+  }
+
+  // ---------------------------------------------------------------------------
+  // Update Application Status (Company action → Supabase PATCH)
+  // ---------------------------------------------------------------------------
+  async updateApplicationStatus(applicationId, newStatus, selectEl) {
+    try {
+      selectEl.disabled = true;
+      const res = await fetch(
+        `${supabaseBridge.url}/rest/v1/applications?id=eq.${applicationId}`,
+        {
+          method: 'PATCH',
+          headers: { ...supabaseBridge.getHeaders(true), 'Prefer': 'return=minimal' },
+          body: JSON.stringify({ status: newStatus })
+        }
+      );
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.message || `HTTP ${res.status}`);
+      }
+      // Update the status badge next to the dropdown
+      const STATUS_AR = {
+        applied:         { label: 'تم التقديم',     color: '#2563eb', bg: '#eff6ff' },
+        under_review:    { label: 'قيد المراجعة',   color: '#7c3aed', bg: '#f5f3ff' },
+        contacted:       { label: 'تم التواصل',     color: '#d97706', bg: '#fffbeb' },
+        accepted:        { label: 'تم القبول ✓',    color: '#16a34a', bg: '#dcfce7' },
+        rejected:        { label: 'مرفوض',          color: '#dc2626', bg: '#fef2f2' },
+        position_closed: { label: 'الوظيفة مغلقة', color: '#6b7280', bg: '#f3f4f6' },
+      };
+      const st = STATUS_AR[newStatus] || STATUS_AR.applied;
+      const badge = selectEl.previousElementSibling;
+      if (badge) {
+        badge.textContent = st.label;
+        badge.style.background = st.bg;
+        badge.style.color = st.color;
+      }
+      // Refresh KPI counts
+      this.loadCompanyDashboardData();
+    } catch (err) {
+      console.error('[CompanyDash] Failed to update application status:', err);
+      alert(`تعذّر تحديث الحالة: ${err.message}`);
+    } finally {
+      if (selectEl) selectEl.disabled = false;
+    }
   }
   bindCandidateProfileEvents() {
     this._bindDashboardMobileMenu();
