@@ -374,8 +374,20 @@ a {
 
 .companies-grid {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 16px;
+}
+
+.how-it-works-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 28px;
+}
+
+.featured-jobs-home-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
 }
 
 .company-logo-card {
@@ -1246,6 +1258,23 @@ body.nav-open {
     grid-template-columns: 1fr !important;
   }
 
+  /* --- How It Works grid (Stack vertically on mobile) --- */
+  .how-it-works-grid {
+    grid-template-columns: 1fr !important;
+    gap: 28px !important;
+  }
+
+  /* --- Featured jobs home grid (Stack vertically on mobile) --- */
+  .featured-jobs-home-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+
+  .companies-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px !important;
+  }
+
   /* --- Footer link columns --- */
   .footer-columns {
     grid-template-columns: 1fr 1fr !important;
@@ -1268,6 +1297,19 @@ body.nav-open {
 
   .courses-grid {
     grid-template-columns: 1fr 1fr !important;
+  }
+
+  .how-it-works-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 24px !important;
+  }
+
+  .featured-jobs-home-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  .companies-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
   }
 
   .stats-grid {

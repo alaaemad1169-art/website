@@ -477,7 +477,7 @@ class AgriCoreApp {
             <p style="color:var(--color-text-muted); max-width:540px; margin:0 auto; font-size:0.9375rem;">Our intelligent matching engine connects Egyptian agricultural talent with the right companies in record time.</p>
           </div>
 
-          <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:28px;">
+          <div class="how-it-works-grid">
             ${[
               { step: '1', icon: '👤', title: 'Build Your Profile', desc: 'Complete our 8-step agricultural professional onboarding with your specializations, skills, certifications and CV.' },
               { step: '2', icon: '🤖', title: 'AI Matching Engine', desc: 'Our algorithm scores your profile against all active vacancies using 5-factor matching — specialization, skills, experience, location, education.' },
@@ -507,7 +507,7 @@ class AgriCoreApp {
             <span class="section-link" onclick="window.agriApp.navigateTo('jobs_search')">View All Jobs &rarr;</span>
           </div>
 
-          <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:20px;">
+          <div class="featured-jobs-home-grid">
             ${jobsData.slice(0, 3).map(job => `
               <div style="border:1px solid var(--color-border); border-radius:var(--radius-lg); padding:20px 22px; background:#fafffe; transition:box-shadow 0.2s, border-color 0.2s;" onmouseenter="this.style.borderColor='var(--color-brand-400)'; this.style.boxShadow='0 6px 24px rgba(21,87,59,0.1)'" onmouseleave="this.style.borderColor='var(--color-border)'; this.style.boxShadow=''">
                 <div style="display:flex; align-items:center; gap:12px; margin-bottom:14px;">
